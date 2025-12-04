@@ -39,6 +39,14 @@ def add_visual_to_sheet(
     """
     visual_id = visual.get("VisualId")
     if not visual_id:
+        # Try to find VisualId in the inner dictionary (QuickSight structure)
+        # e.g. { "BarChartVisual": { "VisualId": "..." } }
+        for key, value in visual.items():
+            if isinstance(value, dict) and "VisualId" in value:
+                visual_id = value["VisualId"]
+                break
+    
+    if not visual_id:
         raise ValueError("The visual must contain a 'VisualId' key.")
 
     sheet["Visuals"].append(visual)
