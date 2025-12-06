@@ -64,8 +64,4 @@ We implemented the following visuals:
 
 - Main value = current carbon intensity  
 - Target value = intensity objective  
-- Use case: KPI to measure portfolio alignment (e.g., Net Zero pathway)
-
-- Filter and parameter logic (Person 2 and 3)  
-- Dataset validation (Person 1)
-
+- Use case: KPI to measure portfolio alignment
