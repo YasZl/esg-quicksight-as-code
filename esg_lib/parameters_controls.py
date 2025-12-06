@@ -171,3 +171,83 @@ def create_intensity_slider_control(
     )
 
     return control
+
+# Paramètres ESG supplémentaires (région, type d’actif, intensité)
+
+def create_region_parameter(name="RegionParam", default=None):
+    """Paramètre texte pour filtrer sur la région / pays."""
+    param = StringParameter(name, "MULTI_VALUED")
+    if default is not None:
+        param.set_static_default_value(default)
+    return param
+
+
+def create_region_dropdown_control(control_id, parameter_name, column_name, dataset_id, title="Région / Pays", multi=True):
+    """Dropdown pour choisir un ou plusieurs pays dans le dataset."""
+    control = ParameterDropDownControl(control_id, parameter_name, title)
+    control.select_all_options_visibility = "VISIBLE"
+    if multi:
+        control.type = "MULTI_SELECT"
+    else:
+        control.type = "SINGLE_SELECT"
+    control.column_name = column_name
+    control.data_set_identifier = dataset_id
+    return control
+
+
+def create_asset_type_parameter(name="AssetTypeParam", default=None):
+    """Paramètre pour filtrer Equity / Obligations / etc."""
+    param = StringParameter(name, "MULTI_VALUED")
+    if default is not None:
+        param.set_static_default_value(default)
+    return param
+
+
+def create_asset_type_dropdown_control(control_id, parameter_name, column_name, dataset_id, title="Type d'actif", multi=True):
+    """Liste des types d’actifs présents dans le dataset."""
+    control = ParameterDropDownControl(control_id, parameter_name, title)
+    control.select_all_options_visibility = "VISIBLE"
+    control.type = "MULTI_SELECT" if multi else "SINGLE_SELECT"
+    control.column_name = column_name
+    control.data_set_identifier = dataset_id
+    return control
+
+# Intensité : paramètres min / max
+
+def create_intensity_min_parameter(name="IntensityMinParam", default_value=None):
+    """Valeur minimale d’intensité."""
+    p = DecimalParameter(name, "SINGLE_VALUED")
+    if default_value is not None:
+        p.set_static_default_value(default_value)
+    return p
+
+
+def create_intensity_max_parameter(name="IntensityMaxParam", default_value=None):
+    """Valeur maximale d’intensité."""
+    p = DecimalParameter(name, "SINGLE_VALUED")
+    if default_value is not None:
+        p.set_static_default_value(default_value)
+    return p
+
+
+def create_intensity_min_slider(control_id, parameter_name, title="Intensité minimum", min_val=0, max_val=100000, step=500):
+    """Slider simple pour régler l’intensité minimale."""
+    return ParameterSliderControl(control_id, parameter_name, title, max_val, min_val, step)
+
+
+def create_intensity_max_slider(control_id, parameter_name, title="Intensité maximum", min_val=0, max_val=100000, step=500):
+    """Slider simple pour régler l’intensité maximum."""
+    return ParameterSliderControl(control_id, parameter_name, title, max_val, min_val, step)
+
+# Sous-secteurs 
+
+def create_subsector_list(control_id, parameter_name, column_name, dataset_id, title="Sous-secteur"):
+    """Liste multi-sélection pour les sous-secteurs."""
+    control = ParameterListControl(control_id, parameter_name, title)
+    control.type = "MULTI_SELECT"
+    control.select_all_options_visibility = "VISIBLE"
+    control.search_options_visibility = "VISIBLE"
+    control.column_name = column_name
+    control.data_set_identifier = dataset_id
+    return control
+
