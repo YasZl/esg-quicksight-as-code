@@ -1,0 +1,27 @@
+"""
+Tests pour vérifier que les paramètres ESG se compilent correctement et qu’on récupère bien du JSON QuickSight
+"""
+
+from esg_lib.parameters_controls import *
+from esg_lib.parameters_esg import build_all_esg_parameters_and_controls
+
+
+def test_year_param():
+    p = create_year_parameter(default_year=2024)
+    data = p.compile()
+    assert "IntegerParameterDeclaration" in data
+    assert data["IntegerParameterDeclaration"]["DefaultValues"]["StaticValues"] == [2024]
+
+
+def test_sector_controls():
+    ctrl = create_sector_dropdown_control("t1", "SectorParam", "CIC Code", "ds")
+    compiled = ctrl.compile()
+    assert "Dropdown" in compiled
+    assert compiled["Dropdown"]["SourceParameterName"] == "SectorParam"
+
+
+def test_esg_builder_runs():
+    params, ctrls = build_all_esg_parameters_and_controls("myDataset")
+    # on vérifie juste que ça renvoie des listes non vides
+    assert len(params) > 3
+    assert len(ctrls) > 3
