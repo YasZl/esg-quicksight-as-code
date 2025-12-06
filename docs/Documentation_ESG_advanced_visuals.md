@@ -65,3 +65,18 @@ We implemented the following visuals:
 - Main value = current carbon intensity  
 - Target value = intensity objective  
 - Use case: KPI to measure portfolio alignment
+
+# JSON Examples
+
+The file `advanced_visuals_output.json` contains example JSON structures generated
+using the `.compile()` method for each of the advanced visuals:
+
+- Heatmap  
+- Treemap  
+- Filled Map  
+- Geospatial Map  
+- Waterfall  
+- Gauge  
+
+These JSON outputs confirm that the visuals are correctly constructed and valid
+for integration into the QuickSight Analysis pipeline.
