@@ -238,7 +238,7 @@ def build_esg_analysis(
     # 3. Filters
     sector_filter = create_sector_filter("sector_filter_1", mappings["sector"], dataset_id)
     year_filter = create_year_timerange_filter("year_filter_1", mappings["date"], dataset_id)
-    intensity_filter = create_intensity_numeric_filter("intensity_filter_1", mappings["intensity"], dataset_id)
+    intensity_filter = create_intensity_numeric_filter("intensity_filter_1", mappings["carbon_intensity"], dataset_id)
 
     filter_group = create_filter_group(
         group_id="global_filters",

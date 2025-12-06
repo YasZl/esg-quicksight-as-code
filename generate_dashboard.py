@@ -9,28 +9,21 @@ if __name__ == "__main__":
 
     # Mapping between your dataset columns and the expected fields
     MAPPINGS = {
-       # Basic fields
+        # Core ESG fields
         "sector": "Sector",
+        "subsector": "SubSector",
+        "country": "Country",
+
+        # Time fields
         "date": "Year",
-        "emissions": "CO2_Emissions",
-        "intensity": "CO2_Intensity",
+        "year": "Year",  # required by waterfall
 
-        # Heatmap
-        "row": "Sector",
-        "column": "Year",
-        "value": "CO2_Emissions",
-
-        # Treemap
-        "groups": ["Sector", "SubSector"],  
-        "size": "CO2_Emissions",
-        "color": "CO2_Intensity",
-
-        # Geospatial / Filled Map
-        "geo": "Country",
-
-        # Gauge
-        "current": "CO2_Intensity",
-        "target": "Target_Intensity"
+        # Emissions fields
+        "emissions_total": "CO2_Emissions",
+    
+        # Intensity fields
+        "carbon_intensity": "CO2_Intensity",
+        "intensity_target": "Target_Intensity"
     }
 
     output = build_esg_analysis(

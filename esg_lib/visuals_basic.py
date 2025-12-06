@@ -36,12 +36,14 @@ class GenericVisual:
 
 def make_emissions_by_sector_bar(dataset_id, mappings):
     """
-    mappings = { "sector": "...", "emissions": "..." }
+    Expected mappings:
+        "sector"
+        "emissions_total"
     """
     vis = GenericVisual("bar_chart", dataset_id)
 
     vis.add_dimension(mappings["sector"])
-    vis.add_measure(mappings["emissions"])
+    vis.add_measure(mappings["emissions_total"])
     vis.add_title("Emissions by Sector")
 
     return vis.compile()
@@ -53,12 +55,14 @@ def make_emissions_by_sector_bar(dataset_id, mappings):
 
 def make_emissions_over_time_line(dataset_id, mappings):
     """
-    mappings = { "date": "...", "emissions": "..." }
+    Expected mappings:
+        "date"
+        "emissions_total"
     """
     vis = GenericVisual("line_chart", dataset_id)
 
     vis.add_dimension(mappings["date"])
-    vis.add_measure(mappings["emissions"])
+    vis.add_measure(mappings["emissions_total"])
     vis.add_title("Emissions Over Time")
 
     return vis.compile()
@@ -70,12 +74,14 @@ def make_emissions_over_time_line(dataset_id, mappings):
 
 def make_sector_share_pie(dataset_id, mappings):
     """
-    mappings = { "sector": "...", "emissions": "..." }
+    Expected mappings:
+        "sector"
+        "emissions_total"
     """
     vis = GenericVisual("pie_chart", dataset_id)
 
     vis.add_dimension(mappings["sector"])
-    vis.add_measure(mappings["emissions"])
+    vis.add_measure(mappings["emissions_total"])
     vis.add_title("Emission Share by Sector")
 
     return vis.compile()
@@ -87,11 +93,12 @@ def make_sector_share_pie(dataset_id, mappings):
 
 def make_total_emissions_kpi(dataset_id, mappings):
     """
-    mappings = { "emissions": "..." }
+    Expected mappings:
+        "emissions_total"
     """
     vis = GenericVisual("kpi", dataset_id)
 
-    vis.add_measure(mappings["emissions"])
+    vis.add_measure(mappings["emissions_total"])
     vis.add_title("Total Emissions")
 
     return vis.compile()
@@ -103,11 +110,10 @@ def make_total_emissions_kpi(dataset_id, mappings):
 
 def make_emissions_table(dataset_id, mappings):
     """
-    mappings = {
-        "sector": "...",
-        "emissions": "...",
-        "date": "..."   (optional)
-    }
+    Expected mappings:
+        "sector"
+        "date"
+        "emissions_total"
     """
     vis = GenericVisual("table", dataset_id)
 
@@ -116,29 +122,7 @@ def make_emissions_table(dataset_id, mappings):
     if "date" in mappings:
         vis.add_dimension(mappings["date"])
 
-    vis.add_measure(mappings["emissions"])
+    vis.add_measure(mappings["emissions_total"])
     vis.add_title("Emissions Table")
 
     return vis.compile()
-
-"""
-
-dataset_id = "ESG_DATASET_001"
-mappings = {
-    "sector": "Sector",
-    "emissions": "CO2_Emissions"
-}
-
-output = make_emissions_by_sector_bar(dataset_id, mappings)
-print(output)
-
-
-dataset_id = "ESG_DATASET_001"
-mappings = {
-    "date": "Year",
-    "emissions": "CO2_Emissions"
-}
-
-output = make_emissions_over_time_line(dataset_id, mappings)
-print(output)
-"""

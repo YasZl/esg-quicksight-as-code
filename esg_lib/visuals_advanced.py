@@ -18,7 +18,7 @@ def make_heatmap(visual_id, dataset_id, mappings):
     heatmap.add_row_categorical_dimension_field(mappings["sector"], dataset_id)
 
     # year on X axis
-    heatmap.add_column_categorical_dimension_field(mappings["year"], dataset_id)
+    heatmap.add_column_categorical_dimension_field(mappings["date"], dataset_id)
 
     # value = total emissions
     heatmap.add_numerical_measure_field(
