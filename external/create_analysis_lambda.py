@@ -1,6 +1,6 @@
 import json
 import boto3
-from quicksight_assets_class import *
+from external.quicksight_assets_class import *
 
 client = boto3.client('quicksight')
 

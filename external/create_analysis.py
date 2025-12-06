@@ -1,4 +1,4 @@
-from quicksight_assets_class import *
+from external.quicksight_assets_class import *
 import json
 import boto3
 ###################################################################

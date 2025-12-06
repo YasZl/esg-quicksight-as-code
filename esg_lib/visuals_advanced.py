@@ -1,10 +1,10 @@
-from quicksight_assets_class import (
+from external.quicksight_assets_class import (
     HeatMapVisual,
     TreeMapVisual,
     FilledMapVisual,
     GeospatialMapVisual,
     WaterfallVisual,
-    GaugeChartVisual
+    GaugeChartVisual,
 )
 
 

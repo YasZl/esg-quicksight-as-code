@@ -1,12 +1,19 @@
 import boto3
 
-# These imports come from the AWS sample repo (src/quicksight_assets_class.py)
-from src.quicksight_assets_class import Analysis, Definition
+# Imports from your project
+from esg_lib.parameters_esg import build_all_esg_parameters_and_controls
+from sheets_esg import build_overview_sheet, build_risk_sheet
+from esg_lib.filters import (
+    create_filter_group,
+    create_sector_filter,
+    create_year_timerange_filter,
+    create_intensity_numeric_filter,
+)
 
 
-# ------------------------------------------------------------
-# 1. Build the dashboard definition (datasets, sheets, filters, parameters…)
-# ------------------------------------------------------------
+# =====================================================================
+# 1. PURE DICTIONARY-BASED DEFINITION (NO AWS QuickSight CLASSES)
+# =====================================================================
 def build_definition(
     dataset_arn,
     sheets,
@@ -15,33 +22,35 @@ def build_definition(
     calculated_fields=None,
 ):
     """
-    Build a QuickSight Definition object using the custom AWS sample classes.
-    This object will later be compiled into JSON using definition.compile().
+    Build a pure dictionary representation of the QuickSight analysis.
+    This avoids using AWS sample classes that expect objects with .compile().
     """
-    definition = Definition([{"DataSetArn": dataset_arn, "Identifier": "dataset"}])
+    if parameters is None:
+        parameters = []
 
-    # Add sheets
-    for sheet in sheets:
-        definition.add_sheets([sheet])
+    if filter_groups is None:
+        filter_groups = []
 
-    # Add parameters
-    if parameters:
-        definition.add_parameters(parameters)
+    if calculated_fields is None:
+        calculated_fields = []
 
-    # Add filter groups
-    if filter_groups:
-        definition.add_filter_groups(filter_groups)
+    return {
+        "DataSetIdentifierDeclarations": [
+            {
+                "DataSetArn": dataset_arn,
+                "Identifier": "dataset",
+            }
+        ],
+        "Sheets": sheets,
+        "Parameters": parameters,
+        "FilterGroups": filter_groups,
+        "CalculatedFields": calculated_fields,
+    }
 
-    # Add calculated fields
-    if calculated_fields:
-        definition.add_calculated_fields(calculated_fields)
 
-    return definition
-
-
-# ------------------------------------------------------------
-# 2. Build the Analysis object that wraps the definition
-# ------------------------------------------------------------
+# =====================================================================
+# 2. ANALYSIS OBJECT (ALSO PURE DICTIONARY)
+# =====================================================================
 def build_analysis(
     aws_account_id,
     analysis_id,
@@ -51,36 +60,40 @@ def build_analysis(
     permissions=None,
 ):
     """
-    Create an Analysis object (AWS sample class) and attach the definition.
+    Build a dictionary representing the QuickSight analysis.
     """
-    analysis = Analysis(aws_account_id, analysis_id, name)
-    analysis.add_definition(definition)
+    analysis = {
+        "AwsAccountId": aws_account_id,
+        "AnalysisId": analysis_id,
+        "Name": name,
+        "Definition": definition,
+    }
 
     if theme_arn:
-        analysis.set_theme(theme_arn)
+        analysis["ThemeArn"] = theme_arn
     if permissions:
-        analysis.set_permissions(permissions)
+        analysis["Permissions"] = permissions
 
     return analysis
 
 
-# ------------------------------------------------------------
-# 3. Create analysis through boto3
-# ------------------------------------------------------------
+# =====================================================================
+# 3. REAL DEPLOYMENT VIA BOTO3  (ONLY WORKS WITH REAL QUICKsIGHT OBJECTS)
+# =====================================================================
 def create_analysis_boto3(analysis_obj):
     """
-    Calls boto3.create_analysis using the compiled Analysis JSON.
+    Calls boto3.create_analysis using the JSON payload.
+    Only works if running in AWS with correct permissions.
     """
     client = boto3.client("quicksight")
 
-    payload = analysis_obj.compile()  # produces the API-ready JSON
+    payload = analysis_obj  # already a JSON dict
 
     response = client.create_analysis(
         AwsAccountId=payload["AwsAccountId"],
         AnalysisId=payload["AnalysisId"],
         Definition=payload["Definition"],
         Name=payload["Name"],
-        # Optional fields only if they exist
         Permissions=payload.get("Permissions"),
         SourceEntity=payload.get("SourceEntity"),
         ThemeArn=payload.get("ThemeArn"),
@@ -90,16 +103,13 @@ def create_analysis_boto3(analysis_obj):
     return response
 
 
-# ------------------------------------------------------------
-# 4. Update an existing analysis through boto3
-# ------------------------------------------------------------
 def update_analysis_boto3(analysis_obj):
     """
-    Calls boto3.update_analysis using the compiled Analysis JSON.
+    Calls boto3.update_analysis for an existing dashboard.
     """
     client = boto3.client("quicksight")
 
-    payload = analysis_obj.compile()
+    payload = analysis_obj
 
     response = client.update_analysis(
         AwsAccountId=payload["AwsAccountId"],
@@ -112,6 +122,10 @@ def update_analysis_boto3(analysis_obj):
 
     return response
 
+
+# =====================================================================
+# 4. HIGH-LEVEL DEPLOY WRAPPER
+# =====================================================================
 def deploy_analysis(
     aws_account_id,
     analysis_id,
@@ -126,11 +140,8 @@ def deploy_analysis(
     update=False,
 ):
     """
-    High-level function to build and deploy (create/update)
-    a QuickSight analysis in a single call.
+    Builds an analysis and deploys it using AWS (create or update).
     """
-
-    # Build the definition
     definition = build_definition(
         dataset_arn=dataset_arn,
         sheets=sheets,
@@ -139,7 +150,6 @@ def deploy_analysis(
         calculated_fields=calculated_fields,
     )
 
-    # Build the analysis container
     analysis = build_analysis(
         aws_account_id=aws_account_id,
         analysis_id=analysis_id,
@@ -149,13 +159,15 @@ def deploy_analysis(
         permissions=permissions,
     )
 
-    # Deploy to AWS
     if update:
         return update_analysis_boto3(analysis)
     else:
         return create_analysis_boto3(analysis)
-    
 
+
+# =====================================================================
+# 5. SIMULATION MODE (NO boto3)
+# =====================================================================
 def simulate_deploy(
     aws_account_id,
     analysis_id,
@@ -166,14 +178,12 @@ def simulate_deploy(
     filter_groups=None,
     calculated_fields=None,
     theme_arn=None,
-    permissions=None
+    permissions=None,
 ):
     """
-    Simulation version of deploy_analysis().
-    It does NOT call boto3.
-    It only returns the compiled JSON that would be sent to QuickSight.
+    Returns the final JSON representation of the dashboard 
+    WITHOUT calling boto3 (ideal for development).
     """
-
     definition = build_definition(
         dataset_arn=dataset_arn,
         sheets=sheets,
@@ -191,4 +201,59 @@ def simulate_deploy(
         permissions=permissions,
     )
 
-    return analysis.compile()
+    return analysis
+
+
+# =====================================================================
+# 6. MASTER FUNCTION FOR THE ESG DASHBOARD
+# =====================================================================
+def build_esg_analysis(
+    aws_account_id: str,
+    dataset_arn: str,
+    dataset_id: str,
+    mappings: dict,
+    analysis_id: str = "esg-dashboard",
+    analysis_name: str = "ESG Automated Dashboard",
+):
+    """
+    Builds the complete ESG dashboard:
+
+    ✓ parameters & controls
+    ✓ overview sheet
+    ✓ risk sheet
+    ✓ dynamic filters
+    ✓ full definition + analysis object (pure dict)
+    ✓ returns JSON used by simulate_deploy()
+    """
+
+    # 1. ESG parameters
+    parameters, controls = build_all_esg_parameters_and_controls(dataset_id)
+
+    # 2. Sheets
+    overview_sheet = build_overview_sheet(dataset_id, mappings)
+    risk_sheet = build_risk_sheet(dataset_id, mappings)
+
+    sheets = [overview_sheet, risk_sheet]
+
+    # 3. Filters
+    sector_filter = create_sector_filter("sector_filter_1", mappings["sector"], dataset_id)
+    year_filter = create_year_timerange_filter("year_filter_1", mappings["date"], dataset_id)
+    intensity_filter = create_intensity_numeric_filter("intensity_filter_1", mappings["intensity"], dataset_id)
+
+    filter_group = create_filter_group(
+        group_id="global_filters",
+        filters=[sector_filter, year_filter, intensity_filter],
+        sheet_id=overview_sheet["SheetId"],
+    )
+
+    # 4. Return simulation output
+    return simulate_deploy(
+        aws_account_id=aws_account_id,
+        analysis_id=analysis_id,
+        name=analysis_name,
+        dataset_arn=dataset_arn,
+        sheets=sheets,
+        parameters=parameters,
+        filter_groups=[filter_group],
+        calculated_fields=[],
+    )

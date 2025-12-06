@@ -1,5 +1,5 @@
 from esg_lib.analysis_api import simulate_deploy
-from src.quicksight_assets_class import Sheet
+from external.quicksight_assets_class import Sheet
 
 # Fake sheet for testing
 fake_sheet = Sheet("sheet1", name="Fake Test Sheet")
