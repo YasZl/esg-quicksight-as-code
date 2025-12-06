@@ -1,0 +1,40 @@
+# Documentation – ESG Parameters
+
+In this project, we need to build an ESG dashboard in QuickSight.  
+Since QuickSight uses many different parameters (year, sector, country, etc.),  
+we decided to group all the parameter into one Python module.
+
+## Why do we need parameters?
+
+Parameters make the dashboard interactive.  
+They allow users to:
+
+- filter the visuals easily,
+- select a specific sector or country,
+- set minimum/maximum thresholds (for example, carbon intensity),
+- generally make the dashboard more flexible and dynamic.
+
+## What our code does
+
+We created two main files:
+
+1. 'parameters_controls.py'
+
+This file contains all the “basic building block” functions:
+
+- how to create a parameter,
+- how to create its control (dropdown, list, slider...).
+
+For example, we implemented:
+
+- year → simple dropdown,
+- sector → dropdown + multi-select list,
+- region → dropdown,
+- asset type → multi-select dropdown,
+- intensity → two sliders (min / max).
+
+2. `parameters_esg.py`
+
+Here, we gather everything in one place using a single function:
+
+build_all_esg_parameters_and_controls(dataset_id)
