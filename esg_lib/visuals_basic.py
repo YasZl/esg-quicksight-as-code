@@ -1,128 +1,248 @@
 # esg_lib/visuals_basic.py
 
-class GenericVisual:
-    """Generic visual object with basic expected methods."""
-    
-    def __init__(self, visual_type, dataset_id):
-        self.visual_type = visual_type
-        self.dataset_id = dataset_id
-        self.dimensions = []
-        self.measures = []
-        self.title = ""
+"""
+Basic ESG visuals implemented using real QuickSight visual classes.
 
-    def add_dimension(self, dim):
-        self.dimensions.append(dim)
+We rely on the AWS sample library in:
+external/quicksight_assets_class.py
+"""
 
-    def add_measure(self, measure):
-        self.measures.append(measure)
-
-    def add_title(self, title):
-        self.title = title
-
-    def compile(self):
-        """Returns a generic dict representation"""
-        return {
-            "Type": self.visual_type,
-            "DatasetId": self.dataset_id,
-            "Dimensions": self.dimensions,
-            "Measures": self.measures,
-            "Title": self.title
-        }
+from external.quicksight_assets_class import (
+    BarChartVisual,
+    LineChartVisual,
+    PieChartVisual,
+    KPIVisual,
+    TableVisual,
+)
 
 
 # ---------------------------------------------------------
 # 1. Emissions by Sector (Bar Chart)
 # ---------------------------------------------------------
 
-def make_emissions_by_sector_bar(dataset_id, mappings):
-    """
-    Expected mappings:
-        "sector"
-        "emissions_total"
-    """
-    vis = GenericVisual("bar_chart", dataset_id)
 
-    vis.add_dimension(mappings["sector"])
-    vis.add_measure(mappings["emissions_total"])
-    vis.add_title("Emissions by Sector")
+def make_emissions_by_sector_bar(visual_id, dataset_id, mappings):
+    """
+    ESG Bar Chart: Emissions by sector.
 
-    return vis.compile()
+    Expected mappings keys:
+        "sector"          -> e.g. "Sector"
+        "emissions_total" -> e.g. "CO2_Emissions"
+    """
+    bar = BarChartVisual(visual_id)
+
+    # Orientation & arrangement (standard bar chart)
+    bar.set_bars_arrangement("CLUSTERED")
+    bar.set_orientation("VERTICAL")
+
+    # X axis = sector
+    bar.add_categorical_dimension_field(mappings["sector"], dataset_id)
+
+    # Y axis = total emissions (SUM)
+    bar.add_numerical_measure_field(
+        mappings["emissions_total"],
+        dataset_id,
+        "SUM",
+    )
+
+    # Title
+    bar.add_title("VISIBLE", "PlainText", "Emissions by Sector")
+
+    return bar
 
 
 # ---------------------------------------------------------
 # 2. Emissions Over Time (Line Chart)
 # ---------------------------------------------------------
 
-def make_emissions_over_time_line(dataset_id, mappings):
-    """
-    Expected mappings:
-        "date"
-        "emissions_total"
-    """
-    vis = GenericVisual("line_chart", dataset_id)
 
-    vis.add_dimension(mappings["date"])
-    vis.add_measure(mappings["emissions_total"])
-    vis.add_title("Emissions Over Time")
+def make_emissions_over_time_line(visual_id, dataset_id, mappings):
+    """
+    ESG Line Chart: Emissions over time.
 
-    return vis.compile()
+    Expected mappings keys:
+        "date"            -> e.g. "Year"
+        "emissions_total" -> e.g. "CO2_Emissions"
+    """
+    line = LineChartVisual(visual_id)
+
+    # Simple line chart
+    line.set_type("LINE")
+
+    # X axis = date/year
+    # We use YEAR granularity here (adaptable if needed)
+    line.add_date_dimension_field(
+        mappings["date"],
+        dataset_id,
+        date_granularity="YEAR",
+    )
+
+    # Y axis = total emissions (SUM)
+    line.add_numerical_measure_field(
+        mappings["emissions_total"],
+        dataset_id,
+        "SUM",
+    )
+
+    # Title
+    line.add_title("VISIBLE", "PlainText", "Emissions Over Time")
+
+    return line
 
 
 # ---------------------------------------------------------
 # 3. Sector Share (Pie Chart)
 # ---------------------------------------------------------
 
-def make_sector_share_pie(dataset_id, mappings):
-    """
-    Expected mappings:
-        "sector"
-        "emissions_total"
-    """
-    vis = GenericVisual("pie_chart", dataset_id)
 
-    vis.add_dimension(mappings["sector"])
-    vis.add_measure(mappings["emissions_total"])
-    vis.add_title("Emission Share by Sector")
+def make_sector_share_pie(visual_id, dataset_id, mappings):
+    """
+    ESG Pie Chart: Emission share by sector.
 
-    return vis.compile()
+    Expected mappings keys:
+        "sector"          -> e.g. "Sector"
+        "emissions_total" -> e.g. "CO2_Emissions"
+    """
+    pie = PieChartVisual(visual_id)
+
+    # Category = sector
+    pie.add_categorical_dimension_field(mappings["sector"], dataset_id)
+
+    # Value = emissions (SUM)
+    pie.add_numerical_measure_field(
+        mappings["emissions_total"],
+        dataset_id,
+        "SUM",
+    )
+
+    # Title
+    pie.add_title("VISIBLE", "PlainText", "Emission Share by Sector")
+
+    return pie
 
 
 # ---------------------------------------------------------
 # 4. Total Emissions (KPI)
 # ---------------------------------------------------------
 
-def make_total_emissions_kpi(dataset_id, mappings):
-    """
-    Expected mappings:
-        "emissions_total"
-    """
-    vis = GenericVisual("kpi", dataset_id)
 
-    vis.add_measure(mappings["emissions_total"])
-    vis.add_title("Total Emissions")
+def make_total_emissions_kpi(visual_id, dataset_id, mappings):
+    """
+    ESG KPI: Total portfolio emissions.
 
-    return vis.compile()
+    Expected mappings keys:
+        "emissions_total" -> e.g. "CO2_Emissions"
+    """
+    kpi = KPIVisual(visual_id)
+
+    # Single numeric measure (SUM of emissions)
+    kpi.add_numerical_measure_field(
+        mappings["emissions_total"],
+        dataset_id,
+        "SUM",
+    )
+
+    # KPI title
+    kpi.add_title("VISIBLE", "PlainText", "Total Emissions")
+
+    return kpi
 
 
 # ---------------------------------------------------------
-# 5. Emissions Table
+# 5. Emissions Table (Holdings)
 # ---------------------------------------------------------
 
-def make_emissions_table(dataset_id, mappings):
-    """
-    Expected mappings:
-        "sector"
-        "date"
-        "emissions_total"
-    """
-    vis = GenericVisual("table", dataset_id)
 
+def make_emissions_table(visual_id, dataset_id, mappings):
+    """
+    ESG Table: Holdings / emissions table.
+
+    Expected mappings keys (we use only the ones that exist):
+        "sector"          -> e.g. "Sector"
+        "country"         -> e.g. "Country"
+        "date"            -> e.g. "Year"
+        "emissions_total" -> e.g. "CO2_Emissions"
+        (optionally "company" if available)
+    """
+    table = TableVisual(visual_id)
+
+    # Dimensions (categorical columns)
+    if "company" in mappings:
+        table.add_categorical_dimension_field(mappings["company"], dataset_id)
     if "sector" in mappings:
-        vis.add_dimension(mappings["sector"])
+        table.add_categorical_dimension_field(mappings["sector"], dataset_id)
+    if "country" in mappings:
+        table.add_categorical_dimension_field(mappings["country"], dataset_id)
     if "date" in mappings:
-        vis.add_dimension(mappings["date"])
+        table.add_date_dimension_field(
+            mappings["date"],
+            dataset_id,
+            date_granularity="YEAR",
+        )
 
-    vis.add_measure(mappings["emissions_total"])
-    vis.add_title("Emissions Table")
+    # Numerical measure = emissions
+    table.add_numerical_measure_field(
+        mappings["emissions_total"],
+        dataset_id,
+        "SUM",
+    )
 
-    return vis.compile()
+    # Simple title
+    table.add_title("VISIBLE", "PlainText", "Emissions Table (Holdings)")
+
+    return table
+
+
+# ---------------------------------------------------------
+# 6. Helper – build_basic_esg_visuals
+# ---------------------------------------------------------
+
+
+def build_basic_esg_visuals(dataset_id, mappings):
+    """
+    Convenience function to build all basic ESG visuals in one call.
+
+    Returns a dict of compiled QuickSight visuals:
+        {
+          "kpi_total_emissions": {...},
+          "bar_emissions_by_sector": {...},
+          "pie_sector_share": {...},
+          "line_emissions_over_time": {...},
+          "table_emissions": {...},
+        }
+    """
+    # Create visual objects with fixed IDs (easier to debug)
+    kpi_obj = make_total_emissions_kpi(
+        "kpi_total_emissions",
+        dataset_id,
+        mappings,
+    )
+    bar_obj = make_emissions_by_sector_bar(
+        "bar_emissions_by_sector",
+        dataset_id,
+        mappings,
+    )
+    pie_obj = make_sector_share_pie(
+        "pie_sector_share",
+        dataset_id,
+        mappings,
+    )
+    line_obj = make_emissions_over_time_line(
+        "line_emissions_over_time",
+        dataset_id,
+        mappings,
+    )
+    table_obj = make_emissions_table(
+        "table_emissions",
+        dataset_id,
+        mappings,
+    )
+
+    # Compile everything into JSON-like dicts
+    return {
+        "kpi_total_emissions": kpi_obj.compile(),
+        "bar_emissions_by_sector": bar_obj.compile(),
+        "pie_sector_share": pie_obj.compile(),
+        "line_emissions_over_time": line_obj.compile(),
+        "table_emissions": table_obj.compile(),
+    }
