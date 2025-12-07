@@ -176,8 +176,3 @@ Elles utilisent uniquement les clés logiques du dictionnaire `mappings` :
 Ces clés sont reliées aux colonnes du dataset dans `esg_lib/column_mapping.py`
 (par exemple via `MANAOS_NATURE_MAPPINGS` pour le dataset biodiversité).
 
-```
-
-Tu crées `docs/visuals_basic.md` sur GitHub, tu colles tout ça dedans, tu commit, et c’est bon pour la doc de la Personne 3 ✅.
-::contentReference[oaicite:0]{index=0}
-```
