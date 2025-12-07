@@ -22,37 +22,53 @@ def build_overview_sheet(dataset_id, mappings):
     # Add Title
     sheet = add_title(sheet, "Portfolio Overview", row=0, col=0, row_span=2, col_span=30)
 
-    # 1. KPI Total Emissions
-    # Position: Top Left
-    kpi_vis = visuals_basic.make_total_emissions_kpi(dataset_id, mappings)
-    kpi_vis["VisualId"] = _generate_id() # Inject VisualId
+    # 1. KPI Total Emissions (Top Left)
+    kpi_obj = visuals_basic.make_total_emissions_kpi(
+        _generate_id(),
+        dataset_id,
+        mappings,
+    )
+    kpi_vis = kpi_obj.compile()
     sheet = add_visual_to_sheet(sheet, kpi_vis, row=2, col=0, row_span=6, col_span=6)
 
-    # 2. Bar Chart (Emissions by Sector)
-    # Position: Top Right
-    bar_vis = visuals_basic.make_emissions_by_sector_bar(dataset_id, mappings)
-    bar_vis["VisualId"] = _generate_id()
+    # 2. Bar Chart (Emissions by Sector) (Top Center)
+    bar_obj = visuals_basic.make_emissions_by_sector_bar(
+        _generate_id(),
+        dataset_id,
+        mappings,
+    )
+    bar_vis = bar_obj.compile()
     sheet = add_visual_to_sheet(sheet, bar_vis, row=2, col=6, row_span=10, col_span=12)
 
-    # 3. Pie Chart (Sector Composition)
-    # Position: Top Far Right
-    pie_vis = visuals_basic.make_sector_share_pie(dataset_id, mappings)
-    pie_vis["VisualId"] = _generate_id()
+    # 3. Pie Chart (Sector Composition) (Top Right)
+    pie_obj = visuals_basic.make_sector_share_pie(
+        _generate_id(),
+        dataset_id,
+        mappings,
+    )
+    pie_vis = pie_obj.compile()
     sheet = add_visual_to_sheet(sheet, pie_vis, row=2, col=18, row_span=10, col_span=12)
 
-    # 4. Line Chart (Emissions Over Time)
-    # Position: Bottom Left
-    line_vis = visuals_basic.make_emissions_over_time_line(dataset_id, mappings)
-    line_vis["VisualId"] = _generate_id()
+    # 4. Line Chart (Emissions Over Time) (Bottom Left)
+    line_obj = visuals_basic.make_emissions_over_time_line(
+        _generate_id(),
+        dataset_id,
+        mappings,
+    )
+    line_vis = line_obj.compile()
     sheet = add_visual_to_sheet(sheet, line_vis, row=12, col=0, row_span=10, col_span=15)
 
-    # 5. Table (Holdings)
-    # Position: Bottom Right
-    table_vis = visuals_basic.make_emissions_table(dataset_id, mappings)
-    table_vis["VisualId"] = _generate_id()
+    # 5. Table (Holdings) (Bottom Right)
+    table_obj = visuals_basic.make_emissions_table(
+        _generate_id(),
+        dataset_id,
+        mappings,
+    )
+    table_vis = table_obj.compile()
     sheet = add_visual_to_sheet(sheet, table_vis, row=12, col=15, row_span=10, col_span=15)
 
     return sheet
+
 
 def build_risk_sheet(dataset_id, mappings):
     """
