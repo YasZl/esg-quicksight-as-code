@@ -315,6 +315,12 @@ def create_dashboard_html(
                 border-radius: 8px;
                 padding: 20px;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                min-height: 400px;
+                overflow: visible;
+            }}
+
+            .kpi-container {{
+                min-height: 300px;
             }}
 
             .two-column {{
@@ -324,9 +330,31 @@ def create_dashboard_html(
                 margin-top: 30px;
             }}
 
-            @media (max-width: 1024px) {{
+            /* Tablet and smaller screens */
+            @media (max-width: 1400px) {{
                 .two-column {{
                     grid-template-columns: 1fr;
+                    gap: 40px;
+                }}
+
+                .chart-container {{
+                    min-height: 500px;
+                }}
+            }}
+
+            /* Mobile screens */
+            @media (max-width: 768px) {{
+                .dashboard-container {{
+                    padding: 15px;
+                }}
+
+                .dashboard-header h1 {{
+                    font-size: 24px;
+                }}
+
+                .chart-container {{
+                    padding: 15px;
+                    min-height: 450px;
                 }}
             }}
 
@@ -349,7 +377,7 @@ def create_dashboard_html(
             </div>
 
             <div class="chart-section">
-                <div class="chart-container" id="kpi-chart"></div>
+                <div class="chart-container kpi-container" id="kpi-chart"></div>
             </div>
 
             <div class="two-column">
@@ -364,17 +392,46 @@ def create_dashboard_html(
         </div>
 
         <script>
-            // Render KPI
+            // Configuration for responsive charts
+            var config = {{
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
+            }};
+
+            // Function to safely render charts with error handling
+            function renderChart(elementId, chartData) {{
+                try {{
+                    Plotly.newPlot(elementId, chartData.data, chartData.layout, config);
+                }} catch (error) {{
+                    console.error('Error rendering ' + elementId + ':', error);
+                    document.getElementById(elementId).innerHTML =
+                        '<div style="padding: 20px; text-align: center; color: #999;">' +
+                        'Error loading chart. Please refresh the page.' +
+                        '</div>';
+                }}
+            }}
+
+            // Render charts
             var kpiData = {kpi_fig.to_json()};
-            Plotly.newPlot('kpi-chart', kpiData.data, kpiData.layout, {{responsive: true}});
-
-            // Render Pie Chart
             var pieData = {pie_fig.to_json()};
-            Plotly.newPlot('pie-chart', pieData.data, pieData.layout, {{responsive: true}});
-
-            // Render Bar Chart
             var barData = {bar_fig.to_json()};
-            Plotly.newPlot('bar-chart', barData.data, barData.layout, {{responsive: true}});
+
+            renderChart('kpi-chart', kpiData);
+            renderChart('pie-chart', pieData);
+            renderChart('bar-chart', barData);
+
+            // Handle window resize for better responsiveness
+            var resizeTimer;
+            window.addEventListener('resize', function() {{
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {{
+                    Plotly.Plots.resize('kpi-chart');
+                    Plotly.Plots.resize('pie-chart');
+                    Plotly.Plots.resize('bar-chart');
+                }}, 250);
+            }});
         </script>
     </body>
     </html>
