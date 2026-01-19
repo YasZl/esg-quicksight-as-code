@@ -211,6 +211,7 @@ __marimo__/
 # Local data files (too large or temporary)
 *.xlsx
 COPIE.*
+*.csv
 
 # Generated configuration files (should be regenerated)
 dashboard_definition.json
@@ -219,3 +220,7 @@ esg_dashboard_output_local.json
 
 # PDF files (reports and generated documents)
 *.pdf
+
+# Generated dashboard HTML files
+portfolio_dashboard_preview.html
+*_dashboard_preview.html
