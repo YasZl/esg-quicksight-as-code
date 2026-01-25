@@ -1,0 +1,447 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Local Preview - ESG Dataset – Config 1</title>
+
+<style>
+  :root{
+    --bg:#f6f7fb;
+    --card:#ffffff;
+    --text:#0f172a;
+    --muted:#64748b;
+    --line:#e5e7eb;
+    --chip:#eef2ff;
+    --chipText:#3730a3;
+    --blue:#2563eb;
+    --warnBg:#fff7ed;
+    --warnLine:#fed7aa;
+    --warnText:#9a3412;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .wrap{max-width:1200px; margin:0 auto; padding:18px;}
+  .header{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px 18px 14px 18px;
+    box-shadow:0 8px 20px rgba(15,23,42,.05);
+  }
+  .hrow{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  h1{margin:0; font-size:28px; letter-spacing:-.02em;}
+  .subtitle{margin-top:6px; color:var(--muted); font-size:13px; line-height:1.4;}
+  .chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{
+    background:var(--chip);
+    color:var(--chipText);
+    border:1px solid rgba(99,102,241,.25);
+    padding:7px 10px;
+    border-radius:999px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .sectionTitle{
+    margin:16px 0 10px 0;
+    font-weight:700;
+    font-size:14px;
+    color:#111827;
+  }
+  .split{
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap:14px;
+    margin-top:14px;
+  }
+  @media (max-width: 950px){ .split{grid-template-columns:1fr;} }
+  .box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+  }
+  .box .row{display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .box h3{margin:0; font-size:13px;}
+  .types{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:8px;
+    font-size:13px;
+    color:#111827;
+  }
+  .types .tname{font-weight:600;}
+  .types .tcount{color:var(--muted);}
+
+  .warn{
+    background:var(--warnBg);
+    border:1px solid var(--warnLine);
+    color:var(--warnText);
+    padding:12px;
+    border-radius:14px;
+    margin-top:12px;
+    font-size:13px;
+  }
+
+  /* Tabs */
+  .tabsWrap{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .tab{
+    border:1px solid var(--line);
+    background:var(--card);
+    border-radius:999px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:13px;
+    color:#111827;
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .tab .count{
+    background:#eef2ff;
+    color:#3730a3;
+    border:1px solid rgba(99,102,241,.25);
+    padding:2px 8px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+  }
+  .tab.active{
+    border-color:rgba(37,99,235,.45);
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+  }
+
+  /* Sheet header line */
+  .sheet{display:none; margin-top:14px;}
+  .sheet.active{display:block;}
+  .sheetHead{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:4px 0 10px 0;
+  }
+  .sheetName{font-size:18px; font-weight:800; margin:0;}
+  .sheetBadge{
+    background:#eef2ff;
+    border:1px solid rgba(99,102,241,.25);
+    color:#3730a3;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+  }
+  .miniChips{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+  .mini{background:#f8fafc; border:1px solid var(--line); color:#0f172a; padding:6px 10px; border-radius:999px; font-size:12px;}
+
+  /* Visual cards */
+  .vlist{display:flex; flex-direction:column; gap:12px; margin-top:10px;}
+  .vcard{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 6px 16px rgba(15,23,42,.04);
+  }
+  .vtop{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .vtitle{font-size:16px; font-weight:800; margin:0;}
+  .vbadges{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  .badge{
+    background:#f8fafc;
+    border:1px solid var(--line);
+    color:#0f172a;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:700;
+  }
+  .badge.blue{
+    background:#eff6ff;
+    border-color:rgba(37,99,235,.25);
+    color:#1d4ed8;
+  }
+  .metaRow{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns: 140px 1fr;
+    gap:8px 14px;
+    font-size:13px;
+    align-items:start;
+  }
+  .k{color:var(--muted); font-weight:700;}
+  .vals{display:flex; gap:8px; flex-wrap:wrap;}
+  .pill{
+    background:#ecfeff;
+    border:1px solid rgba(6,182,212,.25);
+    color:#155e75;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+  }
+  .pill.gray{
+    background:#f1f5f9;
+    border-color:#e2e8f0;
+    color:#334155;
+  }
+  .footerNote{
+    margin-top:14px;
+    color:var(--muted);
+    font-size:12px;
+  }
+</style>
+    
+</head><body>
+<div class='wrap'>
+<div class='header'>
+<div class='hrow'>
+<div><h1>Local Preview - ESG Dataset – Config 1</h1>
+<div class='subtitle'>Generated automatically from the QuickSight <b>Definition</b>. Goal: validate sheets/visuals/fields locally without QuickSight UI.</div></div>
+<div class='chips'>
+<div class='chip'>Sheets: <b>2</b></div>
+<div class='chip'>Visuals: <b>8</b></div>
+<div class='chip'>Dimensions detected: <b>4</b></div>
+<div class='chip'>Measures detected: <b>1</b></div>
+</div>
+</div>
+<div class='split'>
+<div class='box'>
+<div class='row'><h3>Visual type distribution</h3></div>
+<div class='types'>
+<div class='tname'>TextBoxVisual</div><div class='tcount'>2</div>
+<div class='tname'>BarChartVisual</div><div class='tcount'>1</div>
+<div class='tname'>FilledMapVisual</div><div class='tcount'>1</div>
+<div class='tname'>HeatMapVisual</div><div class='tcount'>1</div>
+<div class='tname'>KPIVisual</div><div class='tcount'>1</div>
+<div class='tname'>PieChartVisual</div><div class='tcount'>1</div>
+<div class='tname'>TableVisual</div><div class='tcount'>1</div>
+</div></div>
+<div class='box'>
+<div class='row'><h3>Notes</h3></div>
+<div class='warn'><b>Warning:</b> TextBoxVisual detected (titles/annotations). This is OK in preview, but some API deployments may exclude them.</div>
+<div class='footerNote'>This local preview is your proof of “BI-as-Code” even if QuickSight deployment is blocked by IAM permissions.</div>
+</div>
+</div>
+<div class='tabsWrap'>
+<div class='tab' data-sheet='0'><span>◆ Overview</span><span class='count'>5</span></div>
+<div class='tab' data-sheet='1'><span>◆ Insights</span><span class='count'>3</span></div>
+</div>
+</div>
+<div class='sheet' id='sheet-0'>
+<div class='sheetHead'>
+<h2 class='sheetName'>Overview</h2>
+<div class='sheetBadge'>5 visuals</div>
+</div>
+<div class='miniChips'>
+<div class='mini'>KPIs: 1</div>
+<div class='mini'>Tables: 1</div>
+<div class='mini'>Charts: 2</div>
+<div class='mini'>Titles: 1</div>
+</div>
+<div class='vlist'>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>Overview</p></div>
+<div class='vbadges'>
+<span class='badge blue'>TextBoxVisual</span>
+<span class='badge'>id: 7a7ca1a6-e26b-4b08-8f8d-b80be5c04f07</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Title / annotation</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>None</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill gray'>None</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>-</span></div>
+</div>
+</div>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>KPI</p></div>
+<div class='vbadges'>
+<span class='badge blue'>KPIVisual</span>
+<span class='badge'>inner: cfad9a37-23ff-402b-a19d-9c920daf9911</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>High-level KPI (key value)</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>COMPOSITE_INDEX</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill'>COMPOSITE_INDEX</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>SUM</span></div>
+</div>
+</div>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>BarChart</p></div>
+<div class='vbadges'>
+<span class='badge blue'>BarChartVisual</span>
+<span class='badge'>inner: 8f264bed-a428-438b-826f-6f4dede1ff19</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Comparison / distribution</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>COMPOSITE_INDEX</span><span class='pill gray'>GICS_SECTOR</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill'>COMPOSITE_INDEX</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>SUM</span></div>
+</div>
+</div>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>PieChart</p></div>
+<div class='vbadges'>
+<span class='badge blue'>PieChartVisual</span>
+<span class='badge'>inner: 655b4af5-2203-4f20-9978-8f711a59644b</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Composition / share</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>COMPOSITE_INDEX</span><span class='pill gray'>GICS_SECTOR</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill'>COMPOSITE_INDEX</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>SUM</span></div>
+</div>
+</div>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>Table</p></div>
+<div class='vbadges'>
+<span class='badge blue'>TableVisual</span>
+<span class='badge'>inner: aa12a7d9-4737-4263-b1e2-8cffb833babf</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Detailed table</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>COMPOSITE_INDEX</span><span class='pill gray'>GICS_SECTOR</span><span class='pill gray'>ISSUER_CNTRY_DOMICILE</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill'>COMPOSITE_INDEX</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>SUM</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class='sheet' id='sheet-1'>
+<div class='sheetHead'>
+<h2 class='sheetName'>Insights</h2>
+<div class='sheetBadge'>3 visuals</div>
+</div>
+<div class='miniChips'>
+<div class='mini'>KPIs: 0</div>
+<div class='mini'>Tables: 0</div>
+<div class='mini'>Charts: 2</div>
+<div class='mini'>Titles: 1</div>
+</div>
+<div class='vlist'>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>Insights</p></div>
+<div class='vbadges'>
+<span class='badge blue'>TextBoxVisual</span>
+<span class='badge'>id: 5cc84a0f-cc10-46fd-9cf3-c570fbb0fa49</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Title / annotation</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>None</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill gray'>None</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>-</span></div>
+</div>
+</div>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>HeatMap</p></div>
+<div class='vbadges'>
+<span class='badge blue'>HeatMapVisual</span>
+<span class='badge'>inner: baf9ee5a-e9cc-4eff-bf6d-34851610db8a</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Cross analysis (heatmap)</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>BIO_SCORE_DECILE</span><span class='pill gray'>COMPOSITE_INDEX</span><span class='pill gray'>GICS_SECTOR</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill'>COMPOSITE_INDEX</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>AVERAGE</span></div>
+</div>
+</div>
+<div class='vcard'>
+<div class='vtop'>
+<div><p class='vtitle'>FilledMap</p></div>
+<div class='vbadges'>
+<span class='badge blue'>FilledMapVisual</span>
+<span class='badge'>inner: 4ae1a9f6-9117-4bfd-8c33-dfca4bd98655</span>
+</div></div>
+<div class='metaRow'>
+<div class='k'>Purpose</div><div>Geographical exposure</div>
+<div class='k'>Dataset</div>
+<div class='vals'><span class='pill gray'>dataset</span></div>
+<div class='k'>Dimensions</div>
+<div class='vals'><span class='pill gray'>COMPOSITE_INDEX</span><span class='pill gray'>ISSUER_CNTRY_DOMICILE</span></div>
+<div class='k'>Measures</div>
+<div class='vals'><span class='pill'>COMPOSITE_INDEX</span></div>
+<div class='k'>Aggregation</div>
+<div class='vals'><span class='pill gray'>AVERAGE</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class='footerNote'>Tip: Use multiple config files (different roles + different templates) to demonstrate that the same code generates different dashboards → this proves generalization.</div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const sheets = document.querySelectorAll('.sheet');
+
+  function activate(i){
+    tabs.forEach(t => t.classList.remove('active'));
+    sheets.forEach(s => s.classList.remove('active'));
+    const tab = document.querySelector(`.tab[data-sheet="${i}"]`);
+    const sheet = document.getElementById(`sheet-${i}`);
+    if(tab) tab.classList.add('active');
+    if(sheet) sheet.classList.add('active');
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.sheet)));
+  activate(0);
+</script>
+</body></html>
+    

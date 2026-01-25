@@ -1,0 +1,477 @@
+{
+  "AwsAccountId": "LOCAL",
+  "AnalysisId": "local-sales_3",
+  "Name": "Local Preview - Sales Dataset",
+  "Definition": {
+    "DataSetIdentifierDeclarations": [
+      {
+        "DataSetArn": "LOCAL_ARN",
+        "Identifier": "dataset"
+      }
+    ],
+    "Sheets": [
+      {
+        "SheetId": "3c9294aa-d7e7-44aa-a8df-d7f70d0d7c9d",
+        "Name": "Overview",
+        "Visuals": [
+          {
+            "VisualId": "06de199c-d046-4280-b7ab-0f3579287f9a",
+            "TextBoxVisual": {
+              "VisualId": "06de199c-d046-4280-b7ab-0f3579287f9a",
+              "Title": {
+                "Visibility": "HIDDEN"
+              },
+              "ChartConfiguration": {
+                "TextBoxChartConfiguration": {
+                  "Content": "Overview"
+                }
+              }
+            }
+          },
+          {
+            "KPIVisual": {
+              "VisualId": "96c66fcf-9769-49ab-8cb4-ddaca96cad6a",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TargetValues": [],
+                  "TrendGroups": [],
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "TOTAL_REVENUE",
+                        "Column": {
+                          "ColumnName": "TOTAL_REVENUE",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "SUM"
+                        },
+                        "FormatConfiguration": {
+                          "FormatConfiguration": {
+                            "CurrencyDisplayFormatConfiguration": {
+                              "DecimalPlacesConfiguration": {
+                                "DecimalPlaces": ""
+                              },
+                              "NumberScale": "",
+                              "Prefix": "",
+                              "Suffix": "",
+                              "Symbol": ""
+                            },
+                            "NumberDisplayFormatConfiguration": {},
+                            "PercentageDisplayFormatConfiguration": {
+                              "Suffix": ""
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Total Metric"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "BarChartVisual": {
+              "VisualId": "0237ec19-fcc6-4edf-bedf-ab29d92569c6",
+              "Actions": [],
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "BarChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "PRODUCT_CATEGORY",
+                          "Column": {
+                            "ColumnName": "PRODUCT_CATEGORY",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "TOTAL_REVENUE",
+                          "Column": {
+                            "ColumnName": "TOTAL_REVENUE",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "Colors": [],
+                    "SmallMultiples": []
+                  }
+                },
+                "BarsArrangement": "CLUSTERED",
+                "Orientation": "VERTICAL",
+                "CategoryAxis": {
+                  "AxisLineVisibility": "",
+                  "AxisOffset": "",
+                  "GridLineVisbility": "",
+                  "ScrollbarOptions": {
+                    "Visibility": "",
+                    "VisibleRange": {
+                      "PercentRange": {
+                        "From": "",
+                        "To": ""
+                      }
+                    }
+                  }
+                }
+              },
+              "ColumnHierarchies": [],
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Metric by Category"
+                }
+              },
+              "Subtitle": {}
+            }
+          },
+          {
+            "PieChartVisual": {
+              "VisualId": "a335266e-8c28-443c-af22-02cded74c51f",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "PieChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "PRODUCT_CATEGORY",
+                          "Column": {
+                            "ColumnName": "PRODUCT_CATEGORY",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "TOTAL_REVENUE",
+                          "Column": {
+                            "ColumnName": "TOTAL_REVENUE",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "SmallMultiples": []
+                  }
+                },
+                "DonutOptions": {
+                  "ArcOptions": {
+                    "ArcThickness": ""
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Category Share"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "TableVisual": {
+              "VisualId": "5990b1e3-e42a-4214-98c3-c130076a5041",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TableAggregatedFieldWells": {
+                    "GroupBy": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "PRODUCT_CATEGORY",
+                          "Column": {
+                            "ColumnName": "PRODUCT_CATEGORY",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      },
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "COUNTRY",
+                          "Column": {
+                            "ColumnName": "COUNTRY",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "TOTAL_REVENUE",
+                          "Column": {
+                            "ColumnName": "TOTAL_REVENUE",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "TableUnaggregatedFieldWells": {
+                    "Values": []
+                  }
+                },
+                "SortConfiguration": {
+                  "RowSort": []
+                },
+                "TableInlineVisualizations": [],
+                "TableOptions": {
+                  "CellStyle": {
+                    "BackgroundColor": "",
+                    "Border": {}
+                  },
+                  "HeaderStyle": {
+                    "BackgroundColor": "",
+                    "Border": {}
+                  }
+                }
+              },
+              "ConditionalFormatting": {
+                "ConditionalFormattingOptions": []
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Table"
+                }
+              },
+              "subtitle": {}
+            }
+          }
+        ],
+        "Layouts": [
+          {
+            "Configuration": {
+              "GridLayout": {
+                "Elements": [
+                  {
+                    "ElementId": "06de199c-d046-4280-b7ab-0f3579287f9a",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 0,
+                    "RowSpan": 2
+                  },
+                  {
+                    "ElementId": "96c66fcf-9769-49ab-8cb4-ddaca96cad6a",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 6,
+                    "RowIndex": 2,
+                    "RowSpan": 6
+                  },
+                  {
+                    "ElementId": "0237ec19-fcc6-4edf-bedf-ab29d92569c6",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 6,
+                    "ColumnSpan": 12,
+                    "RowIndex": 2,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "a335266e-8c28-443c-af22-02cded74c51f",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 18,
+                    "ColumnSpan": 12,
+                    "RowIndex": 2,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "5990b1e3-e42a-4214-98c3-c130076a5041",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 12,
+                    "RowSpan": 10
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "SheetId": "91961a79-5106-4456-946a-110110c4f833",
+        "Name": "Insights",
+        "Visuals": [
+          {
+            "VisualId": "68fa29cb-0298-441f-8793-eb1451438766",
+            "TextBoxVisual": {
+              "VisualId": "68fa29cb-0298-441f-8793-eb1451438766",
+              "Title": {
+                "Visibility": "HIDDEN"
+              },
+              "ChartConfiguration": {
+                "TextBoxChartConfiguration": {
+                  "Content": "Insights"
+                }
+              }
+            }
+          },
+          {
+            "FilledMapVisual": {
+              "VisualId": "f88278d1-0ac5-4050-855d-11572c5574f4",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "FilledMapAggregatedFieldWells": {
+                    "Geospatial": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "COUNTRY",
+                          "Column": {
+                            "ColumnName": "COUNTRY",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "TOTAL_REVENUE",
+                          "Column": {
+                            "ColumnName": "TOTAL_REVENUE",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "AVERAGE"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Composite Index by geo"
+                }
+              },
+              "subtitle": {}
+            }
+          }
+        ],
+        "Layouts": [
+          {
+            "Configuration": {
+              "GridLayout": {
+                "Elements": [
+                  {
+                    "ElementId": "68fa29cb-0298-441f-8793-eb1451438766",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 0,
+                    "RowSpan": 2
+                  },
+                  {
+                    "ElementId": "f88278d1-0ac5-4050-855d-11572c5574f4",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 10,
+                    "ColumnSpan": 20,
+                    "RowIndex": 14,
+                    "RowSpan": 10
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "FilterGroups": [],
+    "CalculatedFields": []
+  }
+}

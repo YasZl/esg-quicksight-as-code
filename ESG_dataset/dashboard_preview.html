@@ -1,0 +1,435 @@
+<html><head><meta charset='utf-8'>
+
+<style>
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --muted:#5b667a;
+  --text:#111827;
+  --border:#e6ebf2;
+  --shadow: 0 10px 25px rgba(17,24,39,0.08);
+}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+.container{max-width:1180px; margin:0 auto; padding:26px 18px 60px;}
+.header{
+  background: var(--card);
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius:16px;
+  padding:18px 18px 14px;
+  margin-bottom:14px;
+}
+.h-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px;}
+h1{font-size:22px; margin:0;}
+.sub{color:var(--muted); font-size:13px; margin-top:6px; line-height:1.4;}
+.badges{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+.badge{
+  font-size:12px;
+  background:#eef2ff;
+  color:#3730a3;
+  border:1px solid #dbe3ff;
+  padding:6px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+.kv{
+  display:grid;
+  grid-template-columns: 190px 1fr;
+  gap:6px 10px;
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+.kv b{color:#111827; font-weight:700;}
+hr.sep{border:none; border-top:1px solid var(--border); margin:14px 0 10px;}
+.tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:10px 4px 2px;
+}
+.tab{
+  appearance:none;
+  border:1px solid var(--border);
+  background: var(--card);
+  padding:8px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:13px;
+  color:#111827;
+  box-shadow: 0 6px 14px rgba(17,24,39,0.05);
+}
+.tab.active{
+  border-color: rgba(37,99,235,0.35);
+  background: rgba(37,99,235,0.08);
+  color: #1d4ed8;
+  font-weight:700;
+}
+.sheet{display:none; margin-top:10px;}
+.sheet.active{display:block;}
+.sheet-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:6px 4px 10px;
+}
+.sheet-left{display:flex; flex-direction:column; gap:6px;}
+h2{font-size:16px; margin:0;}
+.sheet-chips{display:flex; gap:8px; flex-wrap:wrap;}
+.chip{
+  font-size:11px;
+  background:#f3f4f6;
+  border:1px solid var(--border);
+  color:#111827;
+  padding:4px 8px;
+  border-radius:999px;
+}
+.grid{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap:12px;
+}
+.card{
+  grid-column: span 6;
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px 14px 12px;
+  box-shadow: 0 8px 18px rgba(17,24,39,0.06);
+}
+.card.kpi{grid-column: span 4;}
+.card.full{grid-column: span 12;}
+@media (max-width: 980px){
+  .card, .card.kpi{grid-column: span 12;}
+}
+.card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+.title{font-weight:700; font-size:14px; line-height:1.25;}
+.meta{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+.small{color:var(--muted); font-size:12px; margin-top:8px; line-height:1.4;}
+.fields{margin-top:10px; display:flex; flex-direction:column; gap:8px;}
+.row{display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+.label{min-width:92px; font-size:11px; color:#111827; font-weight:700;}
+.pill{
+  font-size:11px;
+  background:#fff;
+  border:1px solid var(--border);
+  color:#111827;
+  padding:4px 8px;
+  border-radius:10px;
+}
+.pill.dim{background:#f0f9ff;}
+.pill.meas{background:#f0fdf4;}
+.pill.agg{background:#fff7ed;}
+.pill.ds{background:#f5f3ff;}
+.footer{
+  margin-top:16px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+  padding:0 4px;
+}
+</style>
+
+</head><body><div class='container'>
+<div class='header'>
+<div class='h-top'>
+<div>
+<h1>ESG Dashboard – Aperçu local (BI-as-Code)</h1>
+<div class='sub'>Généré automatiquement depuis la <b>Definition</b> QuickSight. Objectif : valider la génération des sheets/visuals/fields sans dépendre de l’UI QuickSight.</div>
+</div>
+<div class='badges'>
+<span class='badge'>Sheets: 2</span>
+<span class='badge'>Visuals: 9</span>
+<span class='badge'>Dimensions détectées: 4</span>
+<span class='badge'>Mesures détectées: 2</span>
+</div>
+</div>
+<hr class='sep'/>
+<div class='kv'>
+<b>Répartition des visuels</b><span></span>
+<b>TextBoxVisual</b><span>2</span>
+<b>KPIVisual</b><span>1</span>
+<b>BarChartVisual</b><span>1</span>
+<b>PieChartVisual</b><span>1</span>
+<b>TableVisual</b><span>1</span>
+<b>HeatMapVisual</b><span>1</span>
+<b>TreeMapVisual</b><span>1</span>
+<b>FilledMapVisual</b><span>1</span>
+</div>
+</div>
+<div class='tabs' id='tabs'>
+<button class='tab' data-sheet='0'>🔹 Portfolio Overview <span style='opacity:.65'>(5)</span></button>
+<button class='tab' data-sheet='1'>🔹 Risk & Exposure <span style='opacity:.65'>(4)</span></button>
+</div>
+<div class='sheet' id='sheet_0'>
+<div class='sheet-head'>
+<div class='sheet-left'>
+<h2>Portfolio Overview</h2>
+<div class='sheet-chips'>
+<span class='chip'>KPIs: 1</span>
+<span class='chip'>Tables: 1</span>
+<span class='chip'>Charts: 2</span>
+<span class='chip'>Titles: 1</span>
+</div></div>
+<span class='badge'>5 visuals</span>
+</div>
+<div class='grid'>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Portfolio Overview</div>
+<div class='meta'>
+<span class='chip'>TextBoxVisual</span>
+<span class='chip'>id: 643041c0-55e8-4c5e-a42b-71b5e6379a2c</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Titre / annotation</div>
+<div class='fields'>
+<div class='small'>Aucun champ détecté automatiquement.</div>
+</div>
+</div>
+<div class='card kpi'>
+<div class='card-top'>
+<div class='title'>Total Emissions</div>
+<div class='meta'>
+<span class='chip'>KPIVisual</span>
+<span class='chip'>id: fe19015b-792b-4b9f-90f2-2f35bc90fb47</span>
+</div></div>
+<div class='small'><b>Purpose:</b> High-level KPI (valeur clé)</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>SUM</span>
+</div>
+</div>
+</div>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Emissions by Sector</div>
+<div class='meta'>
+<span class='chip'>BarChartVisual</span>
+<span class='chip'>id: af202bcc-b9da-4522-9ccf-154e8040ae75</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Comparaison / distribution</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Dimensions</div>
+<span class='pill dim'>GICS_SECTOR</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>SUM</span>
+</div>
+</div>
+</div>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Emission Share by Sector</div>
+<div class='meta'>
+<span class='chip'>PieChartVisual</span>
+<span class='chip'>id: 76bf7074-fccb-4d0b-ac20-8016eb402b98</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Composition / parts</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Dimensions</div>
+<span class='pill dim'>GICS_SECTOR</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>SUM</span>
+</div>
+</div>
+</div>
+<div class='card full'>
+<div class='card-top'>
+<div class='title'>Emissions Table (Holdings)</div>
+<div class='meta'>
+<span class='chip'>TableVisual</span>
+<span class='chip'>id: aba16000-1e96-4889-a627-5843ca84c895</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Détail des données (table)</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Dimensions</div>
+<span class='pill dim'>GICS_SECTOR</span>
+<span class='pill dim'>ISSUER_CNTRY_DOMICILE</span>
+<span class='pill dim'>PORTFOLIO_NAME</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>SUM</span>
+</div>
+</div>
+</div>
+</div></div>
+<div class='sheet' id='sheet_1'>
+<div class='sheet-head'>
+<div class='sheet-left'>
+<h2>Risk & Exposure</h2>
+<div class='sheet-chips'>
+<span class='chip'>KPIs: 0</span>
+<span class='chip'>Tables: 0</span>
+<span class='chip'>Charts: 3</span>
+<span class='chip'>Titles: 1</span>
+</div></div>
+<span class='badge'>4 visuals</span>
+</div>
+<div class='grid'>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Risk & Exposure Analysis</div>
+<div class='meta'>
+<span class='chip'>TextBoxVisual</span>
+<span class='chip'>id: 8318f784-f561-4a7b-93ed-36d3f24ce3ca</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Titre / annotation</div>
+<div class='fields'>
+<div class='small'>Aucun champ détecté automatiquement.</div>
+</div>
+</div>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Composite Index by Sector & Decile</div>
+<div class='meta'>
+<span class='chip'>HeatMapVisual</span>
+<span class='chip'>id: 8db2afba-904a-4be2-90e8-cfe0f6e5d41d</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Analyse croisée (heatmap)</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Dimensions</div>
+<span class='pill dim'>BIO_SCORE_DECILE</span>
+<span class='pill dim'>GICS_SECTOR</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>AVERAGE</span>
+</div>
+</div>
+</div>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Exposure Structure (Country > Sector)</div>
+<div class='meta'>
+<span class='chip'>TreeMapVisual</span>
+<span class='chip'>id: 0a4998c1-483c-41ff-a34c-2c002fdcf1b6</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Répartition hiérarchique (treemap)</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Dimensions</div>
+<span class='pill dim'>ISSUER_CNTRY_DOMICILE</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+<span class='pill meas'>DATA_QUALITY_SCORE</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>AVERAGE</span>
+</div>
+</div>
+</div>
+<div class='card'>
+<div class='card-top'>
+<div class='title'>Composite Index by Country</div>
+<div class='meta'>
+<span class='chip'>FilledMapVisual</span>
+<span class='chip'>id: 46b2bf54-70a2-45cb-9a51-bb07fe0af010</span>
+</div></div>
+<div class='small'><b>Purpose:</b> Analyse géographique (carte)</div>
+<div class='fields'>
+<div class='row'>
+<div class='label'>Dataset</div>
+<span class='pill ds'>dataset</span>
+</div>
+<div class='row'>
+<div class='label'>Dimensions</div>
+<span class='pill dim'>ISSUER_CNTRY_DOMICILE</span>
+</div>
+<div class='row'>
+<div class='label'>Mesures</div>
+<span class='pill meas'>COMPOSITE_INDEX</span>
+</div>
+<div class='row'>
+<div class='label'>Aggregation</div>
+<span class='pill agg'>AVERAGE</span>
+</div>
+</div>
+</div>
+</div></div>
+<div class='footer'><b>Note :</b> Cet aperçu local valide la génération du dashboard par code (BI-as-Code). Le déploiement Template/Dashboard dans l’UI QuickSight peut être bloqué par des permissions IAM (CreateTemplate, CreateDashboard, UpdateAnalysisPermissions).</div>
+
+<script>
+(function(){
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const sheets = Array.from(document.querySelectorAll('.sheet'));
+
+  function activate(i){
+    tabs.forEach(t => t.classList.remove('active'));
+    sheets.forEach(s => s.classList.remove('active'));
+
+    const tab = tabs[i];
+    if(!tab) return;
+    const id = tab.getAttribute('data-sheet');
+    tab.classList.add('active');
+    const sheet = document.getElementById('sheet_' + id);
+    if(sheet) sheet.classList.add('active');
+  }
+
+  tabs.forEach((t, idx) => t.addEventListener('click', () => activate(idx)));
+  activate(0);
+})();
+</script>
+
+</div></body></html>

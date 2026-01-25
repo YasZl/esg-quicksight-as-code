@@ -1,0 +1,267 @@
+{
+  "AwsAccountId": "LOCAL",
+  "AnalysisId": "local-portfolio",
+  "Name": "Local Preview - Portfolio Dataset",
+  "Definition": {
+    "DataSetIdentifierDeclarations": [
+      {
+        "DataSetArn": "LOCAL_ARN",
+        "Identifier": "dataset"
+      }
+    ],
+    "Sheets": [
+      {
+        "SheetId": "5ddbde89-dfba-42cc-a7d8-6acb76bc80a8",
+        "Name": "Portfolio Overview",
+        "Visuals": [
+          {
+            "VisualId": "29b776c2-9b88-4c9c-9fd1-0398aaa1da8c",
+            "TextBoxVisual": {
+              "VisualId": "29b776c2-9b88-4c9c-9fd1-0398aaa1da8c",
+              "Title": {
+                "Visibility": "HIDDEN"
+              },
+              "ChartConfiguration": {
+                "TextBoxChartConfiguration": {
+                  "Content": "Portfolio Overview"
+                }
+              }
+            }
+          },
+          {
+            "KPIVisual": {
+              "VisualId": "979cfb50-cba8-428d-98b3-ddb6021b395e",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TargetValues": [],
+                  "TrendGroups": [],
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "Security name *",
+                        "Column": {
+                          "ColumnName": "Security name *",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "COUNT"
+                        },
+                        "FormatConfiguration": {
+                          "FormatConfiguration": {
+                            "CurrencyDisplayFormatConfiguration": {
+                              "DecimalPlacesConfiguration": {
+                                "DecimalPlaces": ""
+                              },
+                              "NumberScale": "",
+                              "Prefix": "",
+                              "Suffix": "",
+                              "Symbol": ""
+                            },
+                            "NumberDisplayFormatConfiguration": {},
+                            "PercentageDisplayFormatConfiguration": {
+                              "Suffix": ""
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Total Securities"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "BarChartVisual": {
+              "VisualId": "16490b4f-8bde-410e-bce7-a82117d2487d",
+              "Actions": [],
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "BarChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Security name *",
+                          "Column": {
+                            "ColumnName": "Security name *",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "COUNT"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "Colors": [],
+                    "SmallMultiples": []
+                  }
+                },
+                "BarsArrangement": "CLUSTERED",
+                "Orientation": "VERTICAL",
+                "CategoryAxis": {
+                  "AxisLineVisibility": "",
+                  "AxisOffset": "",
+                  "GridLineVisbility": "",
+                  "ScrollbarOptions": {
+                    "Visibility": "",
+                    "VisibleRange": {
+                      "PercentRange": {
+                        "From": "",
+                        "To": ""
+                      }
+                    }
+                  }
+                }
+              },
+              "ColumnHierarchies": [],
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Securities by Type"
+                }
+              },
+              "Subtitle": {}
+            }
+          },
+          {
+            "TableVisual": {
+              "VisualId": "d1f21c95-9b4d-4090-a3f2-6a82ab926b9c",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TableAggregatedFieldWells": {
+                    "GroupBy": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security name *",
+                          "Column": {
+                            "ColumnName": "Security name *",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      },
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": []
+                  },
+                  "TableUnaggregatedFieldWells": {
+                    "Values": []
+                  }
+                },
+                "SortConfiguration": {
+                  "RowSort": []
+                },
+                "TableInlineVisualizations": [],
+                "TableOptions": {
+                  "CellStyle": {
+                    "BackgroundColor": "",
+                    "Border": {}
+                  },
+                  "HeaderStyle": {
+                    "BackgroundColor": "",
+                    "Border": {}
+                  }
+                }
+              },
+              "ConditionalFormatting": {
+                "ConditionalFormattingOptions": []
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Securities List"
+                }
+              },
+              "subtitle": {}
+            }
+          }
+        ],
+        "Layouts": [
+          {
+            "Configuration": {
+              "GridLayout": {
+                "Elements": [
+                  {
+                    "ElementId": "29b776c2-9b88-4c9c-9fd1-0398aaa1da8c",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 0,
+                    "RowSpan": 2
+                  },
+                  {
+                    "ElementId": "979cfb50-cba8-428d-98b3-ddb6021b395e",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 6,
+                    "RowIndex": 2,
+                    "RowSpan": 6
+                  },
+                  {
+                    "ElementId": "16490b4f-8bde-410e-bce7-a82117d2487d",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 6,
+                    "ColumnSpan": 12,
+                    "RowIndex": 2,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "d1f21c95-9b4d-4090-a3f2-6a82ab926b9c",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 12,
+                    "RowSpan": 10
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "FilterGroups": [],
+    "CalculatedFields": []
+  }
+}

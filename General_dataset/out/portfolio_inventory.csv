@@ -1,0 +1,5 @@
+sheet,visual_type,wrapper_visual_id,inner_visual_id,title_or_text,note
+Portfolio Overview,TextBoxVisual,29b776c2-9b88-4c9c-9fd1-0398aaa1da8c,29b776c2-9b88-4c9c-9fd1-0398aaa1da8c,Portfolio Overview,
+Portfolio Overview,KPIVisual,,979cfb50-cba8-428d-98b3-ddb6021b395e,Total Securities,
+Portfolio Overview,BarChartVisual,,16490b4f-8bde-410e-bce7-a82117d2487d,Securities by Type,
+Portfolio Overview,TableVisual,,d1f21c95-9b4d-4090-a3f2-6a82ab926b9c,Securities List,
