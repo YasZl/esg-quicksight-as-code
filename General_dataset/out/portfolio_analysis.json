@@ -11,13 +11,13 @@
     ],
     "Sheets": [
       {
-        "SheetId": "5ddbde89-dfba-42cc-a7d8-6acb76bc80a8",
+        "SheetId": "df0b815f-efdd-4e80-bb03-25bd7ec2133d",
         "Name": "Portfolio Overview",
         "Visuals": [
           {
-            "VisualId": "29b776c2-9b88-4c9c-9fd1-0398aaa1da8c",
+            "VisualId": "17068123-e551-4509-b646-fa0b3dbe4c8f",
             "TextBoxVisual": {
-              "VisualId": "29b776c2-9b88-4c9c-9fd1-0398aaa1da8c",
+              "VisualId": "17068123-e551-4509-b646-fa0b3dbe4c8f",
               "Title": {
                 "Visibility": "HIDDEN"
               },
@@ -30,7 +30,7 @@
           },
           {
             "KPIVisual": {
-              "VisualId": "979cfb50-cba8-428d-98b3-ddb6021b395e",
+              "VisualId": "89885963-4968-449d-80e9-f8993f9b31c5",
               "ChartConfiguration": {
                 "FieldWells": {
                   "TargetValues": [],
@@ -79,7 +79,7 @@
           },
           {
             "BarChartVisual": {
-              "VisualId": "16490b4f-8bde-410e-bce7-a82117d2487d",
+              "VisualId": "a72f10f5-9e7a-4f52-b09b-35a3f8f9f637",
               "Actions": [],
               "ChartConfiguration": {
                 "FieldWells": {
@@ -159,7 +159,7 @@
           },
           {
             "TableVisual": {
-              "VisualId": "d1f21c95-9b4d-4090-a3f2-6a82ab926b9c",
+              "VisualId": "844c0cdc-b303-4fd9-bdc1-30e91e7d605b",
               "ChartConfiguration": {
                 "FieldWells": {
                   "TableAggregatedFieldWells": {
@@ -223,7 +223,7 @@
               "GridLayout": {
                 "Elements": [
                   {
-                    "ElementId": "29b776c2-9b88-4c9c-9fd1-0398aaa1da8c",
+                    "ElementId": "17068123-e551-4509-b646-fa0b3dbe4c8f",
                     "ElementType": "VISUAL",
                     "ColumnIndex": 0,
                     "ColumnSpan": 30,
@@ -231,7 +231,7 @@
                     "RowSpan": 2
                   },
                   {
-                    "ElementId": "979cfb50-cba8-428d-98b3-ddb6021b395e",
+                    "ElementId": "89885963-4968-449d-80e9-f8993f9b31c5",
                     "ElementType": "VISUAL",
                     "ColumnIndex": 0,
                     "ColumnSpan": 6,
@@ -239,7 +239,7 @@
                     "RowSpan": 6
                   },
                   {
-                    "ElementId": "16490b4f-8bde-410e-bce7-a82117d2487d",
+                    "ElementId": "a72f10f5-9e7a-4f52-b09b-35a3f8f9f637",
                     "ElementType": "VISUAL",
                     "ColumnIndex": 6,
                     "ColumnSpan": 12,
@@ -247,7 +247,7 @@
                     "RowSpan": 10
                   },
                   {
-                    "ElementId": "d1f21c95-9b4d-4090-a3f2-6a82ab926b9c",
+                    "ElementId": "844c0cdc-b303-4fd9-bdc1-30e91e7d605b",
                     "ElementType": "VISUAL",
                     "ColumnIndex": 0,
                     "ColumnSpan": 30,
