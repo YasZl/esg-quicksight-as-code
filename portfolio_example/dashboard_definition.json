@@ -2,7 +2,8 @@
   "DataSetIdentifierDeclarations": [
     {
       "Identifier": "MANAOS_ESG_DATA_TEST.csv",
-      "DataSetArn": "..."
+      "DataSetArn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31"
+
     }
   ],
   "Sheets": [
