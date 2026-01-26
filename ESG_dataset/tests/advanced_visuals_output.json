@@ -1,0 +1,453 @@
+{
+  "Heatmap": {
+    "HeatMapVisual": {
+      "VisualId": "heatmap_1",
+      "ChartConfiguration": {
+        "FieldWells": {
+          "HeatMapAggregatedFieldWells": {
+            "Columns": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Year",
+                  "Column": {
+                    "ColumnName": "Year",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Rows": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Sector",
+                  "Column": {
+                    "ColumnName": "Sector",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "CO2_Total",
+                  "Column": {
+                    "ColumnName": "CO2_Total",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  },
+                  "AggregationFunction": {
+                    "SimpleNumericalAggregation": "SUM"
+                  },
+                  "FormatConfiguration": {
+                    "FormatConfiguration": {
+                      "CurrencyDisplayFormatConfiguration": {
+                        "DecimalPlacesConfiguration": {
+                          "DecimalPlaces": ""
+                        },
+                        "NumberScale": "",
+                        "Prefix": "",
+                        "Suffix": "",
+                        "Symbol": ""
+                      },
+                      "NumberDisplayFormatConfiguration": {},
+                      "PercentageDisplayFormatConfiguration": {
+                        "Suffix": ""
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Title": {
+        "Visibility": "VISIBLE",
+        "FormatText": {
+          "PlainText": "Emissions by Sector and Year"
+        }
+      },
+      "subtitle": {}
+    }
+  },
+  "Treemap": {
+    "TreeMapVisual": {
+      "VisualId": "treemap_1",
+      "ChartConfiguration": {
+        "FieldWells": {
+          "TreeMapAggregatedFieldWells": {
+            "Colors": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "CarbonIntensity",
+                  "Column": {
+                    "ColumnName": "CarbonIntensity",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  },
+                  "AggregationFunction": {
+                    "SimpleNumericalAggregation": "AVG"
+                  },
+                  "FormatConfiguration": {
+                    "FormatConfiguration": {
+                      "CurrencyDisplayFormatConfiguration": {
+                        "DecimalPlacesConfiguration": {
+                          "DecimalPlaces": ""
+                        },
+                        "NumberScale": "",
+                        "Prefix": "",
+                        "Suffix": "",
+                        "Symbol": ""
+                      },
+                      "NumberDisplayFormatConfiguration": {},
+                      "PercentageDisplayFormatConfiguration": {
+                        "Suffix": ""
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "Groups": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Country",
+                  "Column": {
+                    "ColumnName": "Country",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              },
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Sector",
+                  "Column": {
+                    "ColumnName": "Sector",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Sizes": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "CO2_Total",
+                  "Column": {
+                    "ColumnName": "CO2_Total",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  },
+                  "AggregationFunction": {
+                    "SimpleNumericalAggregation": "SUM"
+                  },
+                  "FormatConfiguration": {
+                    "FormatConfiguration": {
+                      "CurrencyDisplayFormatConfiguration": {
+                        "DecimalPlacesConfiguration": {
+                          "DecimalPlaces": ""
+                        },
+                        "NumberScale": "",
+                        "Prefix": "",
+                        "Suffix": "",
+                        "Symbol": ""
+                      },
+                      "NumberDisplayFormatConfiguration": {},
+                      "PercentageDisplayFormatConfiguration": {
+                        "Suffix": ""
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Title": {
+        "Visibility": "VISIBLE",
+        "FormatText": {
+          "PlainText": "Portfolio Composition Treemap"
+        }
+      },
+      "subtitle": {}
+    }
+  },
+  "FilledMap": {
+    "FilledMapVisual": {
+      "VisualId": "filled_map_1",
+      "ChartConfiguration": {
+        "FieldWells": {
+          "FilledMapAggregatedFieldWells": {
+            "Geospatial": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Country",
+                  "Column": {
+                    "ColumnName": "Country",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "CO2_Total",
+                  "Column": {
+                    "ColumnName": "CO2_Total",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  },
+                  "AggregationFunction": {
+                    "SimpleNumericalAggregation": "SUM"
+                  },
+                  "FormatConfiguration": {
+                    "FormatConfiguration": {
+                      "CurrencyDisplayFormatConfiguration": {
+                        "DecimalPlacesConfiguration": {
+                          "DecimalPlaces": ""
+                        },
+                        "NumberScale": "",
+                        "Prefix": "",
+                        "Suffix": "",
+                        "Symbol": ""
+                      },
+                      "NumberDisplayFormatConfiguration": {},
+                      "PercentageDisplayFormatConfiguration": {
+                        "Suffix": ""
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Title": {
+        "Visibility": "VISIBLE",
+        "FormatText": {
+          "PlainText": "Geographical Emissions Map"
+        }
+      },
+      "subtitle": {}
+    }
+  },
+  "GeospatialMap": {
+    "GeospatialMapVisual": {
+      "VisualId": "geo_map_1",
+      "ChartConfiguration": {
+        "FieldWells": {
+          "GeospatialMapAggregatedFieldWells": {
+            "Colors": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Sector",
+                  "Column": {
+                    "ColumnName": "Sector",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Geospatial": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Country",
+                  "Column": {
+                    "ColumnName": "Country",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "CO2_Total",
+                  "Column": {
+                    "ColumnName": "CO2_Total",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  },
+                  "AggregationFunction": {
+                    "SimpleNumericalAggregation": "SUM"
+                  },
+                  "FormatConfiguration": {
+                    "FormatConfiguration": {
+                      "CurrencyDisplayFormatConfiguration": {
+                        "DecimalPlacesConfiguration": {
+                          "DecimalPlaces": ""
+                        },
+                        "NumberScale": "",
+                        "Prefix": "",
+                        "Suffix": "",
+                        "Symbol": ""
+                      },
+                      "NumberDisplayFormatConfiguration": {},
+                      "PercentageDisplayFormatConfiguration": {
+                        "Suffix": ""
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Title": {
+        "Visibility": "VISIBLE",
+        "FormatText": {
+          "PlainText": "ESG Geospatial Map"
+        }
+      },
+      "subtitle": {}
+    }
+  },
+  "Waterfall": {
+    "WaterfallVisual": {
+      "VisualId": "waterfall_1",
+      "ChartConfiguration": {
+        "FieldWells": {
+          "WaterfallChartAggregatedFieldWells": {
+            "Breakdowns": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Sector",
+                  "Column": {
+                    "ColumnName": "Sector",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Categories": [
+              {
+                "CategoricalDimensionField": {
+                  "FieldId": "Year",
+                  "Column": {
+                    "ColumnName": "Year",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  }
+                }
+              }
+            ],
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "CO2_Total",
+                  "Column": {
+                    "ColumnName": "CO2_Total",
+                    "DataSetIdentifier": "ESG_DATASET"
+                  },
+                  "AggregationFunction": {
+                    "SimpleNumericalAggregation": "SUM"
+                  },
+                  "FormatConfiguration": {
+                    "FormatConfiguration": {
+                      "CurrencyDisplayFormatConfiguration": {
+                        "DecimalPlacesConfiguration": {
+                          "DecimalPlaces": ""
+                        },
+                        "NumberScale": "",
+                        "Prefix": "",
+                        "Suffix": "",
+                        "Symbol": ""
+                      },
+                      "NumberDisplayFormatConfiguration": {},
+                      "PercentageDisplayFormatConfiguration": {
+                        "Suffix": ""
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Title": {
+        "Visibility": "VISIBLE",
+        "FormatText": {
+          "PlainText": "Emissions Change (Waterfall)"
+        }
+      },
+      "subtitle": {}
+    }
+  },
+  "Gauge": {
+    "GaugeChartVisual": {
+      "VisualId": "gauge_1",
+      "ChartConfiguration": {
+        "FieldWells": {
+          "TargetValues": [
+            {
+              "NumericalMeasureField": {
+                "FieldId": "IntensityTarget",
+                "Column": {
+                  "ColumnName": "IntensityTarget",
+                  "DataSetIdentifier": "ESG_DATASET"
+                },
+                "AggregationFunction": {
+                  "SimpleNumericalAggregation": "AVG"
+                },
+                "FormatConfiguration": {
+                  "FormatConfiguration": {
+                    "CurrencyDisplayFormatConfiguration": {
+                      "DecimalPlacesConfiguration": {
+                        "DecimalPlaces": ""
+                      },
+                      "NumberScale": "",
+                      "Prefix": "",
+                      "Suffix": "",
+                      "Symbol": ""
+                    },
+                    "NumberDisplayFormatConfiguration": {},
+                    "PercentageDisplayFormatConfiguration": {
+                      "Suffix": ""
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "Values": [
+            {
+              "NumericalMeasureField": {
+                "FieldId": "CarbonIntensity",
+                "Column": {
+                  "ColumnName": "CarbonIntensity",
+                  "DataSetIdentifier": "ESG_DATASET"
+                },
+                "AggregationFunction": {
+                  "SimpleNumericalAggregation": "AVG"
+                },
+                "FormatConfiguration": {
+                  "FormatConfiguration": {
+                    "CurrencyDisplayFormatConfiguration": {
+                      "DecimalPlacesConfiguration": {
+                        "DecimalPlaces": ""
+                      },
+                      "NumberScale": "",
+                      "Prefix": "",
+                      "Suffix": "",
+                      "Symbol": ""
+                    },
+                    "NumberDisplayFormatConfiguration": {},
+                    "PercentageDisplayFormatConfiguration": {
+                      "Suffix": ""
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Title": {
+        "Visibility": "VISIBLE",
+        "FormatText": {
+          "PlainText": "Carbon Intensity Gauge"
+        }
+      },
+      "subtitle": {}
+    }
+  }
+}

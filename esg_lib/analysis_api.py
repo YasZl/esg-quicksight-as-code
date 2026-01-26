@@ -1,4 +1,10 @@
-import boto3
+# esg_lib/analysis_api.py
+
+try:
+    import boto3
+except ImportError:
+    boto3 = None
+
 
 # Imports from your project
 from esg_lib.parameters_esg import build_all_esg_parameters_and_controls
@@ -11,9 +17,25 @@ from esg_lib.filters import (
 )
 
 
-# =====================================================================
-# 1. PURE DICTIONARY-BASED DEFINITION (NO AWS QuickSight CLASSES)
-# =====================================================================
+# DEFINITION EN DICT 
+
+def _compile_list(items):
+    """
+    Utilitaire : si un élément a une méthode .compile(), on l'appelle.
+    Sinon on le laisse tel quel (déjà dict).
+    """
+    if items is None:
+        return []
+
+    compiled = []
+    for x in items:
+        if hasattr(x, "compile"):
+            compiled.append(x.compile())
+        else:
+            compiled.append(x)
+    return compiled
+
+
 def build_definition(
     dataset_arn,
     sheets,
@@ -22,35 +44,39 @@ def build_definition(
     calculated_fields=None,
 ):
     """
-    Build a pure dictionary representation of the QuickSight analysis.
-    This avoids using AWS sample classes that expect objects with .compile().
+    Build a dictionary representation of the QuickSight analysis.
+    Si on reçoit des objets QuickSight (IntegerParameter, FilterGroup…),
+    on les convertit en dict avec .compile().
     """
-    if parameters is None:
-        parameters = []
 
-    if filter_groups is None:
-        filter_groups = []
+    sheets_dict = _compile_list(sheets)
 
-    if calculated_fields is None:
-        calculated_fields = []
+    # Parameters
+    parameters_dict = _compile_list(parameters)
 
-    return {
+    # FilterGroups 
+    filter_groups_dict = _compile_list(filter_groups)
+
+    # CalculatedFields 
+    calc_fields_dict = _compile_list(calculated_fields)
+
+    definition = {
         "DataSetIdentifierDeclarations": [
-            {
-                "DataSetArn": dataset_arn,
-                "Identifier": "dataset",
-            }
+            {"DataSetArn": dataset_arn, "Identifier": "dataset"}
         ],
-        "Sheets": sheets,
-        "Parameters": parameters,
-        "FilterGroups": filter_groups,
-        "CalculatedFields": calculated_fields,
+        "Sheets": sheets_dict,
+        "FilterGroups": filter_groups_dict,
+        "CalculatedFields": calc_fields_dict,
     }
 
+    if parameters_dict:
+        definition["ParameterDeclarations"] = parameters_dict
 
-# =====================================================================
-# 2. ANALYSIS OBJECT (ALSO PURE DICTIONARY)
-# =====================================================================
+    return definition
+
+
+# ANALYSIS EN DICT
+
 def build_analysis(
     aws_account_id,
     analysis_id,
@@ -76,56 +102,171 @@ def build_analysis(
 
     return analysis
 
-
-# =====================================================================
-# 3. REAL DEPLOYMENT VIA BOTO3  (ONLY WORKS WITH REAL QUICKsIGHT OBJECTS)
-# =====================================================================
-def create_analysis_boto3(analysis_obj):
+def build_dashboard(
+    aws_account_id: str,
+    dataset_arn: str,
+    dataset_id: str,
+    mappings: dict,
+    dashboard_type: str,
+):
     """
-    Calls boto3.create_analysis using the JSON payload.
-    Only works if running in AWS with correct permissions.
+    Generic entry point for ALL dashboards (ESG, Portfolio, etc.).
+    The dashboard behavior depends ONLY on the mappings.
     """
-    client = boto3.client("quicksight")
 
-    payload = analysis_obj  # already a JSON dict
-
-    response = client.create_analysis(
-        AwsAccountId=payload["AwsAccountId"],
-        AnalysisId=payload["AnalysisId"],
-        Definition=payload["Definition"],
-        Name=payload["Name"],
-        Permissions=payload.get("Permissions"),
-        SourceEntity=payload.get("SourceEntity"),
-        ThemeArn=payload.get("ThemeArn"),
-        Tags=payload.get("Tags"),
+    return build_esg_analysis(
+        aws_account_id=aws_account_id,
+        dataset_arn=dataset_arn,
+        dataset_id=dataset_id,
+        mappings=mappings,
+        analysis_id=f"{dashboard_type}-dashboard",
+        analysis_name=f"{dashboard_type.upper()} Automated Dashboard",
     )
 
-    return response
+
+# DEPLOIEMENT REEL (boto3)
+
+def sanitize_definition(definition: dict) -> dict:
+    """
+    Nettoie la Definition QuickSight pour la rendre compatible boto3.
+    - Supprime les TextBoxVisual (titres)
+    - Corrige les typos connues
+    - Supprime les champs vides ("", None)
+    - Corrige la structure des Visuals :
+        {"VisualId": "...", "KPIVisual": {...}}  -> {"KPIVisual": {...}}
+    """
+
+    ALLOWED_VISUAL_KEYS = {
+        "TableVisual", "PivotTableVisual", "BarChartVisual", "KPIVisual", "PieChartVisual",
+        "GaugeChartVisual", "LineChartVisual", "HeatMapVisual", "TreeMapVisual",
+        "GeospatialMapVisual", "FilledMapVisual", "LayerMapVisual", "FunnelChartVisual",
+        "ScatterPlotVisual", "ComboChartVisual", "BoxPlotVisual", "WaterfallVisual",
+        "HistogramVisual", "WordCloudVisual", "InsightVisual", "SankeyDiagramVisual",
+        "CustomContentVisual", "EmptyVisual", "RadarChartVisual", "PluginVisual",
+    }
+
+    def clean(obj):
+
+        if isinstance(obj, dict):
+            # Si c'est un TextBoxVisual (titre), on le supprime entièrement
+            if "TextBoxVisual" in obj:
+                return None
+
+            new = {}
+            for k, v in obj.items():
+                # supprimer clés interdites / typos
+                if k in {"subtitle"}:
+                    continue
+                if k == "GridLineVisbility":
+                    k = "GridLineVisibility"
+
+                cleaned_v = clean(v)
+
+                # supprimer valeurs invalides
+                if cleaned_v in ("", None):
+                    continue
+                if isinstance(cleaned_v, dict) and len(cleaned_v) == 0:
+                    continue
+                if isinstance(cleaned_v, list) and len(cleaned_v) == 0:
+                    continue
+
+                new[k] = cleaned_v
+
+            # Cas spécial : Visuals mal structurés
+            if "VisualId" in new:
+                visual_keys = [k for k in new.keys() if k in ALLOWED_VISUAL_KEYS]
+                if len(visual_keys) == 1:
+                    vk = visual_keys[0]
+                    return {vk: new[vk]}  # on retire le VisualId top-level
+
+                # Si après nettoyage il ne reste que VisualId, on supprime l'entrée
+                if len(new.keys()) == 1 and "VisualId" in new:
+                    return None
+
+            return new
+
+        # list
+        if isinstance(obj, list):
+            out = []
+            for x in obj:
+                cx = clean(x)
+                if cx in ("", None):
+                    continue
+                if isinstance(cx, dict) and len(cx) == 0:
+                    continue
+                out.append(cx)
+            return out
+
+        return obj
+
+    cleaned = clean(definition)
+    return cleaned if cleaned is not None else {}
 
 
-def update_analysis_boto3(analysis_obj):
+def create_analysis_boto3(analysis_obj, region):
     """
-    Calls boto3.update_analysis for an existing dashboard.
+    Appelle boto3.create_analysis.
+    Utilisé uniquement quand on déploie vraiment dans AWS.
     """
-    client = boto3.client("quicksight")
+    if boto3 is None:
+        raise RuntimeError("boto3 n'est pas installé : déploiement AWS impossible en local.")
+
+    client = boto3.client("quicksight", region_name=region)
 
     payload = analysis_obj
 
-    response = client.update_analysis(
-        AwsAccountId=payload["AwsAccountId"],
-        AnalysisId=payload["AnalysisId"],
-        Definition=payload["Definition"],
-        Name=payload["Name"],
-        ThemeArn=payload.get("ThemeArn"),
-        SourceEntity=payload.get("SourceEntity"),
-    )
+    kwargs = {
+        "AwsAccountId": payload["AwsAccountId"],
+        "AnalysisId": payload["AnalysisId"],
+        "Definition": sanitize_definition(payload["Definition"]),
+        "Name": payload["Name"],
+    }
 
+    if payload.get("Permissions") is not None:
+        kwargs["Permissions"] = payload["Permissions"]
+    if payload.get("SourceEntity") is not None:
+        kwargs["SourceEntity"] = payload["SourceEntity"]
+    if payload.get("ThemeArn") is not None:
+        kwargs["ThemeArn"] = payload["ThemeArn"]
+    if payload.get("Tags") is not None:
+        kwargs["Tags"] = payload["Tags"]
+
+    response = client.create_analysis(**kwargs)
     return response
 
 
-# =====================================================================
-# 4. HIGH-LEVEL DEPLOY WRAPPER
-# =====================================================================
+
+
+def update_analysis_boto3(analysis_obj, region):
+    """
+    Appelle boto3.update_analysis.
+    """
+    if boto3 is None:
+        raise RuntimeError("boto3 n'est pas installé : déploiement AWS impossible en local.")
+
+    client = boto3.client("quicksight", region_name=region)
+
+    payload = analysis_obj
+
+    kwargs = {
+        "AwsAccountId": payload["AwsAccountId"],
+        "AnalysisId": payload["AnalysisId"],
+        "Definition": sanitize_definition(payload["Definition"]),
+        "Name": payload["Name"],
+    }
+
+    if payload.get("ThemeArn") is not None:
+        kwargs["ThemeArn"] = payload["ThemeArn"]
+    if payload.get("SourceEntity") is not None:
+        kwargs["SourceEntity"] = payload["SourceEntity"]
+
+    response = client.update_analysis(**kwargs)
+    return response
+
+
+
+# WRAPPER DEPLOIEMENT
+
 def deploy_analysis(
     aws_account_id,
     analysis_id,
@@ -138,6 +279,7 @@ def deploy_analysis(
     theme_arn=None,
     permissions=None,
     update=False,
+    region="eu-central-1",
 ):
     """
     Builds an analysis and deploys it using AWS (create or update).
@@ -160,14 +302,13 @@ def deploy_analysis(
     )
 
     if update:
-        return update_analysis_boto3(analysis)
+        return update_analysis_boto3(analysis, region)
     else:
-        return create_analysis_boto3(analysis)
+        return create_analysis_boto3(analysis, region)
 
 
-# =====================================================================
-# 5. SIMULATION MODE (NO boto3)
-# =====================================================================
+# MODE SIMULATION (PAS DE boto3)
+
 def simulate_deploy(
     aws_account_id,
     analysis_id,
@@ -204,9 +345,8 @@ def simulate_deploy(
     return analysis
 
 
-# =====================================================================
-# 6. MASTER FUNCTION FOR THE ESG DASHBOARD
-# =====================================================================
+# ESG DASHBOARD
+
 def build_esg_analysis(
     aws_account_id: str,
     dataset_arn: str,
@@ -216,29 +356,25 @@ def build_esg_analysis(
     analysis_name: str = "ESG Automated Dashboard",
 ):
     """
-    Builds the complete ESG dashboard:
-
-    ✓ parameters & controls
-    ✓ overview sheet
-    ✓ risk sheet
-    ✓ dynamic filters
-    ✓ full definition + analysis object (pure dict)
-    ✓ returns JSON used by simulate_deploy()
+    Build the complete ESG dashboard and return a pure Python dict
+    ready to be dumpé en JSON.
     """
 
-    # 1. ESG parameters
+    # ESG parameters + controls
     parameters, controls = build_all_esg_parameters_and_controls(dataset_id)
 
-    # 2. Sheets
+    # Sheets
     overview_sheet = build_overview_sheet(dataset_id, mappings)
     risk_sheet = build_risk_sheet(dataset_id, mappings)
 
     sheets = [overview_sheet, risk_sheet]
 
-    # 3. Filters
+    # Filters
     sector_filter = create_sector_filter("sector_filter_1", mappings["sector"], dataset_id)
     year_filter = create_year_timerange_filter("year_filter_1", mappings["date"], dataset_id)
-    intensity_filter = create_intensity_numeric_filter("intensity_filter_1", mappings["carbon_intensity"], dataset_id)
+    intensity_filter = create_intensity_numeric_filter(
+        "intensity_filter_1", mappings["carbon_intensity"], dataset_id
+    )
 
     filter_group = create_filter_group(
         group_id="global_filters",
@@ -246,7 +382,7 @@ def build_esg_analysis(
         sheet_id=overview_sheet["SheetId"],
     )
 
-    # 4. Return simulation output
+    # Retourne la structure complète 
     return simulate_deploy(
         aws_account_id=aws_account_id,
         analysis_id=analysis_id,

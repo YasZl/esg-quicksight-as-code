@@ -1,38 +1,59 @@
 import json
-from esg_lib.analysis_api import build_esg_analysis
+from esg_lib.analysis_api import build_dashboard
+
+dashboard_type="esg"
+ 
 
 if __name__ == "__main__":
 
-    #  À adapter avec le vrai compte / dataset
-    AWS_ACCOUNT_ID = "123456789012"
-    DATASET_ARN = "arn:aws:quicksight:eu-west-1:123456789012:dataset/ESG_dataset"
-    DATASET_ID = "ESG_dataset"
+    AWS_ACCOUNT_ID = "ID"
 
-    # Mapping entre colonnes Manaos et notre librairie
+    DATASET_ARN = "<DATASET_ARN>"
+
+    DATASET_ID = "dataset"
+
+
     MAPPINGS = {
-        "sector": "Security type",      
-        "subsector": "CIC Code",        
-        "country": "Security quotation currency",  
+    # Dimensions réelles
+    "country": "country",
+    "date": "year",     # utilisé par heatmap + line (granularity YEAR)
+    "year": "year",     # utilisé par waterfall (le code demande mappings["year"])
 
-        "date": "Portfolio date",
-        "year": "Portfolio date",       
+    # Le template veut un "sector" → on l’approxime par country
+    # (ça permet d'avoir des breakdowns et de générer le JSON)
+    "sector": "country",
 
-        "emissions_total": "CO2_Emissions",   
-        "carbon_intensity": "CO2_Intensity",  
-        "intensity_target": "Target_Intensity"
-    }
+    # Mesure principale CO2
+    "emissions_total": "value",
 
-    # 1) Génération de la structure d’analysis
-    analysis_json = build_esg_analysis(
+    # Champs "ESG/risk" attendus → on mappe sur value (proxy)
+    "carbon_intensity": "value",
+    "intensity_target": "value",
+}
+
+
+
+
+
+
+
+
+    analysis_json = build_dashboard(
         aws_account_id=AWS_ACCOUNT_ID,
         dataset_arn=DATASET_ARN,
         dataset_id=DATASET_ID,
         mappings=MAPPINGS,
+        dashboard_type="esg"
+,   
     )
 
-    # 2) Sauvegarde en fichier JSON
-    output_path = "docs/esg_dashboard_output.json"
+    if dashboard_type == "esg":
+        output_path = "docs/esg_dashboard_output.json"
+    else:
+        output_path = "docs/portfolio_dashboard_output.json"
+
+    
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(analysis_json, f, indent=2)
 
-    print(f"ESG dashboard JSON généré dans : {output_path}")
+    print(f"✅  Dashboard JSON généré : {output_path}")

@@ -1,0 +1,10 @@
+{
+  "name": "Portfolio Dataset",
+  "dataset_id": "dataset",
+  "template": "portfolio",
+  "roles": {
+    "security_name": "Security name *",
+    "security_type": "Security type",
+    "securoty_ID": "Security ID"
+  }
+}

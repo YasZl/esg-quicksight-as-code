@@ -11,7 +11,6 @@ pass
 Weihua SHI
 Yasmine ZEROUAL
 Adam TOUCHANE
-Alexandre FAU
 Saber BERREHILI
 Amine MEGHAGHI
 

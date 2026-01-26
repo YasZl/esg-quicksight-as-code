@@ -48,10 +48,10 @@ def create_year_dropdown_control(
     """
     control = ParameterDropDownControl(control_id, parameter_name, title)
 
-    # on cache le bouton "Select all" (inutile pour une année)
+    # on cache le bouton "Select all" 
     control.select_all_options_visibility = "HIDDEN"
 
-    # ce contrôle permet de choisir UNE seule valeur dans la liste
+    # ce contrôle permet de choisir une seule valeur dans la liste
     control.type = "SINGLE_SELECT"
 
     # on relie le contrôle à une colonne du dataset
@@ -89,7 +89,7 @@ def create_sector_dropdown_control(
     """
     control = ParameterDropDownControl(control_id, parameter_name, title)
 
-    #on peut afficher "Select all" ici si besoin
+    #on peut afficher "Select all" 
     control.select_all_options_visibility = "VISIBLE"
 
     #sélection d’un seul secteur (pas de multi-choix)

@@ -9,7 +9,7 @@ Deux niveaux :
 """
 
 
-# 1. Expressions QuickSight (syntaxe des calculated fields)
+# Expressions QuickSight (syntaxe des calculated fields)
 
 TOTAL_EMISSIONS_EXPR = "Scope1 + Scope2 + Scope3"
 
@@ -61,7 +61,7 @@ def get_all_esg_calculated_fields(dataset_identifier: str = "dataset") -> list[d
     ]
 
 
-# 2. Interprétation possible pour le dataset Manaos Nature / Biodiversity
+# Interprétation possible pour le dataset Manaos Nature / Biodiversity
 
 """
 Pour notre dataset réel :

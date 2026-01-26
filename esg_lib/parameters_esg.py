@@ -53,7 +53,7 @@ def build_all_esg_parameters_and_controls(dataset_id):
     region_control = create_region_dropdown_control(
         "RegionCtrl01",
         "RegionParam",
-        "Country",   # si la colonne change on l’adaptera
+        "Country",   
         dataset_id)
     parameters.append(region_param)
     controls.append(region_control)
@@ -73,7 +73,7 @@ def build_all_esg_parameters_and_controls(dataset_id):
     subsector_ctrl = create_subsector_list(
         "SubSectorCtrl01",
         "SubSectorParam",
-        "SubSector",   # placeholder si la colonne manque
+        "SubSector",   
         dataset_id)
     parameters.append(subsector_param)
     controls.append(subsector_ctrl)

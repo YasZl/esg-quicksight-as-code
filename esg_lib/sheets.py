@@ -5,6 +5,8 @@ from __future__ import annotations
 import uuid
 from typing import Dict, Any
 
+from external.quicksight_assets_class import Sheet
+
 
 def create_empty_sheet(sheet_id: str, name: str) -> Dict[str, Any]:
     """
@@ -39,8 +41,7 @@ def add_visual_to_sheet(
     """
     visual_id = visual.get("VisualId")
     if not visual_id:
-        # Try to find VisualId in the inner dictionary (QuickSight structure)
-        # e.g. { "BarChartVisual": { "VisualId": "..." } }
+        
         for key, value in visual.items():
             if isinstance(value, dict) and "VisualId" in value:
                 visual_id = value["VisualId"]
@@ -107,3 +108,103 @@ def add_title(
     )
 
     return sheet
+
+def build_portfolio_overview_sheet(dataset_id: str, mappings: dict) -> Dict[str, Any]:
+    """
+    Simple Portfolio dashboard (dict-based):
+    - KPI: Total number of securities
+    - Bar chart: Securities by type
+    """
+
+    sheet = create_empty_sheet(
+        sheet_id="portfolio_overview",
+        name="Portfolio Overview"
+    )
+
+    # -------------------------
+    # KPI – Total Securities
+    # -------------------------
+    kpi_total = {
+        "VisualId": "kpi_total_securities",
+        "KPIVisual": {
+            "VisualId": "kpi_total_securities",
+            "Title": {"Visibility": "VISIBLE"},
+            "ChartConfiguration": {
+                "FieldWells": {
+                    "Values": [
+                        {
+                            "CategoricalMeasureField": {
+                                "FieldId": "security_count",
+                                "Column": {
+                                    "DataSetIdentifier": dataset_id,
+                                    "ColumnName": mappings["security_id"],
+                                },
+                                "AggregationFunction": "COUNT",
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    }
+
+    sheet = add_visual_to_sheet(
+        sheet,
+        kpi_total,
+        row=0,
+        col=0,
+        row_span=4,
+        col_span=6,
+    )
+
+    # -------------------------
+    # Bar chart – Securities by type
+    # -------------------------
+    bar_by_type = {
+        "VisualId": "bar_security_type",
+        "BarChartVisual": {
+            "VisualId": "bar_security_type",
+            "Title": {"Visibility": "VISIBLE"},
+            "ChartConfiguration": {
+                "FieldWells": {
+                    "BarChartAggregatedFieldWells": {
+                        "Category": [
+                            {
+                                "CategoricalDimensionField": {
+                                    "FieldId": "security_type",
+                                    "Column": {
+                                        "DataSetIdentifier": dataset_id,
+                                        "ColumnName": mappings["security_type"],
+                                    },
+                                }
+                            }
+                        ],
+                        "Values": [
+                            {
+                                "CategoricalMeasureField": {
+                                    "FieldId": "security_count_by_type",
+                                    "Column": {
+                                        "DataSetIdentifier": dataset_id,
+                                        "ColumnName": mappings["security_id"],
+                                    },
+                                    "AggregationFunction": "COUNT",
+                                }
+                            }
+                        ],
+                    }
+                }
+            }
+        },
+    }
+
+    sheet = add_visual_to_sheet(
+        sheet,
+        bar_by_type,
+        row=5,
+        col=0,
+        row_span=10,
+        col_span=12,
+    )
+
+    return sheet
+

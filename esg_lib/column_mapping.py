@@ -15,7 +15,7 @@ On distingue deux choses :
    mais les mappe sur des colonnes de biodiversité.
 """
 
-# 1. Mapping générique CO2 (structure cible de la librairie)
+# Mapping générique CO2 
 ESG_MAPPINGS = {
     # Dimensions
     "sector": "Sector",
@@ -46,28 +46,28 @@ def get_default_esg_mappings() -> dict:
     return dict(ESG_MAPPINGS)
 
 
-# 2. Mapping spécifique au dataset Manaos Nature / Biodiversity
+# Mapping spécifique au dataset Manaos nature / Biodiversity
 
 MANAOS_NATURE_MAPPINGS = {
     # Dimensions
     "sector": "GICS_SECTOR",
-    "subsector": "NACE_GROUP_CODE",  # ou NACE_SECTION_CODE selon le besoin
+    "subsector": "NACE_GROUP_CODE", 
     "country": "ISSUER_CNTRY_DOMICILE",
-    "year": None,  # pas de champ année dans le dataset
+    "year": None, # pas de champ année dans le dataset
 
     # Identifiants
     "company": "PORTFOLIO_NAME",
     "isin": "INSTRUMENT_ID",
 
     # “Emissions” / intensité - proxies biodiversité
-    "emissions_total": "COMPOSITE_INDEX",   # indice global de risque / état
+    "emissions_total": "COMPOSITE_INDEX",   
     "scope1": None,
     "scope2": None,
     "scope3": None,
 
     # Données financières / poids
-    "revenue": "NATURE_RELATED_SPEND_USD_M",  # proxy “montants liés à la nature”
-    "portfolio_weight": "NORMALIZED_EXPOSURE_0_1",  # poids de portefeuille
+    "revenue": "NATURE_RELATED_SPEND_USD_M",  
+    "portfolio_weight": "NORMALIZED_EXPOSURE_0_1",  
 }
 
 

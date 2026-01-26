@@ -103,7 +103,7 @@ def create_intensity_numeric_filter(filter_id, column, dataset_id):
         null_option="ALL_VALUES"
     )
 
-    # Valeur par défaut (sera contrôlée par un paramètre)
+    # Valeur par défaut 
     # La valeur sera définie par le contrôle de paramètre (slider)
     intensity_filter.select_all_options = "FILTER_ALL_VALUES"
 

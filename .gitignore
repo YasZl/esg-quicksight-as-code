@@ -205,17 +205,3 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-
-.DS_Store
-
-# Local data files (too large or temporary)
-*.xlsx
-COPIE.*
-
-# Generated configuration files (should be regenerated)
-dashboard_definition.json
-dashboard_preview.html
-esg_dashboard_output_local.json
-
-# PDF files (reports and generated documents)
-*.pdf

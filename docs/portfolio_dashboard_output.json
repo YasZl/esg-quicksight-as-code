@@ -1,0 +1,1021 @@
+{
+  "AwsAccountId": "730335657350",
+  "AnalysisId": "portfolio-dashboard",
+  "Name": "PORTFOLIO Automated Dashboard",
+  "Definition": {
+    "DataSetIdentifierDeclarations": [
+      {
+        "DataSetArn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/27b1283e-0142-41de-bba9-d70d2012375d",
+        "Identifier": "dataset"
+      }
+    ],
+    "Sheets": [
+      {
+        "SheetId": "0c99101c-4be6-414a-8632-67d610d9ddcc",
+        "Name": "Portfolio Overview",
+        "Visuals": [
+          {
+            "VisualId": "2c95c764-8146-4750-a4dc-1ca68d9bb948",
+            "TextBoxVisual": {
+              "VisualId": "2c95c764-8146-4750-a4dc-1ca68d9bb948",
+              "Title": {
+                "Visibility": "HIDDEN"
+              },
+              "ChartConfiguration": {
+                "TextBoxChartConfiguration": {
+                  "Content": "Portfolio Overview"
+                }
+              }
+            }
+          },
+          {
+            "KPIVisual": {
+              "VisualId": "d271f4fe-0d63-46ff-b172-c6228fd09f71",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TargetValues": [],
+                  "TrendGroups": [],
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "Portfolio validated nav",
+                        "Column": {
+                          "ColumnName": "Portfolio validated nav",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "SUM"
+                        },
+                        "FormatConfiguration": {
+                          "FormatConfiguration": {
+                            "CurrencyDisplayFormatConfiguration": {
+                              "DecimalPlacesConfiguration": {
+                                "DecimalPlaces": ""
+                              },
+                              "NumberScale": "",
+                              "Prefix": "",
+                              "Suffix": "",
+                              "Symbol": ""
+                            },
+                            "NumberDisplayFormatConfiguration": {},
+                            "PercentageDisplayFormatConfiguration": {
+                              "Suffix": ""
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Total Emissions"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "BarChartVisual": {
+              "VisualId": "c36fc296-983f-46fa-a5c9-0e75c49a447b",
+              "Actions": [],
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "BarChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "Colors": [],
+                    "SmallMultiples": []
+                  }
+                },
+                "BarsArrangement": "CLUSTERED",
+                "Orientation": "VERTICAL",
+                "CategoryAxis": {
+                  "AxisLineVisibility": "",
+                  "AxisOffset": "",
+                  "GridLineVisbility": "",
+                  "ScrollbarOptions": {
+                    "Visibility": "",
+                    "VisibleRange": {
+                      "PercentRange": {
+                        "From": "",
+                        "To": ""
+                      }
+                    }
+                  }
+                }
+              },
+              "ColumnHierarchies": [],
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Emissions by Sector"
+                }
+              },
+              "Subtitle": {}
+            }
+          },
+          {
+            "PieChartVisual": {
+              "VisualId": "07b05321-f257-4f27-b17b-14b319c6e1b0",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "PieChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "SmallMultiples": []
+                  }
+                },
+                "DonutOptions": {
+                  "ArcOptions": {
+                    "ArcThickness": ""
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Emission Share by Sector"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "LineChartVisual": {
+              "VisualId": "07e14414-98ea-4845-a60c-978b913a28ba",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "LineChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "DateDimensionField": {
+                          "FieldId": "Portfolio date",
+                          "Column": {
+                            "ColumnName": "Portfolio date",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "DateGranularity": "YEAR",
+                          "FormatConfiguration": {
+                            "DateTimeFormat": "",
+                            "NullValueFormatConfiguration": {
+                              "NullString": ""
+                            },
+                            "NumericFormatConfiguration": {}
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "Colors": [],
+                    "SmallMultiples": []
+                  }
+                },
+                "XAxisDisplayOptions": {
+                  "AxisLineVisibility": "",
+                  "AxisOffset": "",
+                  "GridLineVisbility": "",
+                  "ScrollbarOptions": {
+                    "Visibility": "",
+                    "VisibleRange": {
+                      "PercentRange": {
+                        "From": "",
+                        "To": ""
+                      }
+                    }
+                  }
+                },
+                "Type": "LINE"
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Emissions Over Time"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "TableVisual": {
+              "VisualId": "7bfa5a18-f06a-47f0-bc54-4acfe1c3e0ed",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TableAggregatedFieldWells": {
+                    "GroupBy": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      },
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security quotation currency",
+                          "Column": {
+                            "ColumnName": "Security quotation currency",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      },
+                      {
+                        "DateDimensionField": {
+                          "FieldId": "Portfolio date",
+                          "Column": {
+                            "ColumnName": "Portfolio date",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "DateGranularity": "YEAR",
+                          "FormatConfiguration": {
+                            "DateTimeFormat": "",
+                            "NullValueFormatConfiguration": {
+                              "NullString": ""
+                            },
+                            "NumericFormatConfiguration": {}
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "TableUnaggregatedFieldWells": {
+                    "Values": []
+                  }
+                },
+                "SortConfiguration": {
+                  "RowSort": []
+                },
+                "TableInlineVisualizations": [],
+                "TableOptions": {
+                  "CellStyle": {
+                    "BackgroundColor": "",
+                    "Border": {}
+                  },
+                  "HeaderStyle": {
+                    "BackgroundColor": "",
+                    "Border": {}
+                  }
+                }
+              },
+              "ConditionalFormatting": {
+                "ConditionalFormattingOptions": []
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Emissions Table (Holdings)"
+                }
+              },
+              "subtitle": {}
+            }
+          }
+        ],
+        "Layouts": [
+          {
+            "Configuration": {
+              "GridLayout": {
+                "Elements": [
+                  {
+                    "ElementId": "2c95c764-8146-4750-a4dc-1ca68d9bb948",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 0,
+                    "RowSpan": 2
+                  },
+                  {
+                    "ElementId": "d271f4fe-0d63-46ff-b172-c6228fd09f71",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 6,
+                    "RowIndex": 2,
+                    "RowSpan": 6
+                  },
+                  {
+                    "ElementId": "c36fc296-983f-46fa-a5c9-0e75c49a447b",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 6,
+                    "ColumnSpan": 12,
+                    "RowIndex": 2,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "07b05321-f257-4f27-b17b-14b319c6e1b0",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 18,
+                    "ColumnSpan": 12,
+                    "RowIndex": 2,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "07e14414-98ea-4845-a60c-978b913a28ba",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 15,
+                    "RowIndex": 12,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "7bfa5a18-f06a-47f0-bc54-4acfe1c3e0ed",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 15,
+                    "ColumnSpan": 15,
+                    "RowIndex": 12,
+                    "RowSpan": 10
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "SheetId": "73925e12-7e7a-4739-8269-4b72d62f6dff",
+        "Name": "Risk & Exposure",
+        "Visuals": [
+          {
+            "VisualId": "d00ea8b5-d9d5-40c8-83a0-332c22f8bff2",
+            "TextBoxVisual": {
+              "VisualId": "d00ea8b5-d9d5-40c8-83a0-332c22f8bff2",
+              "Title": {
+                "Visibility": "HIDDEN"
+              },
+              "ChartConfiguration": {
+                "TextBoxChartConfiguration": {
+                  "Content": "Risk & Exposure Analysis"
+                }
+              }
+            }
+          },
+          {
+            "HeatMapVisual": {
+              "VisualId": "59e5d51a-3219-41a6-bcdd-db3d0c71c391",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "HeatMapAggregatedFieldWells": {
+                    "Columns": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Portfolio date",
+                          "Column": {
+                            "ColumnName": "Portfolio date",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Rows": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Emissions by Sector and Year"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "TreeMapVisual": {
+              "VisualId": "4d734ca6-d668-4548-8c4a-b883b5ca2612",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TreeMapAggregatedFieldWells": {
+                    "Colors": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "AVG"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "Groups": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security quotation currency",
+                          "Column": {
+                            "ColumnName": "Security quotation currency",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      },
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security type",
+                          "Column": {
+                            "ColumnName": "Security type",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Sizes": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Portfolio Composition Treemap"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "GaugeChartVisual": {
+              "VisualId": "24f5ccfb-706e-4664-9cda-24e04a123d7c",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TargetValues": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "Portfolio validated nav",
+                        "Column": {
+                          "ColumnName": "Portfolio validated nav",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "AVG"
+                        },
+                        "FormatConfiguration": {
+                          "FormatConfiguration": {
+                            "CurrencyDisplayFormatConfiguration": {
+                              "DecimalPlacesConfiguration": {
+                                "DecimalPlaces": ""
+                              },
+                              "NumberScale": "",
+                              "Prefix": "",
+                              "Suffix": "",
+                              "Symbol": ""
+                            },
+                            "NumberDisplayFormatConfiguration": {},
+                            "PercentageDisplayFormatConfiguration": {
+                              "Suffix": ""
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "Portfolio validated nav",
+                        "Column": {
+                          "ColumnName": "Portfolio validated nav",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "AVG"
+                        },
+                        "FormatConfiguration": {
+                          "FormatConfiguration": {
+                            "CurrencyDisplayFormatConfiguration": {
+                              "DecimalPlacesConfiguration": {
+                                "DecimalPlaces": ""
+                              },
+                              "NumberScale": "",
+                              "Prefix": "",
+                              "Suffix": "",
+                              "Symbol": ""
+                            },
+                            "NumberDisplayFormatConfiguration": {},
+                            "PercentageDisplayFormatConfiguration": {
+                              "Suffix": ""
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Carbon Intensity Gauge"
+                }
+              },
+              "subtitle": {}
+            }
+          },
+          {
+            "FilledMapVisual": {
+              "VisualId": "ec157c63-520c-4b9b-bd42-a3970f913c41",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "FilledMapAggregatedFieldWells": {
+                    "Geospatial": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "Security quotation currency",
+                          "Column": {
+                            "ColumnName": "Security quotation currency",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "Portfolio validated nav",
+                          "Column": {
+                            "ColumnName": "Portfolio validated nav",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          },
+                          "FormatConfiguration": {
+                            "FormatConfiguration": {
+                              "CurrencyDisplayFormatConfiguration": {
+                                "DecimalPlacesConfiguration": {
+                                  "DecimalPlaces": ""
+                                },
+                                "NumberScale": "",
+                                "Prefix": "",
+                                "Suffix": "",
+                                "Symbol": ""
+                              },
+                              "NumberDisplayFormatConfiguration": {},
+                              "PercentageDisplayFormatConfiguration": {
+                                "Suffix": ""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Geographical Emissions Map"
+                }
+              },
+              "subtitle": {}
+            }
+          }
+        ],
+        "Layouts": [
+          {
+            "Configuration": {
+              "GridLayout": {
+                "Elements": [
+                  {
+                    "ElementId": "d00ea8b5-d9d5-40c8-83a0-332c22f8bff2",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 30,
+                    "RowIndex": 0,
+                    "RowSpan": 2
+                  },
+                  {
+                    "ElementId": "59e5d51a-3219-41a6-bcdd-db3d0c71c391",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 15,
+                    "RowIndex": 2,
+                    "RowSpan": 12
+                  },
+                  {
+                    "ElementId": "4d734ca6-d668-4548-8c4a-b883b5ca2612",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 15,
+                    "ColumnSpan": 15,
+                    "RowIndex": 2,
+                    "RowSpan": 12
+                  },
+                  {
+                    "ElementId": "24f5ccfb-706e-4664-9cda-24e04a123d7c",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 10,
+                    "RowIndex": 14,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "ec157c63-520c-4b9b-bd42-a3970f913c41",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 10,
+                    "ColumnSpan": 20,
+                    "RowIndex": 14,
+                    "RowSpan": 10
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "FilterGroups": [
+      {
+        "CrossDataset": "ALL_DATASETS",
+        "FilterGroupId": "global_filters",
+        "Filters": [
+          {
+            "CategoryFilter": {
+              "FilterId": "sector_filter_1",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "Security type"
+              },
+              "Configuration": {
+                "CustomFilterListConfiguration": {
+                  "MatchOperator": "EQUALS",
+                  "NullOption": "ALL_VALUES",
+                  "CategoryValues": [],
+                  "SelectAllOptions": "FILTER_ALL_VALUES"
+                }
+              }
+            }
+          },
+          {
+            "TimeRangeFilter": {
+              "FilterId": "year_filter_1",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "Portfolio date"
+              },
+              "NullOption": "ALL_VALUES",
+              "ExcludePeriodConfiguration": {
+                "Amount": "",
+                "Granularity": "",
+                "Status": ""
+              },
+              "IncludeMaximum": true,
+              "IncludeMinimum": true,
+              "RangeMaximumValue": {},
+              "RangeMinimumValue": {
+                "Parameter": ""
+              },
+              "TimeGranularity": "YEAR"
+            }
+          },
+          {
+            "NumericEqualityFilter": {
+              "FilterId": "intensity_filter_1",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "Portfolio validated nav"
+              },
+              "MatchOperator": "GREATER_THAN_OR_EQUAL",
+              "NullOption": "ALL_VALUES",
+              "AggregationFunction": {
+                "CategoricalAggrecationFunction": "",
+                "DateAggregationFunction": "",
+                "NumericalAggregationFunction": {
+                  "PercentileAggregation": {
+                    "PercentileValue": ""
+                  },
+                  "SimpleNumericalAggregation": ""
+                }
+              },
+              "ParameterName": "",
+              "SelectAllOptions": "FILTER_ALL_VALUES",
+              "Value": ""
+            }
+          }
+        ],
+        "ScopeConfiguration": {
+          "SelectedSheets": {
+            "SheetVisualScopingConfigurations": [
+              {
+                "Scope": "ALL_VISUALS",
+                "SheetId": "0c99101c-4be6-414a-8632-67d610d9ddcc",
+                "VisualIds": []
+              }
+            ]
+          }
+        },
+        "Status": "ENABLED"
+      }
+    ],
+    "CalculatedFields": [],
+    "ParameterDeclarations": [
+      {
+        "IntegerParameterDeclaration": {
+          "Name": "YearParam",
+          "DefaultValues": {},
+          "ParameterValueType": "SINGLE_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      },
+      {
+        "IntegerParameterDeclaration": {
+          "Name": "SectorParam",
+          "DefaultValues": {},
+          "ParameterValueType": "MULTI_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      },
+      {
+        "IntegerParameterDeclaration": {
+          "Name": "RegionParam",
+          "DefaultValues": {},
+          "ParameterValueType": "MULTI_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      },
+      {
+        "IntegerParameterDeclaration": {
+          "Name": "AssetTypeParam",
+          "DefaultValues": {},
+          "ParameterValueType": "MULTI_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      },
+      {
+        "IntegerParameterDeclaration": {
+          "Name": "SubSectorParam",
+          "DefaultValues": {},
+          "ParameterValueType": "MULTI_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      },
+      {
+        "DecimalParameterDeclaration": {
+          "Name": "IntensityMinParam",
+          "DefaultValues": {},
+          "ParameterValueType": "SINGLE_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      },
+      {
+        "DecimalParameterDeclaration": {
+          "Name": "IntensityMaxParam",
+          "DefaultValues": {},
+          "ParameterValueType": "SINGLE_VALUED",
+          "ValueWhenUnset": {
+            "CustomValue": "",
+            "ValueWhenUnsetOption": ""
+          }
+        }
+      }
+    ]
+  }
+}

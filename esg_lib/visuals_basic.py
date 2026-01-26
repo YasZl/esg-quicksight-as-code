@@ -16,9 +16,7 @@ from external.quicksight_assets_class import (
 )
 
 
-# ---------------------------------------------------------
-# 1. Emissions by Sector (Bar Chart)
-# ---------------------------------------------------------
+# Emissions by Sector (Bar Chart)
 
 
 def make_emissions_by_sector_bar(visual_id, dataset_id, mappings):
@@ -26,8 +24,8 @@ def make_emissions_by_sector_bar(visual_id, dataset_id, mappings):
     ESG Bar Chart: Emissions by sector.
 
     Expected mappings keys:
-        "sector"          -> e.g. "Sector"
-        "emissions_total" -> e.g. "CO2_Emissions"
+        "sector"-> "Sector"
+        "emissions_total" ->"CO2_Emissions"
     """
     bar = BarChartVisual(visual_id)
 
@@ -51,9 +49,7 @@ def make_emissions_by_sector_bar(visual_id, dataset_id, mappings):
     return bar
 
 
-# ---------------------------------------------------------
-# 2. Emissions Over Time (Line Chart)
-# ---------------------------------------------------------
+# Emissions Over Time (Line Chart)
 
 
 def make_emissions_over_time_line(visual_id, dataset_id, mappings):
@@ -70,7 +66,7 @@ def make_emissions_over_time_line(visual_id, dataset_id, mappings):
     line.set_type("LINE")
 
     # X axis = date/year
-    # We use YEAR granularity here (adaptable if needed)
+    # We use YEAR granularity 
     line.add_date_dimension_field(
         mappings["date"],
         dataset_id,
@@ -90,9 +86,7 @@ def make_emissions_over_time_line(visual_id, dataset_id, mappings):
     return line
 
 
-# ---------------------------------------------------------
-# 3. Sector Share (Pie Chart)
-# ---------------------------------------------------------
+# Sector Share (Pie Chart)
 
 
 def make_sector_share_pie(visual_id, dataset_id, mappings):
@@ -121,9 +115,7 @@ def make_sector_share_pie(visual_id, dataset_id, mappings):
     return pie
 
 
-# ---------------------------------------------------------
-# 4. Total Emissions (KPI)
-# ---------------------------------------------------------
+# Total Emissions (KPI)
 
 
 def make_total_emissions_kpi(visual_id, dataset_id, mappings):
@@ -148,9 +140,7 @@ def make_total_emissions_kpi(visual_id, dataset_id, mappings):
     return kpi
 
 
-# ---------------------------------------------------------
-# 5. Emissions Table (Holdings)
-# ---------------------------------------------------------
+# Emissions Table (Holdings)
 
 
 def make_emissions_table(visual_id, dataset_id, mappings):
@@ -193,10 +183,7 @@ def make_emissions_table(visual_id, dataset_id, mappings):
     return table
 
 
-# ---------------------------------------------------------
-# 6. Helper – build_basic_esg_visuals
-# ---------------------------------------------------------
-
+# Helper – build_basic_esg_visuals
 
 def build_basic_esg_visuals(dataset_id, mappings):
     """
@@ -211,7 +198,7 @@ def build_basic_esg_visuals(dataset_id, mappings):
           "table_emissions": {...},
         }
     """
-    # Create visual objects with fixed IDs (easier to debug)
+    # Create visual objects with fixed IDs 
     kpi_obj = make_total_emissions_kpi(
         "kpi_total_emissions",
         dataset_id,
@@ -246,3 +233,38 @@ def build_basic_esg_visuals(dataset_id, mappings):
         "line_emissions_over_time": line_obj.compile(),
         "table_emissions": table_obj.compile(),
     }
+
+# Portfolio visuals 
+
+def make_total_securities_kpi(visual_id, dataset_id, mappings):
+    # KPI = SUM(one) => compte le nombre de lignes
+    kpi = KPIVisual(visual_id)
+    kpi.add_numerical_measure_field("one", dataset_id, "SUM")
+    kpi.add_title("VISIBLE", "PlainText", "Total Securities")
+    return kpi
+
+
+def make_securities_by_type_bar(visual_id, dataset_id, mappings):
+    # Bar = SUM(one) par Security type
+    bar = BarChartVisual(visual_id)
+    bar.set_bars_arrangement("CLUSTERED")
+    bar.set_orientation("VERTICAL")
+
+    bar.add_categorical_dimension_field(mappings["security_type"], dataset_id)
+    bar.add_numerical_measure_field("one", dataset_id, "SUM")
+
+    bar.add_title("VISIBLE", "PlainText", "Securities by Type")
+    return bar
+
+
+def make_securities_table(visual_id, dataset_id, mappings):
+    # Table = Security name + SUM(one)
+    table = TableVisual(visual_id)
+
+    table.add_categorical_dimension_field(mappings["security_name"], dataset_id)
+    table.add_numerical_measure_field("one", dataset_id, "SUM")
+
+    table.add_title("VISIBLE", "PlainText", "Securities List")
+    return table
+
+
