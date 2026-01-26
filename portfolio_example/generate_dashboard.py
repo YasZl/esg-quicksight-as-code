@@ -4,9 +4,9 @@ from esg_lib.analysis_api import build_esg_analysis
 if __name__ == "__main__":
 
     #  À adapter avec le vrai compte / dataset
-    AWS_ACCOUNT_ID = "123456789012"
-    DATASET_ARN = "arn:aws:quicksight:eu-west-1:123456789012:dataset/ESG_dataset"
-    DATASET_ID = "ESG_dataset"
+    AWS_ACCOUNT_ID = "730335657350"
+    DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741"
+    DATASET_ID = "498e463a-4e55-4db6-b832-100cb1eb6741"
 
     # Mapping entre colonnes Manaos et notre librairie
     MAPPINGS = {
