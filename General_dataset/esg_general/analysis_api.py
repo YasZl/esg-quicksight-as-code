@@ -1,4 +1,4 @@
-# esg_lib/analysis_api.py
+# esg_general/analysis_api.py
 
 try:
     import boto3
@@ -342,4 +342,25 @@ def build_analysis_from_parts(
         filter_groups=filter_groups,
         calculated_fields=calculated_fields or [],
     )
+def build_analysis_from_parts(
+    aws_account_id: str,
+    dataset_arn: str,
+    analysis_id: str,
+    analysis_name: str,
+    sheets: list,
+    parameters=None,
+    filter_groups=None,
+    calculated_fields=None,
+):
+    return simulate_deploy(
+        aws_account_id=aws_account_id,
+        analysis_id=analysis_id,
+        name=analysis_name,
+        dataset_arn=dataset_arn,
+        sheets=sheets,
+        parameters=parameters,
+        filter_groups=filter_groups,
+        calculated_fields=calculated_fields or [],
+    )
+
 

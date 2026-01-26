@@ -1,6 +1,7 @@
 import uuid
-from esg_lib.sheets import create_empty_sheet, add_visual_to_sheet, add_title
-from esg_lib import visuals_basic, visuals_advanced
+from esg_general.sheets import create_empty_sheet, add_visual_to_sheet, add_title
+import esg_general.visuals_basic as visuals_basic
+import esg_general.visuals_advanced as visuals_advanced
 from external.quicksight_assets_class import KPIVisual, BarChartVisual, TableVisual
 
 
