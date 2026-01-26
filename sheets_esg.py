@@ -37,7 +37,7 @@ def build_overview_sheet(dataset_id, mappings):
         mappings,
     )
     kpi_vis = kpi_obj.compile()
-    sheet = add_visual_to_sheet(sheet, kpi_vis, row=2, col=0, row_span=6, col_span=6)
+    sheet = add_visual_to_sheet(sheet, kpi_vis, row=2, col=0, row_span=10, col_span=6)
 
     # Bar Chart (Total Emissions by Sector (tCO₂e)) 
     bar_obj = visuals_basic.make_emissions_by_sector_bar(
@@ -74,7 +74,6 @@ def build_overview_sheet(dataset_id, mappings):
     )
     table_vis = table_obj.compile()
     sheet = add_visual_to_sheet(sheet, table_vis, row=12, col=15, row_span=10, col_span=15)
-
     return sheet
 
 
@@ -125,8 +124,10 @@ def build_risk_sheet(dataset_id, mappings):
             gauge_obj = None
     if gauge_obj is not None:
         gauge_vis = gauge_obj.compile()
-        sheet = add_visual_to_sheet(sheet, gauge_vis, row=14, col=0, row_span=6, col_span=15)
-    # 4. Geographical Map (Exposure)
+        sheet = add_visual_to_sheet(sheet, gauge_vis, row=14, col=0, row_span=10, col_span=15)
+    else:
+        # Placeholder to keep layout consistent if Gauge is skipped (missing mapping / not implemented)
+        sheet = add_title(sheet, "⚠ Gauge skipped (missing mapping or not supported)", row=14, col=0, row_span=10, col_span=15)# 4. Geographical Map (Exposure)
     # Position: Bottom Right
     map_obj = None
     try:
@@ -136,7 +137,10 @@ def build_risk_sheet(dataset_id, mappings):
 
     if map_obj is not None:
         map_vis = map_obj.compile()
-        sheet = add_visual_to_sheet(sheet, map_vis, row=14, col=10, row_span=10, col_span=20)
+        sheet = add_visual_to_sheet(sheet, map_vis, row=14, col=15, row_span=10, col_span=15)
+    else:
+        # Placeholder to keep layout consistent if Map is skipped (missing mapping like geo)
+        sheet = add_title(sheet, "⚠ Map skipped (missing mapping: geo)", row=14, col=15, row_span=10, col_span=15)
     return sheet
 
 def build_portfolio_sheet(dataset_id, mappings):
@@ -152,6 +156,11 @@ def build_portfolio_sheet(dataset_id, mappings):
     sheet = add_visual_to_sheet(sheet, table_obj.compile(), row=12, col=0, row_span=10, col_span=22)
 
     return sheet
+
+
+
+
+
 
 
 
