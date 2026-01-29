@@ -11,11 +11,11 @@ from General_dataset.esg_general.parameters_esg import build_all_esg_parameters_
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = "730335657350"
+AWS_ACCOUNT_ID = "..."
 REGION = "eu-central-1"
-#DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31" # 👉 A CHANGER SELON LE DATASET UTILISE
-DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741" # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = "arn:aws:quicksight:eu-central-1:730335657350:user/default/yasmine.zeroual@edu.devinci.fr"
+#DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
+DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
+QUICKSIGHT_USER_ARN = "..."
 
 
 def make_permissions(user_arn):
