@@ -5,6 +5,6 @@
   "roles": {
     "security_name": "Security name *",
     "security_type": "Security type",
-    "securoty_ID": "Security ID"
+    "security_id": "Security ID *"
   }
 }

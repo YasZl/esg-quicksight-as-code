@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import Dict, Any
 
-from external.quicksight_assets_class import Sheet
+from ..external.quicksight_assets_class import Sheet
 
 
 def create_empty_sheet(sheet_id: str, name: str) -> Dict[str, Any]:

@@ -7,8 +7,8 @@ Main features:
 - Dataset-agnostic (config-driven)
 """
 
-from esg_general.analysis_api import build_analysis_from_parts
-from esg_general.preview_html import (
+from .analysis_api import build_analysis_from_parts
+from .preview_html import (
     generate_html_dashboard_from_analysis_obj,
     save_analysis_json,
 )

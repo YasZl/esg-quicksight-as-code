@@ -178,9 +178,13 @@ def sanitize_definition(definition: dict) -> dict:
 
         return obj
 
-    cleaned = clean(definition)
-    return cleaned if cleaned is not None else {}
+    cleaned = clean(definition) or {}
 
+    # DATASET DECLARATIONS
+    if "DataSetIdentifierDeclarations" not in cleaned or not cleaned["DataSetIdentifierDeclarations"]:
+        cleaned["DataSetIdentifierDeclarations"] = definition.get("DataSetIdentifierDeclarations", [])
+
+    return cleaned
 
 def create_analysis_boto3(analysis_obj, region):
     """

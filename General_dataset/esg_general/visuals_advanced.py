@@ -1,4 +1,4 @@
-from external.quicksight_assets_class import (
+from ..external.quicksight_assets_class  import (
     HeatMapVisual,
     TreeMapVisual,
     FilledMapVisual,
@@ -13,8 +13,8 @@ def make_heatmap(visual_id, dataset_id, roles):
     heatmap.add_row_categorical_dimension_field(roles["category_1"], dataset_id)
 
     # X = bucket_1 (BIO_SCORE_bucket_1)
-    heatmap.add_column_categorical_dimension_field(roles["bucket_1"], dataset_id)
-
+    heatmap.add_column_numerical_dimension_field(roles["bucket_1"], dataset_id)
+    
     # Value = composite index (AVERAGE)
     heatmap.add_numerical_measure_field(
         roles["metric_1"], dataset_id, aggregation_function="AVERAGE"

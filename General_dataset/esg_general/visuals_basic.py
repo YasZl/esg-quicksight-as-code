@@ -1,4 +1,4 @@
-from external.quicksight_assets_class import (
+from ..external.quicksight_assets_class  import (
     BarChartVisual, LineChartVisual, PieChartVisual, KPIVisual, TableVisual
 )
 
