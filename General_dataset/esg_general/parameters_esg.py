@@ -2,7 +2,7 @@
 Construit les paramètres et contrôles pour le dataset ESG biodiversité (Manaos Nature).
 """
 
-from esg_lib.parameters_controls import (
+from .parameters_controls import (
     create_sector_parameter, create_sector_dropdown_control, create_sector_list_control,
     create_region_parameter, create_region_dropdown_control,
     create_intensity_min_parameter, create_intensity_max_parameter,

@@ -2,7 +2,7 @@
 
 # on importe les classes QuickSight utiles depuis le fichier fourni par AWS
 
-from external.quicksight_assets_class import (
+from ..external.quicksight_assets_class  import (
     IntegerParameter,
     StringParameter,
     DecimalParameter,

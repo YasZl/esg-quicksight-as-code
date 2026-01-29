@@ -237,12 +237,12 @@ def build_basic_esg_visuals(dataset_id, mappings):
 # Portfolio visuals 
 
 def make_total_securities_kpi(visual_id, dataset_id, mappings):
-    # KPI = SUM(one) => compte le nombre de lignes
     kpi = KPIVisual(visual_id)
-    kpi.add_numerical_measure_field("one", dataset_id, "SUM")
+    kpi.add_numerical_measure_field(
+        mappings["security_id"], dataset_id, "COUNT"
+    )
     kpi.add_title("VISIBLE", "PlainText", "Total Securities")
     return kpi
-
 
 def make_securities_by_type_bar(visual_id, dataset_id, mappings):
     # Bar = SUM(one) par Security type
@@ -251,7 +251,7 @@ def make_securities_by_type_bar(visual_id, dataset_id, mappings):
     bar.set_orientation("VERTICAL")
 
     bar.add_categorical_dimension_field(mappings["security_type"], dataset_id)
-    bar.add_numerical_measure_field("one", dataset_id, "SUM")
+    bar.add_numerical_measure_field(mappings["security_id"], dataset_id, "COUNT")
 
     bar.add_title("VISIBLE", "PlainText", "Securities by Type")
     return bar
@@ -262,7 +262,7 @@ def make_securities_table(visual_id, dataset_id, mappings):
     table = TableVisual(visual_id)
 
     table.add_categorical_dimension_field(mappings["security_name"], dataset_id)
-    table.add_numerical_measure_field("one", dataset_id, "SUM")
+    table.add_numerical_measure_field(mappings["security_id"], dataset_id, "COUNT")
 
     table.add_title("VISIBLE", "PlainText", "Securities List")
     return table

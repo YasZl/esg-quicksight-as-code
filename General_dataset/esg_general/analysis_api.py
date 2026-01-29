@@ -61,6 +61,12 @@ def build_definition(
     if parameters_dict:
         definition["ParameterDeclarations"] = parameters_dict
     
+    if controls_dict:
+        definition["ParameterControlDeclarations"] = controls_dict
+
+    return definition
+
+
     return definition
 
 

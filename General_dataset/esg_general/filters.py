@@ -1,6 +1,6 @@
 # Création des filtres QuickSight pour le dashboard ESG
 
-from external.quicksight_assets_class import (
+from ..external.quicksight_assets_class  import (
     CategoryFilter,
     NumericEqualityFilter,
     TimeRangeFilter,
