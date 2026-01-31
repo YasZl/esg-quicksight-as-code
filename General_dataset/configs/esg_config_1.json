@@ -2,6 +2,7 @@
   "name": "ESG Dataset – Config 1",
   "dataset_id": "dataset",
   "template": "esg",
+  "dataset_arn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/27b1283e-0142-41de-bba9-d70d2012375d",
   "roles": {
     "metric_1": "COMPOSITE_INDEX",
     "category_1": "GICS_SECTOR",
