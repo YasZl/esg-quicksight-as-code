@@ -11,11 +11,11 @@ from General_dataset.esg_general.parameters_esg import build_all_esg_parameters_
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = "..."
+AWS_ACCOUNT_ID = "730335657350"
 REGION = "eu-central-1"
 #DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = "..."
+DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/27b1283e-0142-41de-bba9-d70d2012375d" # 👉 A CHANGER SELON LE DATASET UTILISE
+QUICKSIGHT_USER_ARN = "arn:aws:quicksight:eu-central-1:730335657350:user/default/adam.touchane@edu.devinci.fr"
 
 
 def make_permissions(user_arn):
@@ -53,7 +53,7 @@ def run_one(tag, config_path):
     template = cfg.get("template", "esg")
     
     prefix = "portfolio" if template == "portfolio" else "esg"
-    analysis_id = f"{prefix}_{tag}-analysis-v9"     # 👉 à changer car sinon conflit à chaque déploiement
+    analysis_id = f"{prefix}_{tag}-analysis-v19"     # 👉 à changer car sinon conflit à chaque déploiement
 
     if template == "portfolio":
         sheets = [build_portfolio_sheet(dataset_id, roles)]
@@ -86,7 +86,7 @@ def run_one(tag, config_path):
 
 if __name__ == "__main__":
     print("👉 calling run_one")
-    run_one("1", "configs/esg_config_1.json") # 👉 mettre les noms des fichiers de config json
+    # run_one("1", "configs/esg_config_1.json") # 👉 mettre les noms des fichiers de config json
     run_one("1", "configs/portfolio_config.json") # 👉 mettre les noms des fichiers de config json
 
     print("✅ deploy_aws.py done")

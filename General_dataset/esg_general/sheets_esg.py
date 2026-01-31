@@ -47,20 +47,20 @@ def build_portfolio_sheet(dataset_id, roles):
     sheet = create_empty_sheet(sheet_id, "Portfolio Overview")
     sheet = add_title(sheet, "Portfolio Overview", row=0, col=0, row_span=2, col_span=30)
 
-    # Table (liste des titres)
     table_obj = TableVisual(_id())
     table_obj.add_categorical_dimension_field(roles["security_name"], dataset_id)
 
-    # security_type optionnel
     if roles.get("security_type"):
         table_obj.add_categorical_dimension_field(roles["security_type"], dataset_id)
 
-    # security_id optionnel
     if roles.get("security_id"):
         table_obj.add_categorical_dimension_field(roles["security_id"], dataset_id)
+
+    # ✅ Mesure numérique (optionnelle)
+    if roles.get("value"):
+        table_obj.add_numerical_measure_field(roles["value"], dataset_id)
 
     table_obj.add_title("VISIBLE", "PlainText", "Securities List")
 
     sheet = add_visual_to_sheet(sheet, table_obj.compile(), row=2, col=0, row_span=18, col_span=30)
     return sheet
-
