@@ -1,8 +1,0 @@
-sheet,visual_type,wrapper_visual_id,inner_visual_id,title_or_text,note
-Overview,TextBoxVisual,3a54d85f-7876-48cc-af1a-75ea122f7dc4,3a54d85f-7876-48cc-af1a-75ea122f7dc4,Overview,
-Overview,KPIVisual,,d2f1d316-e7a3-4dcb-ad3b-6d81ec51ac8d,Total Metric,
-Overview,BarChartVisual,,467321f7-0cb4-4827-9e46-ff829ceec888,Metric by Category,
-Overview,PieChartVisual,,ea17e959-c2b7-43c3-a569-53858dcfc0e6,Category Share,
-Overview,TableVisual,,9b01217d-d2f9-445c-834c-0fac22bc22ef,Table,
-Insights,TextBoxVisual,940eeda5-0deb-47b8-80b4-fb365a62b7ec,940eeda5-0deb-47b8-80b4-fb365a62b7ec,Insights,
-Insights,FilledMapVisual,,fb93320d-0c79-4472-aaa8-20b8e615ccf8,Composite Index by geo,

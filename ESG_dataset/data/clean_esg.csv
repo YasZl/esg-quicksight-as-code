@@ -1,2 +1,0 @@
-Le fichier clean_esg.csv (≈ 166k lignes, 38 Mo) n’est pas versionné dans le repo car il dépasse la limite d’upload GitHub via interface web.
-Il est généré à partir du fichier source ESG_BIG.csv en suivant le notebook Colab (nettoyage, filtrage NaN, etc.)
