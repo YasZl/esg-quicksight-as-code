@@ -53,7 +53,7 @@ def run_one(tag, config_path):
     template = cfg.get("template", "esg")
     
     prefix = "portfolio" if template == "portfolio" else "esg"
-    analysis_id = f"{prefix}_{tag}-analysis-v19"     # 👉 à changer car sinon conflit à chaque déploiement
+    analysis_id = f"{prefix}_{tag}-analysis-v20"     # 👉 à changer car sinon conflit à chaque déploiement
 
     if template == "portfolio":
         sheets = [build_portfolio_sheet(dataset_id, roles)]
