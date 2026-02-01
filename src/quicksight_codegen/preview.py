@@ -553,3 +553,670 @@ def _get_tab_script():
   activate(0);
 </script>
 """
+
+
+# =============================================================================
+# Chart Preview with actual visualizations (using Chart.js)
+# =============================================================================
+
+import random
+import hashlib
+
+
+def _generate_mock_categories(field_name: str, count: int = 5) -> list:
+    """Generate mock category labels based on field name."""
+    field_lower = field_name.lower()
+
+    if "sector" in field_lower or "gics" in field_lower:
+        return ["Technology", "Finance", "Healthcare", "Energy", "Consumer"][:count]
+    elif "country" in field_lower or "cntry" in field_lower or "region" in field_lower:
+        return ["USA", "Germany", "France", "UK", "Japan"][:count]
+    elif "year" in field_lower:
+        return [str(2020 + i) for i in range(count)]
+    elif "month" in field_lower:
+        return ["Jan", "Feb", "Mar", "Apr", "May", "Jun"][:count]
+    elif "name" in field_lower or "issuer" in field_lower:
+        return ["Company A", "Company B", "Company C", "Company D", "Company E"][:count]
+    elif "category" in field_lower or "type" in field_lower:
+        return ["Category A", "Category B", "Category C", "Category D", "Category E"][:count]
+    elif "risk" in field_lower:
+        return ["Low", "Medium", "High", "Critical", "Unknown"][:count]
+    else:
+        return [f"{field_name} {i+1}" for i in range(count)]
+
+
+def _generate_mock_values(field_name: str, count: int = 5, seed: str = "") -> list:
+    """Generate mock numeric values based on field name."""
+    random.seed(hashlib.md5((field_name + seed).encode()).hexdigest())
+
+    field_lower = field_name.lower()
+
+    if "score" in field_lower or "index" in field_lower or "rating" in field_lower:
+        return [round(random.uniform(50, 95), 1) for _ in range(count)]
+    elif "exposure" in field_lower or "amount" in field_lower or "value" in field_lower:
+        return [round(random.uniform(1000000, 10000000), 0) for _ in range(count)]
+    elif "percent" in field_lower or "ratio" in field_lower:
+        return [round(random.uniform(0.1, 0.9), 2) for _ in range(count)]
+    elif "count" in field_lower or "num" in field_lower:
+        return [random.randint(10, 500) for _ in range(count)]
+    elif "sales" in field_lower or "revenue" in field_lower:
+        return [round(random.uniform(50000, 500000), 0) for _ in range(count)]
+    else:
+        return [round(random.uniform(10, 100), 1) for _ in range(count)]
+
+
+def _extract_category_fields(inner: dict) -> list:
+    """Extract category/dimension field names from visual config."""
+    categories = []
+
+    def walk(obj):
+        if isinstance(obj, dict):
+            if "CategoricalDimensionField" in obj:
+                cdf = obj["CategoricalDimensionField"]
+                col = cdf.get("Column", {}).get("ColumnName")
+                if col:
+                    categories.append(col)
+            for v in obj.values():
+                walk(v)
+        elif isinstance(obj, list):
+            for x in obj:
+                walk(x)
+
+    walk(inner)
+    return categories
+
+
+def _get_chart_colors():
+    """Return a list of chart colors."""
+    return [
+        "rgba(37, 99, 235, 0.8)",   # blue
+        "rgba(16, 185, 129, 0.8)",  # green
+        "rgba(245, 158, 11, 0.8)", # amber
+        "rgba(239, 68, 68, 0.8)",   # red
+        "rgba(139, 92, 246, 0.8)",  # purple
+        "rgba(6, 182, 212, 0.8)",   # cyan
+        "rgba(236, 72, 153, 0.8)",  # pink
+        "rgba(107, 114, 128, 0.8)", # gray
+    ]
+
+
+def _render_bar_chart(visual_id: str, title: str, categories: list, measures: list,
+                      sample_data: dict | None, orientation: str = "VERTICAL") -> str:
+    """Render a bar chart using Chart.js."""
+    cat_field = categories[0] if categories else "Category"
+    measure_field = measures[0] if measures else "Value"
+
+    if sample_data and cat_field in sample_data and measure_field in sample_data:
+        labels = sample_data[cat_field][:8]
+        values = sample_data[measure_field][:8]
+    else:
+        labels = _generate_mock_categories(cat_field)
+        values = _generate_mock_values(measure_field, len(labels), visual_id)
+
+    labels_json = json.dumps(labels)
+    values_json = json.dumps(values)
+    colors = _get_chart_colors()[:len(labels)]
+    colors_json = json.dumps(colors)
+
+    chart_type = "bar"
+    index_axis = "'y'" if orientation == "HORIZONTAL" else "'x'"
+
+    return f"""
+    <div class="chart-container">
+      <canvas id="{visual_id}"></canvas>
+    </div>
+    <script>
+      new Chart(document.getElementById('{visual_id}'), {{
+        type: '{chart_type}',
+        data: {{
+          labels: {labels_json},
+          datasets: [{{
+            label: '{measure_field}',
+            data: {values_json},
+            backgroundColor: {colors_json},
+            borderRadius: 6
+          }}]
+        }},
+        options: {{
+          indexAxis: {index_axis},
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {{
+            legend: {{ display: false }},
+            title: {{ display: true, text: '{title}', font: {{ size: 14, weight: 'bold' }} }}
+          }},
+          scales: {{
+            y: {{ beginAtZero: true }}
+          }}
+        }}
+      }});
+    </script>
+    """
+
+
+def _render_line_chart(visual_id: str, title: str, categories: list, measures: list,
+                       sample_data: dict | None) -> str:
+    """Render a line chart using Chart.js."""
+    cat_field = categories[0] if categories else "Time"
+    measure_field = measures[0] if measures else "Value"
+
+    if sample_data and cat_field in sample_data and measure_field in sample_data:
+        labels = sample_data[cat_field][:12]
+        values = sample_data[measure_field][:12]
+    else:
+        labels = _generate_mock_categories(cat_field, 8)
+        values = _generate_mock_values(measure_field, len(labels), visual_id)
+
+    labels_json = json.dumps(labels)
+    values_json = json.dumps(values)
+
+    return f"""
+    <div class="chart-container">
+      <canvas id="{visual_id}"></canvas>
+    </div>
+    <script>
+      new Chart(document.getElementById('{visual_id}'), {{
+        type: 'line',
+        data: {{
+          labels: {labels_json},
+          datasets: [{{
+            label: '{measure_field}',
+            data: {values_json},
+            borderColor: 'rgba(37, 99, 235, 1)',
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            fill: true,
+            tension: 0.3
+          }}]
+        }},
+        options: {{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {{
+            legend: {{ display: false }},
+            title: {{ display: true, text: '{title}', font: {{ size: 14, weight: 'bold' }} }}
+          }}
+        }}
+      }});
+    </script>
+    """
+
+
+def _render_pie_chart(visual_id: str, title: str, categories: list, measures: list,
+                      sample_data: dict | None) -> str:
+    """Render a pie/donut chart using Chart.js."""
+    cat_field = categories[0] if categories else "Category"
+    measure_field = measures[0] if measures else "Value"
+
+    if sample_data and cat_field in sample_data and measure_field in sample_data:
+        labels = sample_data[cat_field][:6]
+        values = sample_data[measure_field][:6]
+    else:
+        labels = _generate_mock_categories(cat_field, 5)
+        values = _generate_mock_values(measure_field, len(labels), visual_id)
+
+    labels_json = json.dumps(labels)
+    values_json = json.dumps(values)
+    colors = _get_chart_colors()[:len(labels)]
+    colors_json = json.dumps(colors)
+
+    return f"""
+    <div class="chart-container">
+      <canvas id="{visual_id}"></canvas>
+    </div>
+    <script>
+      new Chart(document.getElementById('{visual_id}'), {{
+        type: 'doughnut',
+        data: {{
+          labels: {labels_json},
+          datasets: [{{
+            data: {values_json},
+            backgroundColor: {colors_json}
+          }}]
+        }},
+        options: {{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {{
+            legend: {{ position: 'right' }},
+            title: {{ display: true, text: '{title}', font: {{ size: 14, weight: 'bold' }} }}
+          }}
+        }}
+      }});
+    </script>
+    """
+
+
+def _render_kpi(visual_id: str, title: str, measures: list, sample_data: dict | None) -> str:
+    """Render a KPI card."""
+    measure_field = measures[0] if measures else "Value"
+
+    if sample_data and measure_field in sample_data:
+        values = sample_data[measure_field]
+        value = sum(values) / len(values) if values else 0
+    else:
+        values = _generate_mock_values(measure_field, 10, visual_id)
+        value = sum(values) / len(values)
+
+    if value >= 1000000:
+        display_value = f"{value/1000000:.1f}M"
+    elif value >= 1000:
+        display_value = f"{value/1000:.1f}K"
+    else:
+        display_value = f"{value:.1f}"
+
+    return f"""
+    <div class="kpi-card" id="{visual_id}">
+      <div class="kpi-title">{title}</div>
+      <div class="kpi-value">{display_value}</div>
+      <div class="kpi-label">{measure_field}</div>
+    </div>
+    """
+
+
+def _render_table(visual_id: str, title: str, categories: list, measures: list,
+                  sample_data: dict | None) -> str:
+    """Render an HTML table."""
+    all_fields = categories + measures
+    if not all_fields:
+        all_fields = ["Column 1", "Column 2"]
+
+    rows = 5
+    data = {}
+
+    for field in all_fields:
+        if sample_data and field in sample_data:
+            data[field] = sample_data[field][:rows]
+        elif field in measures:
+            data[field] = _generate_mock_values(field, rows, visual_id)
+        else:
+            data[field] = _generate_mock_categories(field, rows)
+
+    headers = "".join([f"<th>{f}</th>" for f in all_fields])
+
+    body_rows = []
+    for i in range(rows):
+        cells = []
+        for field in all_fields:
+            val = data[field][i] if i < len(data[field]) else ""
+            if isinstance(val, float):
+                val = f"{val:,.1f}"
+            elif isinstance(val, int):
+                val = f"{val:,}"
+            cells.append(f"<td>{val}</td>")
+        body_rows.append(f"<tr>{''.join(cells)}</tr>")
+
+    return f"""
+    <div class="table-container" id="{visual_id}">
+      <div class="table-title">{title}</div>
+      <table class="data-table">
+        <thead><tr>{headers}</tr></thead>
+        <tbody>{''.join(body_rows)}</tbody>
+      </table>
+    </div>
+    """
+
+
+def _render_heatmap(visual_id: str, title: str, inner: dict, sample_data: dict | None) -> str:
+    """Render a heatmap as a colored grid."""
+    rows_field = None
+    cols_field = None
+    value_field = None
+
+    fw = inner.get("ChartConfiguration", {}).get("FieldWells", {}).get("HeatMapAggregatedFieldWells", {})
+
+    rows_list = fw.get("Rows", [])
+    if rows_list:
+        rows_field = rows_list[0].get("CategoricalDimensionField", {}).get("Column", {}).get("ColumnName")
+
+    cols_list = fw.get("Columns", [])
+    if cols_list:
+        cols_field = cols_list[0].get("CategoricalDimensionField", {}).get("Column", {}).get("ColumnName")
+
+    values_list = fw.get("Values", [])
+    if values_list:
+        value_field = values_list[0].get("NumericalMeasureField", {}).get("Column", {}).get("ColumnName")
+
+    row_labels = _generate_mock_categories(rows_field or "Row", 4)
+    col_labels = _generate_mock_categories(cols_field or "Column", 4)
+
+    random.seed(hashlib.md5(visual_id.encode()).hexdigest())
+
+    grid_html = []
+    grid_html.append("<div class='heatmap-grid'>")
+    grid_html.append("<div class='heatmap-row'><div class='heatmap-cell corner'></div>")
+    for col in col_labels:
+        grid_html.append(f"<div class='heatmap-cell header'>{col}</div>")
+    grid_html.append("</div>")
+
+    for row in row_labels:
+        grid_html.append(f"<div class='heatmap-row'><div class='heatmap-cell row-header'>{row}</div>")
+        for _ in col_labels:
+            val = random.randint(20, 95)
+            hue = 120 - (val - 20) * 1.6  # green to red
+            color = f"hsl({hue}, 70%, 50%)"
+            grid_html.append(f"<div class='heatmap-cell value' style='background:{color}'>{val}</div>")
+        grid_html.append("</div>")
+    grid_html.append("</div>")
+
+    return f"""
+    <div class="heatmap-container" id="{visual_id}">
+      <div class="heatmap-title">{title}</div>
+      {''.join(grid_html)}
+    </div>
+    """
+
+
+def _render_textbox(visual_id: str, content: str) -> str:
+    """Render a text box."""
+    return f"""
+    <div class="textbox" id="{visual_id}">
+      <h2>{content}</h2>
+    </div>
+    """
+
+
+def _get_chart_css_styles():
+    """Return CSS styles for chart preview."""
+    return """
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --blue: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .header {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 { margin: 0 0 8px 0; font-size: 28px; }
+  .header .subtitle { color: var(--muted); font-size: 14px; }
+  .chips { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .chip {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .tab.active {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+  .sheet { display: none; }
+  .sheet.active { display: block; }
+  .sheet-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 16px;
+  }
+  .visual-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 280px;
+  }
+  .visual-card.wide {
+    grid-column: span 2;
+  }
+  @media (max-width: 800px) {
+    .visual-card.wide { grid-column: span 1; }
+  }
+  .chart-container {
+    height: 220px;
+    position: relative;
+  }
+  .kpi-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    text-align: center;
+  }
+  .kpi-title {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--blue);
+  }
+  .kpi-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .table-container { overflow-x: auto; }
+  .table-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th, .data-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  .data-table th {
+    background: #f8fafc;
+    font-weight: 700;
+  }
+  .heatmap-container { }
+  .heatmap-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .heatmap-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .heatmap-row {
+    display: flex;
+    gap: 2px;
+  }
+  .heatmap-cell {
+    width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .heatmap-cell.corner { background: transparent; }
+  .heatmap-cell.header { background: #f1f5f9; font-size: 11px; }
+  .heatmap-cell.row-header { background: #f1f5f9; font-size: 11px; width: 80px; }
+  .heatmap-cell.value { color: white; border-radius: 4px; }
+  .textbox {
+    padding: 20px;
+    text-align: center;
+  }
+  .textbox h2 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--text);
+  }
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+</style>
+"""
+
+
+def _get_chart_tab_script():
+    """Return JavaScript for chart preview tab switching."""
+    return """
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const sheets = document.querySelectorAll('.sheet');
+
+  function activate(i) {
+    tabs.forEach(t => t.classList.remove('active'));
+    sheets.forEach(s => s.classList.remove('active'));
+    tabs[i]?.classList.add('active');
+    sheets[i]?.classList.add('active');
+  }
+
+  tabs.forEach((t, i) => t.addEventListener('click', () => activate(i)));
+  activate(0);
+</script>
+"""
+
+
+def generate_chart_html_preview(
+    analysis_obj: dict,
+    out_file: str = "chart_preview.html",
+    sample_data: dict | None = None,
+) -> str:
+    """
+    Generate an HTML preview with actual charts rendered using Chart.js.
+
+    Args:
+        analysis_obj: The QuickSight analysis dictionary
+        out_file: Output file path
+        sample_data: Optional dict of {column_name: [values]} for real data.
+                    If not provided, mock data is generated automatically.
+
+    Returns:
+        Path to the generated HTML file
+
+    Example:
+        # With mock data (default)
+        generate_chart_html_preview(analysis, "preview.html")
+
+        # With sample data
+        sample = {"Sector": ["Tech", "Finance"], "Score": [85, 72]}
+        generate_chart_html_preview(analysis, "preview.html", sample_data=sample)
+    """
+    name = analysis_obj.get("Name", "Dashboard Preview")
+    definition = analysis_obj.get("Definition", {})
+    sheets = definition.get("Sheets", [])
+
+    total_visuals = sum(len(s.get("Visuals", [])) for s in sheets)
+
+    html = []
+    html.append("<!DOCTYPE html><html><head><meta charset='utf-8'>")
+    html.append("<meta name='viewport' content='width=device-width, initial-scale=1'>")
+    html.append(f"<title>{name}</title>")
+    html.append("<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>")
+    html.append(_get_chart_css_styles())
+    html.append("</head><body>")
+    html.append("<div class='wrap'>")
+
+    # Header
+    html.append("<div class='header'>")
+    html.append(f"<h1>{name}</h1>")
+    data_note = "with sample data" if sample_data else "with mock data"
+    html.append(f"<div class='subtitle'>Interactive chart preview {data_note}</div>")
+    html.append("<div class='chips'>")
+    html.append(f"<div class='chip'>Sheets: {len(sheets)}</div>")
+    html.append(f"<div class='chip'>Visuals: {total_visuals}</div>")
+    html.append("</div>")
+    html.append("</div>")
+
+    # Tabs
+    html.append("<div class='tabs'>")
+    for i, s in enumerate(sheets):
+        sname = s.get("Name", f"Sheet {i+1}")
+        html.append(f"<div class='tab'>{sname}</div>")
+    html.append("</div>")
+
+    # Sheets
+    for i, s in enumerate(sheets):
+        sname = s.get("Name", f"Sheet {i+1}")
+        visuals = s.get("Visuals", [])
+
+        html.append(f"<div class='sheet' id='sheet-{i}'>")
+        html.append(f"<div class='sheet-title'>{sname}</div>")
+        html.append("<div class='grid'>")
+
+        for v in visuals:
+            vtype, inner, wrapper_id = _safe_get_visual_type_and_inner(v)
+            visual_id = inner.get("VisualId", "") or wrapper_id or f"v{random.randint(1000,9999)}"
+            visual_id = visual_id.replace("-", "_")
+
+            title = _extract_title(vtype, inner) or vtype.replace("Visual", "")
+            categories = _extract_category_fields(inner)
+            measures, _ = _extract_measures_and_aggs(inner)
+
+            is_wide = vtype in ("TableVisual", "HeatMapVisual")
+            wide_class = " wide" if is_wide else ""
+
+            html.append(f"<div class='visual-card{wide_class}'>")
+
+            if vtype == "BarChartVisual":
+                orientation = inner.get("ChartConfiguration", {}).get("Orientation", "VERTICAL")
+                html.append(_render_bar_chart(visual_id, title, categories, measures, sample_data, orientation))
+            elif vtype == "LineChartVisual":
+                html.append(_render_line_chart(visual_id, title, categories, measures, sample_data))
+            elif vtype == "PieChartVisual":
+                html.append(_render_pie_chart(visual_id, title, categories, measures, sample_data))
+            elif vtype == "KPIVisual":
+                html.append(_render_kpi(visual_id, title, measures, sample_data))
+            elif vtype == "TableVisual":
+                html.append(_render_table(visual_id, title, categories, measures, sample_data))
+            elif vtype == "HeatMapVisual":
+                html.append(_render_heatmap(visual_id, title, inner, sample_data))
+            elif vtype == "TextBoxVisual":
+                content = inner.get("ChartConfiguration", {}).get("TextBoxChartConfiguration", {}).get("Content", "")
+                html.append(_render_textbox(visual_id, content))
+            else:
+                html.append(f"<div class='kpi-card'><div class='kpi-title'>{vtype}</div><div class='kpi-value'>N/A</div></div>")
+
+            html.append("</div>")
+
+        html.append("</div>")
+        html.append("</div>")
+
+    html.append("<div class='footer'>Generated by quicksight-codegen</div>")
+    html.append("</div>")
+    html.append(_get_chart_tab_script())
+    html.append("</body></html>")
+
+    out_file = Path(out_file)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    out_file.write_text("\n".join(html), encoding="utf-8")
+    return str(out_file)
