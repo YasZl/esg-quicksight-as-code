@@ -84,7 +84,14 @@ from .deploy import (
 
 from .preview import (
     generate_html_preview,
+    generate_chart_html_preview,
     save_analysis_json,
+)
+
+from .auto import (
+    auto_dashboard,
+    infer_column_types,
+    suggest_visuals,
 )
 
 __version__ = "0.1.0"
@@ -149,5 +156,10 @@ __all__ = [
     "simulate_deploy",
     # Preview
     "generate_html_preview",
+    "generate_chart_html_preview",
     "save_analysis_json",
+    # Auto
+    "auto_dashboard",
+    "infer_column_types",
+    "suggest_visuals",
 ]

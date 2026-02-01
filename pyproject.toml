@@ -28,9 +28,11 @@ dependencies = []
 
 [project.optional-dependencies]
 aws = ["boto3>=1.26.0"]
+auto = ["pandas>=1.5.0"]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
+    "pandas>=1.5.0",
 ]
 
 [project.urls]
