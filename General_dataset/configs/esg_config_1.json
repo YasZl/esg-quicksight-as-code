@@ -6,6 +6,8 @@
   "roles": {
     "metric_1": "COMPOSITE_INDEX",
     "category_1": "GICS_SECTOR",
+    "geo": "ISSUER_CNTRY_DOMICILE",
+    "geo_role_ok": true,
     "bucket_1": "BIO_SCORE_DECILE",
     "quality": "DATA_QUALITY_SCORE"
   }
