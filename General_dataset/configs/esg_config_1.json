@@ -2,11 +2,10 @@
   "name": "ESG Dataset – Config 1",
   "dataset_id": "dataset",
   "template": "esg",
-  "dataset_arn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/27b1283e-0142-41de-bba9-d70d2012375d",
+  "dataset_arn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31",
   "roles": {
     "metric_1": "COMPOSITE_INDEX",
     "category_1": "GICS_SECTOR",
-    "geo": "ISSUER_CNTRY_DOMICILE",
     "geo_role_ok": true,
     "bucket_1": "BIO_SCORE_DECILE",
     "quality": "DATA_QUALITY_SCORE"

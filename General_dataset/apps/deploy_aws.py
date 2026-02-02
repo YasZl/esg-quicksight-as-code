@@ -11,11 +11,12 @@ from General_dataset.esg_general.parameters_esg import build_all_esg_parameters_
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = ""
+AWS_ACCOUNT_ID = "..."
 REGION = "eu-central-1"
+DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
 #DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-DATASET_ARN = "" # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = ""
+QUICKSIGHT_USER_ARN = "..."
+
 
 
 def make_permissions(user_arn):
@@ -49,7 +50,7 @@ def run_one(tag, config_path):
 
     # lecture de la config
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-
+    dataset_arn = cfg.get("dataset_arn", DATASET_ARN)
     dataset_id = cfg["dataset_id"]
     roles = cfg["roles"]
     template = cfg.get("template", "esg")
@@ -68,7 +69,6 @@ def run_one(tag, config_path):
             build_overview_sheet(dataset_id, roles),
             build_risk_sheet(dataset_id, roles),
         ]
-
     # paramètres (controls volontairement désactivés)
     parameters, controls = build_all_esg_parameters_and_controls(dataset_id)
     controls = []
@@ -78,7 +78,7 @@ def run_one(tag, config_path):
         aws_account_id=AWS_ACCOUNT_ID,
         analysis_id=analysis_id,
         name=f"{cfg.get('name', tag)}",
-        dataset_arn=DATASET_ARN,
+        dataset_arn=dataset_arn,
         sheets=sheets,
         parameters=parameters,
         parameter_controls=[],

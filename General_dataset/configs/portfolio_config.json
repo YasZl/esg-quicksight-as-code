@@ -2,11 +2,11 @@
   "name": "Portfolio Dataset",
   "template": "portfolio",
   "dataset_id": "dataset",
-  "dataset_arn": "",
+  "dataset_arn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741",
   "roles": {
-    "security_name": "Security name",
+    "security_name": "Security name *",
     "security_type": "Security type",
-    "security_id": "Security ID",
+    "security_id": "Security ID *",
     "value": "Security market valuation in portfolio currency"
   }
 
