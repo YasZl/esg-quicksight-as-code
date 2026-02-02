@@ -36,6 +36,7 @@ def make_permissions(user_arn):
 def run_one(tag, config_path):
     from pathlib import Path
     import json
+    from datetime import datetime
 
     # dossier apps/
     here = Path(__file__).resolve().parent
@@ -46,15 +47,20 @@ def run_one(tag, config_path):
     # le fichier config est dans General_dataset/configs/
     cfg_path = root / config_path
 
+    # lecture de la config
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
 
     dataset_id = cfg["dataset_id"]
     roles = cfg["roles"]
     template = cfg.get("template", "esg")
-    
-    prefix = "portfolio" if template == "portfolio" else "esg"
-    analysis_id = f"{prefix}_{tag}-analysis-v20"     # 👉 à changer car sinon conflit à chaque déploiement
 
+    # prefix selon le template
+    prefix = "portfolio" if template == "portfolio" else "esg"
+
+    # analysis_id UNIQUE avec timestamp (pas de conflit)
+    analysis_id = f"{prefix}_{tag}-analysis-{datetime.now():%Y%m%d-%H%M%S}"
+
+    # construction des sheets
     if template == "portfolio":
         sheets = [build_portfolio_sheet(dataset_id, roles)]
     else:
@@ -63,12 +69,14 @@ def run_one(tag, config_path):
             build_risk_sheet(dataset_id, roles),
         ]
 
+    # paramètres (controls volontairement désactivés)
     parameters, controls = build_all_esg_parameters_and_controls(dataset_id)
-    controls = [] 
+    controls = []
 
+    # déploiement QuickSight
     response = deploy_analysis(
         aws_account_id=AWS_ACCOUNT_ID,
-        analysis_id=analysis_id, 
+        analysis_id=analysis_id,
         name=f"{cfg.get('name', tag)}",
         dataset_arn=DATASET_ARN,
         sheets=sheets,
@@ -81,7 +89,9 @@ def run_one(tag, config_path):
         region=REGION,
     )
 
-    print("✅ Analysis créée :", response)
+    print("✅ Analysis créée :", analysis_id)
+    return response
+
 
 
 if __name__ == "__main__":
