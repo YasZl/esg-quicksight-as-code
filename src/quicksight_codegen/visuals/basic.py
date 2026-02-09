@@ -13,14 +13,8 @@ class BarChartVisual(Visual):
 
     def __init__(self, visual_id: str):
         super().__init__(visual_id)
-        self.bars_arrangement = ""
-        self.orientation = ""
-        self.axis_line_visibility = ""
-        self.axis_offset = ""
-        self.grid_line_visibility = ""
-        self.scroll_bar_visibility = ""
-        self.visible_range_from = ""
-        self.visible_range_to = ""
+        self.bars_arrangement = "CLUSTERED"
+        self.orientation = "VERTICAL"
 
     def set_bars_arrangement(self, bars_arrangement: str):
         """Set bars arrangement (CLUSTERED, STACKED, STACKED_PERCENT)."""
@@ -30,47 +24,28 @@ class BarChartVisual(Visual):
         """Set orientation (HORIZONTAL, VERTICAL)."""
         self.orientation = orientation
 
-    def set_scroll_bar_visibility(self, scroll_bar_visibility: str):
-        """Set scroll bar visibility."""
-        self.scroll_bar_visibility = scroll_bar_visibility
-
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "BarChartVisual": {
                 "VisualId": self.id,
-                "Actions": self.actions,
                 "ChartConfiguration": {
                     "FieldWells": {
                         "BarChartAggregatedFieldWells": {
                             "Category": self.category,
                             "Values": self.values,
-                            "Colors": self.colors,
-                            "SmallMultiples": self.small_multiples,
                         }
                     },
                     "BarsArrangement": self.bars_arrangement,
                     "Orientation": self.orientation,
-                    "CategoryAxis": {
-                        "AxisLineVisibility": self.axis_line_visibility,
-                        "AxisOffset": self.axis_offset,
-                        "GridLineVisbility": self.grid_line_visibility,
-                        "ScrollbarOptions": {
-                            "Visibility": self.scroll_bar_visibility,
-                            "VisibleRange": {
-                                "PercentRange": {
-                                    "From": self.visible_range_from,
-                                    "To": self.visible_range_to,
-                                }
-                            },
-                        },
-                    },
                 },
-                "ColumnHierarchies": self.column_hierarchies,
-                "Title": self.title,
-                "Subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["BarChartVisual"]["Title"] = self.title
+        if self.colors:
+            result["BarChartVisual"]["ChartConfiguration"]["FieldWells"]["BarChartAggregatedFieldWells"]["Colors"] = self.colors
+        return result
 
 
 class LineChartVisual(Visual):
@@ -78,25 +53,15 @@ class LineChartVisual(Visual):
 
     def __init__(self, visual_id: str):
         super().__init__(visual_id)
-        self.type = ""
-        self.axis_line_visibility = ""
-        self.axis_offset = ""
-        self.grid_line_visibility = ""
-        self.scroll_bar_visibility = ""
-        self.visible_range_from = ""
-        self.visible_range_to = ""
+        self.type = "LINE"
 
     def set_type(self, line_type: str):
         """Set line type (LINE, STACKED_AREA, etc.)."""
         self.type = line_type
 
-    def set_scroll_bar_visibility(self, scroll_bar_visibility: str):
-        """Set scroll bar visibility."""
-        self.scroll_bar_visibility = scroll_bar_visibility
-
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "LineChartVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
@@ -104,30 +69,17 @@ class LineChartVisual(Visual):
                         "LineChartAggregatedFieldWells": {
                             "Category": self.category,
                             "Values": self.values,
-                            "Colors": self.colors,
-                            "SmallMultiples": self.small_multiples,
                         }
-                    },
-                    "XAxisDisplayOptions": {
-                        "AxisLineVisibility": self.axis_line_visibility,
-                        "AxisOffset": self.axis_offset,
-                        "GridLineVisbility": self.grid_line_visibility,
-                        "ScrollbarOptions": {
-                            "Visibility": self.scroll_bar_visibility,
-                            "VisibleRange": {
-                                "PercentRange": {
-                                    "From": self.visible_range_from,
-                                    "To": self.visible_range_to,
-                                }
-                            },
-                        },
                     },
                     "Type": self.type,
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["LineChartVisual"]["Title"] = self.title
+        if self.colors:
+            result["LineChartVisual"]["ChartConfiguration"]["FieldWells"]["LineChartAggregatedFieldWells"]["Colors"] = self.colors
+        return result
 
 
 class TableVisual(Visual):
@@ -280,39 +232,34 @@ class TableVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        field_wells = {}
+        if self.category or self.values:
+            field_wells["TableAggregatedFieldWells"] = {
+                "GroupBy": self.category,
+                "Values": self.values,
+            }
+        if self.unaggregated_values:
+            field_wells["TableUnaggregatedFieldWells"] = {
+                "Values": self.unaggregated_values
+            }
+
+        result = {
             "TableVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
-                    "FieldWells": {
-                        "TableAggregatedFieldWells": {
-                            "GroupBy": self.category,
-                            "Values": self.values,
-                        },
-                        "TableUnaggregatedFieldWells": {
-                            "Values": self.unaggregated_values
-                        },
-                    },
-                    "SortConfiguration": {"RowSort": self.field_sort},
-                    "TableInlineVisualizations": self.inline_visualizations,
-                    "TableOptions": {
-                        "CellStyle": {
-                            "BackgroundColor": self.cell_background_color,
-                            "Border": self.cell_border,
-                        },
-                        "HeaderStyle": {
-                            "BackgroundColor": self.header_background_color,
-                            "Border": self.header_border,
-                        },
-                    },
+                    "FieldWells": field_wells,
                 },
-                "ConditionalFormatting": {
-                    "ConditionalFormattingOptions": self.conditional_formatting_options
-                },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["TableVisual"]["Title"] = self.title
+        if self.field_sort:
+            result["TableVisual"]["ChartConfiguration"]["SortConfiguration"] = {"RowSort": self.field_sort}
+        if self.conditional_formatting_options:
+            result["TableVisual"]["ConditionalFormatting"] = {
+                "ConditionalFormattingOptions": self.conditional_formatting_options
+            }
+        return result
 
 
 class PivotTableVisual(Visual):
@@ -370,20 +317,23 @@ class KPIVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        field_wells = {"Values": self.values}
+        if self.target_values:
+            field_wells["TargetValues"] = self.target_values
+        if self.trend_groups:
+            field_wells["TrendGroups"] = self.trend_groups
+
+        result = {
             "KPIVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
-                    "FieldWells": {
-                        "TargetValues": self.target_values,
-                        "TrendGroups": self.trend_groups,
-                        "Values": self.values,
-                    }
+                    "FieldWells": field_wells
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["KPIVisual"]["Title"] = self.title
+        return result
 
 
 class PieChartVisual(Visual):
@@ -391,7 +341,7 @@ class PieChartVisual(Visual):
 
     def __init__(self, visual_id: str):
         super().__init__(visual_id)
-        self.donut_type = ""
+        self.donut_type = None
 
     def set_donut_type(self, donut_type: str):
         """
@@ -404,7 +354,7 @@ class PieChartVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "PieChartVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
@@ -412,15 +362,18 @@ class PieChartVisual(Visual):
                         "PieChartAggregatedFieldWells": {
                             "Category": self.category,
                             "Values": self.values,
-                            "SmallMultiples": self.small_multiples,
                         }
                     },
-                    "DonutOptions": {"ArcOptions": {"ArcThickness": self.donut_type}},
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["PieChartVisual"]["Title"] = self.title
+        if self.donut_type:
+            result["PieChartVisual"]["ChartConfiguration"]["DonutOptions"] = {
+                "ArcOptions": {"ArcThickness": self.donut_type}
+            }
+        return result
 
 
 class ScatterPlotVisual(Visual):
@@ -433,18 +386,20 @@ class ScatterPlotVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "ScatterPlotVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
                     "FieldWells": {
                         "ScatterPlotCategoricallyAggregatedFieldWells": {
-                            "Category": self.category
+                            "Category": self.category,
+                            "XAxis": self.x_axis,
+                            "YAxis": self.y_axis,
                         },
-                        "ScatterPlotUnaggregatedFieldWells": {"Category": self.category},
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["ScatterPlotVisual"]["Title"] = self.title
+        return result

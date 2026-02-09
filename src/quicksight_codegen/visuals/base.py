@@ -116,13 +116,7 @@ class Visual:
         self,
         column_name: str,
         data_set_identifier: str,
-        aggregation_function: str = None,
-        currency_decimal_places: str = "",
-        currency_number_scale: str = "",
-        currency_prefix: str = "",
-        currency_suffix: str = "",
-        currency_symbol: str = "",
-        percentage_suffix: str = "",
+        aggregation_function: str = "SUM",
     ):
         """Add a numerical measure field with aggregation."""
         self.values.append(
@@ -135,23 +129,6 @@ class Visual:
                     },
                     "AggregationFunction": {
                         "SimpleNumericalAggregation": aggregation_function
-                    },
-                    "FormatConfiguration": {
-                        "FormatConfiguration": {
-                            "CurrencyDisplayFormatConfiguration": {
-                                "DecimalPlacesConfiguration": {
-                                    "DecimalPlaces": currency_decimal_places
-                                },
-                                "NumberScale": currency_number_scale,
-                                "Prefix": currency_prefix,
-                                "Suffix": currency_suffix,
-                                "Symbol": currency_symbol,
-                            },
-                            "NumberDisplayFormatConfiguration": {},
-                            "PercentageDisplayFormatConfiguration": {
-                                "Suffix": percentage_suffix
-                            },
-                        }
                     },
                 }
             }

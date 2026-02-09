@@ -30,66 +30,11 @@ class TreeMapVisual(Visual):
             }
         )
 
-    def add_group_date_dimension_field(
-        self,
-        column_name: str,
-        data_set_identifier: str,
-        date_granularity: str = "",
-        date_time_format: str = "",
-        null_string: str = "",
-    ):
-        """Add a date dimension field to groups."""
-        self.groups.append(
-            {
-                "DateDimensionField": {
-                    "FieldId": column_name,
-                    "Column": {
-                        "ColumnName": column_name,
-                        "DataSetIdentifier": data_set_identifier,
-                    },
-                    "DateGranularity": date_granularity,
-                    "FormatConfiguration": {
-                        "DateTimeFormat": date_time_format,
-                        "NullValueFormatConfiguration": {"NullString": null_string},
-                        "NumericFormatConfiguration": {},
-                    },
-                }
-            }
-        )
-
-    def add_group_numerical_dimension_field(
-        self, column_name: str, data_set_identifier: str, hierarchy_id: str = ""
-    ):
-        """Add a numerical dimension field to groups."""
-        self.groups.append(
-            {
-                "NumericalDimensionField": {
-                    "FieldId": column_name,
-                    "Column": {
-                        "ColumnName": column_name,
-                        "DataSetIdentifier": data_set_identifier,
-                    },
-                    "NumberFormatConfiguration": {
-                        "CurrencyDisplayFormatConfiguration": {},
-                        "NumberDisplayFormatConfiguration": {},
-                        "PercentageDisplayFormatConfiguration": {},
-                    },
-                    "HierarchyId": hierarchy_id,
-                }
-            }
-        )
-
     def add_color_numerical_measure_field(
         self,
         column_name: str,
         data_set_identifier: str,
-        aggregation_function: str = None,
-        currency_decimal_places: str = "",
-        currency_number_scale: str = "",
-        currency_prefix: str = "",
-        currency_suffix: str = "",
-        currency_symbol: str = "",
-        percentage_suffix: str = "",
+        aggregation_function: str = "SUM",
     ):
         """Add a numerical measure field for coloring."""
         self.colors.append(
@@ -103,40 +48,6 @@ class TreeMapVisual(Visual):
                     "AggregationFunction": {
                         "SimpleNumericalAggregation": aggregation_function
                     },
-                    "FormatConfiguration": {
-                        "FormatConfiguration": {
-                            "CurrencyDisplayFormatConfiguration": {
-                                "DecimalPlacesConfiguration": {
-                                    "DecimalPlaces": currency_decimal_places
-                                },
-                                "NumberScale": currency_number_scale,
-                                "Prefix": currency_prefix,
-                                "Suffix": currency_suffix,
-                                "Symbol": currency_symbol,
-                            },
-                            "NumberDisplayFormatConfiguration": {},
-                            "PercentageDisplayFormatConfiguration": {
-                                "Suffix": percentage_suffix
-                            },
-                        }
-                    },
-                }
-            }
-        )
-
-    def add_color_categorical_measure_field(
-        self, column_name: str, data_set_identifier: str, aggregation_function=None
-    ):
-        """Add a categorical measure field for coloring."""
-        self.colors.append(
-            {
-                "CategoricalMeasureField": {
-                    "FieldId": column_name,
-                    "Column": {
-                        "ColumnName": column_name,
-                        "DataSetIdentifier": data_set_identifier,
-                    },
-                    "AggregationFunction": aggregation_function,
                 }
             }
         )
@@ -145,13 +56,7 @@ class TreeMapVisual(Visual):
         self,
         column_name: str,
         data_set_identifier: str,
-        aggregation_function: str = None,
-        currency_decimal_places: str = "",
-        currency_number_scale: str = "",
-        currency_prefix: str = "",
-        currency_suffix: str = "",
-        currency_symbol: str = "",
-        percentage_suffix: str = "",
+        aggregation_function: str = "SUM",
     ):
         """Add a numerical measure field for sizing."""
         self.sizes.append(
@@ -165,45 +70,33 @@ class TreeMapVisual(Visual):
                     "AggregationFunction": {
                         "SimpleNumericalAggregation": aggregation_function
                     },
-                    "FormatConfiguration": {
-                        "FormatConfiguration": {
-                            "CurrencyDisplayFormatConfiguration": {
-                                "DecimalPlacesConfiguration": {
-                                    "DecimalPlaces": currency_decimal_places
-                                },
-                                "NumberScale": currency_number_scale,
-                                "Prefix": currency_prefix,
-                                "Suffix": currency_suffix,
-                                "Symbol": currency_symbol,
-                            },
-                            "NumberDisplayFormatConfiguration": {},
-                            "PercentageDisplayFormatConfiguration": {
-                                "Suffix": percentage_suffix
-                            },
-                        }
-                    },
                 }
             }
         )
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        field_wells = {}
+        if self.groups:
+            field_wells["Groups"] = self.groups
+        if self.sizes:
+            field_wells["Sizes"] = self.sizes
+        if self.colors:
+            field_wells["Colors"] = self.colors
+
+        result = {
             "TreeMapVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
                     "FieldWells": {
-                        "TreeMapAggregatedFieldWells": {
-                            "Colors": self.colors,
-                            "Groups": self.groups,
-                            "Sizes": self.sizes,
-                        }
+                        "TreeMapAggregatedFieldWells": field_wells
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["TreeMapVisual"]["Title"] = self.title
+        return result
 
 
 class WaterfallVisual(Visual):
@@ -229,51 +122,26 @@ class WaterfallVisual(Visual):
             }
         )
 
-    def add_breakdown_date_dimension_field(
-        self,
-        column_name: str,
-        data_set_identifier: str,
-        date_granularity: str = "",
-        date_time_format: str = "",
-        null_string: str = "",
-    ):
-        """Add a date breakdown dimension."""
-        self.breakdowns.append(
-            {
-                "DateDimensionField": {
-                    "FieldId": column_name,
-                    "Column": {
-                        "ColumnName": column_name,
-                        "DataSetIdentifier": data_set_identifier,
-                    },
-                    "DateGranularity": date_granularity,
-                    "FormatConfiguration": {
-                        "DateTimeFormat": date_time_format,
-                        "NullValueFormatConfiguration": {"NullString": null_string},
-                        "NumericFormatConfiguration": {},
-                    },
-                }
-            }
-        )
-
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "WaterfallVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
                     "FieldWells": {
                         "WaterfallChartAggregatedFieldWells": {
-                            "Breakdowns": self.breakdowns,
                             "Categories": self.category,
                             "Values": self.values,
                         }
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.breakdowns:
+            result["WaterfallVisual"]["ChartConfiguration"]["FieldWells"]["WaterfallChartAggregatedFieldWells"]["Breakdowns"] = self.breakdowns
+        if self.title:
+            result["WaterfallVisual"]["Title"] = self.title
+        return result
 
 
 class FilledMapVisual(Visual):
@@ -301,7 +169,7 @@ class FilledMapVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "FilledMapVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
@@ -312,10 +180,11 @@ class FilledMapVisual(Visual):
                         }
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["FilledMapVisual"]["Title"] = self.title
+        return result
 
 
 class GeospatialMapVisual(Visual):
@@ -359,22 +228,26 @@ class GeospatialMapVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        field_wells = {
+            "Geospatial": self.geospatial,
+            "Values": self.values,
+        }
+        if self.colors:
+            field_wells["Colors"] = self.colors
+
+        result = {
             "GeospatialMapVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
                     "FieldWells": {
-                        "GeospatialMapAggregatedFieldWells": {
-                            "Colors": self.colors,
-                            "Geospatial": self.geospatial,
-                            "Values": self.values,
-                        }
+                        "GeospatialMapAggregatedFieldWells": field_wells
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["GeospatialMapVisual"]["Title"] = self.title
+        return result
 
 
 class FunnelChartVisual(Visual):
@@ -385,7 +258,7 @@ class FunnelChartVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "FunnelChartVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
@@ -396,10 +269,11 @@ class FunnelChartVisual(Visual):
                         }
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["FunnelChartVisual"]["Title"] = self.title
+        return result
 
 
 class HeatMapVisual(Visual):
@@ -426,28 +300,6 @@ class HeatMapVisual(Visual):
             }
         )
 
-    def add_column_numerical_dimension_field(
-        self, column_name: str, data_set_identifier: str, hierarchy_id: str = ""
-    ):
-        """Add a numerical dimension to columns."""
-        self.columns.append(
-            {
-                "NumericalDimensionField": {
-                    "FieldId": column_name,
-                    "Column": {
-                        "ColumnName": column_name,
-                        "DataSetIdentifier": data_set_identifier,
-                    },
-                    "NumberFormatConfiguration": {
-                        "CurrencyDisplayFormatConfiguration": {},
-                        "NumberDisplayFormatConfiguration": {},
-                        "PercentageDisplayFormatConfiguration": {},
-                    },
-                    "HierarchyId": hierarchy_id,
-                }
-            }
-        )
-
     def add_row_categorical_dimension_field(
         self, column_name: str, data_set_identifier: str
     ):
@@ -464,31 +316,9 @@ class HeatMapVisual(Visual):
             }
         )
 
-    def add_row_numerical_dimension_field(
-        self, column_name: str, data_set_identifier: str, hierarchy_id: str = ""
-    ):
-        """Add a numerical dimension to rows."""
-        self.rows.append(
-            {
-                "NumericalDimensionField": {
-                    "FieldId": column_name,
-                    "Column": {
-                        "ColumnName": column_name,
-                        "DataSetIdentifier": data_set_identifier,
-                    },
-                    "NumberFormatConfiguration": {
-                        "CurrencyDisplayFormatConfiguration": {},
-                        "NumberDisplayFormatConfiguration": {},
-                        "PercentageDisplayFormatConfiguration": {},
-                    },
-                    "HierarchyId": hierarchy_id,
-                }
-            }
-        )
-
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "HeatMapVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
@@ -500,10 +330,11 @@ class HeatMapVisual(Visual):
                         }
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["HeatMapVisual"]["Title"] = self.title
+        return result
 
 
 class BoxPlotVisual(Visual):
@@ -514,7 +345,7 @@ class BoxPlotVisual(Visual):
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        result = {
             "BoxPlotVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
@@ -525,10 +356,11 @@ class BoxPlotVisual(Visual):
                         }
                     }
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["BoxPlotVisual"]["Title"] = self.title
+        return result
 
 
 class GaugeChartVisual(Visual):
@@ -548,13 +380,7 @@ class GaugeChartVisual(Visual):
         self,
         column_name: str,
         data_set_identifier: str,
-        aggregation_function: str = None,
-        currency_decimal_places: str = "",
-        currency_number_scale: str = "",
-        currency_prefix: str = "",
-        currency_suffix: str = "",
-        currency_symbol: str = "",
-        percentage_suffix: str = "",
+        aggregation_function: str = "SUM",
     ):
         """Add a numerical measure field for the target value."""
         self.target_values.append(
@@ -568,39 +394,24 @@ class GaugeChartVisual(Visual):
                     "AggregationFunction": {
                         "SimpleNumericalAggregation": aggregation_function
                     },
-                    "FormatConfiguration": {
-                        "FormatConfiguration": {
-                            "CurrencyDisplayFormatConfiguration": {
-                                "DecimalPlacesConfiguration": {
-                                    "DecimalPlaces": currency_decimal_places
-                                },
-                                "NumberScale": currency_number_scale,
-                                "Prefix": currency_prefix,
-                                "Suffix": currency_suffix,
-                                "Symbol": currency_symbol,
-                            },
-                            "NumberDisplayFormatConfiguration": {},
-                            "PercentageDisplayFormatConfiguration": {
-                                "Suffix": percentage_suffix
-                            },
-                        }
-                    },
                 }
             }
         )
 
     def compile(self) -> dict:
         """Compile to dictionary."""
-        return {
+        field_wells = {"Values": self.values}
+        if self.target_values:
+            field_wells["TargetValues"] = self.target_values
+
+        result = {
             "GaugeChartVisual": {
                 "VisualId": self.id,
                 "ChartConfiguration": {
-                    "FieldWells": {
-                        "TargetValues": self.target_values,
-                        "Values": self.values,
-                    }
+                    "FieldWells": field_wells
                 },
-                "Title": self.title,
-                "subtitle": self.subtitle,
             }
         }
+        if self.title:
+            result["GaugeChartVisual"]["Title"] = self.title
+        return result

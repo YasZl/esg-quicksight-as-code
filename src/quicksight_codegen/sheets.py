@@ -25,8 +25,21 @@ def create_empty_sheet(sheet_id: str, name: str) -> Dict[str, Any]:
     return {
         "SheetId": sheet_id,
         "Name": name,
+        "ContentType": "INTERACTIVE",
         "Visuals": [],
-        "Layouts": [{"Configuration": {"GridLayout": {"Elements": []}}}],
+        "Layouts": [{
+            "Configuration": {
+                "GridLayout": {
+                    "Elements": [],
+                    "CanvasSizeOptions": {
+                        "ScreenCanvasSizeOptions": {
+                            "ResizeOption": "FIXED",
+                            "OptimizedViewPortWidth": "1600px"
+                        }
+                    }
+                }
+            }
+        }],
     }
 
 

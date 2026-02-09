@@ -8,6 +8,8 @@ This module provides the main classes for building QuickSight analyses:
 - CalculatedField: Computed fields based on expressions
 """
 
+import copy
+
 from .utils import clean_dict, compile_list
 
 
@@ -526,7 +528,7 @@ def sanitize_definition(definition: dict) -> dict:
             new = {}
             for k, v in obj.items():
                 if k == "subtitle":
-                    continue
+                    k = "Subtitle"
                 if k == "GridLineVisbility":
                     k = "GridLineVisibility"
 
@@ -573,10 +575,35 @@ def sanitize_definition(definition: dict) -> dict:
 
         return obj
 
+    # Save original Layouts before clean() (clean might remove them due to empty value filtering)
+    original_layouts = {}
+    for i, sheet in enumerate(definition.get("Sheets", [])):
+        if "Layouts" in sheet:
+            original_layouts[i] = copy.deepcopy(sheet["Layouts"])
+
     cleaned = clean(definition) or {}
 
-    # Layout cleanup: remove layout elements referencing removed visuals
-    for sheet in cleaned.get("Sheets", []):
-        sheet.pop("Layouts", None)
+    # Restore original Layouts and filter out elements referencing removed visuals
+    for i, sheet in enumerate(cleaned.get("Sheets", [])):
+        # Collect valid visual IDs from remaining visuals
+        valid_visual_ids = set()
+        for visual in sheet.get("Visuals", []):
+            for key, value in visual.items():
+                if isinstance(value, dict) and "VisualId" in value:
+                    valid_visual_ids.add(value["VisualId"])
+
+        # Restore original Layouts if they were saved
+        if i in original_layouts:
+            sheet["Layouts"] = original_layouts[i]
+
+        # Filter layout elements to only include valid visuals
+        for layout in sheet.get("Layouts", []):
+            config = layout.get("Configuration", {})
+            grid_layout = config.get("GridLayout", {})
+            if "Elements" in grid_layout:
+                grid_layout["Elements"] = [
+                    elem for elem in grid_layout["Elements"]
+                    if elem.get("ElementId") in valid_visual_ids
+                ]
 
     return cleaned

@@ -22,8 +22,12 @@ from .deploy import simulate_deploy
 from .preview import generate_chart_html_preview, save_analysis_json
 
 
-def _load_dataframe(data: Union[str, "pd.DataFrame"]) -> "pd.DataFrame":
-    """Load data from CSV path or return DataFrame directly."""
+def _load_dataframe(data: Union[str, "pd.DataFrame"], sheet_name: str = None) -> "pd.DataFrame":
+    """Load data from CSV path or return DataFrame directly.
+
+    For xlsx files with multiple sheets, automatically finds the sheet
+    with the most data rows and detects the header row.
+    """
     try:
         import pandas as pd
     except ImportError:
@@ -37,11 +41,65 @@ def _load_dataframe(data: Union[str, "pd.DataFrame"]) -> "pd.DataFrame":
         if path.suffix.lower() == ".csv":
             return pd.read_csv(path)
         elif path.suffix.lower() in (".xls", ".xlsx"):
-            return pd.read_excel(path)
+            return _load_excel_smart(path, sheet_name)
         else:
             raise ValueError(f"Unsupported file format: {path.suffix}")
     else:
         return data
+
+
+def _load_excel_smart(path: Path, sheet_name: str = None) -> "pd.DataFrame":
+    """Smart loader for Excel files with multiple sheets and header rows."""
+    import pandas as pd
+
+    xlsx = pd.ExcelFile(path)
+
+    # If sheet_name specified, use it
+    if sheet_name:
+        df_raw = pd.read_excel(path, sheet_name=sheet_name, header=None)
+        header_row = _detect_header_row(df_raw)
+        return pd.read_excel(path, sheet_name=sheet_name, header=header_row)
+
+    # Find the sheet with the most data rows
+    best_sheet = None
+    best_rows = 0
+
+    for name in xlsx.sheet_names:
+        df_raw = pd.read_excel(path, sheet_name=name, header=None)
+        if len(df_raw) > best_rows:
+            best_rows = len(df_raw)
+            best_sheet = name
+
+    if not best_sheet:
+        raise ValueError("No valid sheets found in Excel file")
+
+    # Read the best sheet and detect header row
+    df_raw = pd.read_excel(path, sheet_name=best_sheet, header=None)
+    header_row = _detect_header_row(df_raw)
+
+    print(f"[auto] Using sheet '{best_sheet}' with header at row {header_row}")
+
+    return pd.read_excel(path, sheet_name=best_sheet, header=header_row)
+
+
+def _detect_header_row(df: "pd.DataFrame") -> int:
+    """Detect the header row in a DataFrame by finding the first row with mostly string values."""
+    import pandas as pd
+
+    for i in range(min(10, len(df))):  # Check first 10 rows
+        row = df.iloc[i]
+        non_null = row.dropna()
+
+        # Skip if too few values
+        if len(non_null) < 3:
+            continue
+
+        # Check if most values are strings (likely header)
+        string_count = sum(1 for v in non_null if isinstance(v, str))
+        if string_count >= len(non_null) * 0.7:  # 70% strings = likely header
+            return i
+
+    return 0  # Default to first row
 
 
 def infer_column_types(df: "pd.DataFrame") -> dict:
@@ -91,9 +149,51 @@ def infer_column_types(df: "pd.DataFrame") -> dict:
     return result
 
 
+# Keywords for smart column selection
+METRIC_KEYWORDS = ['score', 'index', 'rating', 'value', 'amount', 'exposure',
+                   'total', 'sum', 'count', 'percent', 'pct', 'ratio', 'composite']
+EXCLUDE_KEYWORDS = ['_id', '_code', '_key', '_num', 'instrument_id', 'portfolio_id']
+DIMENSION_KEYWORDS = ['sector', 'category', 'type', 'region', 'country', 'cntry',
+                      'grade', 'level', 'status', 'name', 'policy']
+
+
+def _rank_measure_columns(columns: list[str]) -> list[str]:
+    """Rank numeric columns by semantic relevance for measures."""
+    def score(col: str) -> int:
+        col_lower = col.lower()
+        # Penalize ID/code columns
+        if any(kw in col_lower for kw in EXCLUDE_KEYWORDS):
+            return -100
+        # Boost meaningful metric columns
+        if any(kw in col_lower for kw in METRIC_KEYWORDS):
+            return 10
+        return 0
+
+    return sorted(columns, key=score, reverse=True)
+
+
+def _rank_dimension_columns(columns: list[str], df: "pd.DataFrame") -> list[str]:
+    """Rank categorical columns by semantic relevance for dimensions."""
+    def score(col: str) -> int:
+        col_lower = col.lower()
+        s = 0
+        # Boost meaningful dimension columns
+        if any(kw in col_lower for kw in DIMENSION_KEYWORDS):
+            s += 10
+        # Prefer medium cardinality (3-15 unique values) for grouping
+        nunique = df[col].nunique()
+        if 3 <= nunique <= 15:
+            s += 5
+        elif nunique <= 2:
+            s += 2  # Yes/No columns are OK for pie charts
+        return s
+
+    return sorted(columns, key=score, reverse=True)
+
+
 def suggest_visuals(df: "pd.DataFrame", column_types: dict) -> list[dict]:
     """
-    Suggest visualizations based on column types.
+    Suggest visualizations based on column types with smart column selection.
 
     Returns a list of visual configurations, each with:
         - type: visual type name
@@ -107,46 +207,68 @@ def suggest_visuals(df: "pd.DataFrame", column_types: dict) -> list[dict]:
     numeric = column_types["numeric"]
     datetime_cols = column_types["datetime"]
 
-    # 1. KPI for each numeric column (first 3 only)
-    for i, num_col in enumerate(numeric[:3]):
+    # Smart column ranking
+    ranked_measures = _rank_measure_columns(numeric)
+    ranked_dims = _rank_dimension_columns(categorical, df)
+
+    # Get best columns
+    best_measures = [m for m in ranked_measures if not any(kw in m.lower() for kw in EXCLUDE_KEYWORDS)][:5]
+    best_dims = ranked_dims[:5]
+
+    if not best_measures:
+        best_measures = numeric[:3]
+
+    # 1. KPI for top 3 meaningful measures
+    for num_col in best_measures[:3]:
+        # Determine aggregation based on column semantics
+        col_lower = num_col.lower()
+        if any(kw in col_lower for kw in ['score', 'index', 'rating', 'pct', 'percent', 'ratio']):
+            agg = "AVERAGE"
+            title = f"Avg {num_col}"
+        else:
+            agg = "SUM"
+            title = f"Total {num_col}"
+
         visuals.append({
             "type": "KPIVisual",
-            "title": f"Total {num_col}",
+            "title": title,
             "category": [],
             "measure": [num_col],
-            "aggregation": "SUM",
+            "aggregation": agg,
         })
 
-    # 2. Bar chart: categorical + numeric
-    if categorical and numeric:
-        cat = categorical[0]
-        num = numeric[0]
+    # 2. Bar chart: best dimension + best measure
+    if best_dims and best_measures:
+        cat = best_dims[0]
+        num = best_measures[0]
+        agg = "AVERAGE" if any(kw in num.lower() for kw in ['score', 'index', 'rating']) else "SUM"
         visuals.append({
             "type": "BarChartVisual",
             "title": f"{num} by {cat}",
             "category": [cat],
             "measure": [num],
-            "aggregation": "SUM",
+            "aggregation": agg,
         })
 
-    # 3. Pie chart: low-cardinality categorical + numeric
-    if categorical and numeric:
-        # Find lowest cardinality categorical column
-        low_card_cat = min(categorical, key=lambda c: df[c].nunique())
-        if df[low_card_cat].nunique() <= 8:
-            num = numeric[0]
+    # 3. Pie chart: low-cardinality dimension + measure
+    if best_dims and best_measures:
+        # Find best low-cardinality column for pie chart
+        pie_candidates = [c for c in best_dims if df[c].nunique() <= 8]
+        if pie_candidates:
+            cat = pie_candidates[0]
+            num = best_measures[0]
             visuals.append({
                 "type": "PieChartVisual",
-                "title": f"{num} Distribution by {low_card_cat}",
-                "category": [low_card_cat],
+                "title": f"{num} by {cat}",
+                "category": [cat],
                 "measure": [num],
                 "aggregation": "SUM",
             })
 
-    # 4. Line chart: datetime + numeric
-    if datetime_cols and numeric:
+    # 4. Line chart: datetime + measure
+    if datetime_cols and best_measures:
         dt = datetime_cols[0]
-        num = numeric[0]
+        num = best_measures[0]
         visuals.append({
             "type": "LineChartVisual",
             "title": f"{num} over Time",
@@ -155,10 +277,10 @@ def suggest_visuals(df: "pd.DataFrame", column_types: dict) -> list[dict]:
             "aggregation": "SUM",
         })
 
-    # 5. Heatmap: 2 categorical + numeric
-    if len(categorical) >= 2 and numeric:
-        cat1, cat2 = categorical[0], categorical[1]
-        num = numeric[0]
+    # 5. Heatmap: 2 dimensions + measure
+    if len(best_dims) >= 2 and best_measures:
+        cat1, cat2 = best_dims[0], best_dims[1]
+        num = best_measures[0]
         visuals.append({
             "type": "HeatMapVisual",
             "title": f"{num} by {cat1} & {cat2}",
@@ -168,25 +290,41 @@ def suggest_visuals(df: "pd.DataFrame", column_types: dict) -> list[dict]:
             "aggregation": "AVERAGE",
         })
 
-    # 6. Table: show all columns (subset)
-    all_cols = categorical[:2] + numeric[:3]
-    if all_cols:
+    # 6. Table: show key columns (dimensions only, measures separate)
+    table_dims = best_dims[:2]
+    table_measures = best_measures[:3]
+    if table_dims or table_measures:
         visuals.append({
             "type": "TableVisual",
             "title": "Data Details",
-            "columns": all_cols,
-            "measure": numeric[:2] if numeric else [],
+            "columns": table_dims,  # Only dimensions as grouped columns
+            "measure": table_measures,  # Measures as values
             "aggregation": "SUM",
         })
 
     return visuals
 
 
-def _create_visual(visual_config: dict, dataset_id: str) -> dict:
+def _sanitize_id(text: str) -> str:
+    r"""Sanitize text to be a valid QuickSight ID (only [\w\-]+ allowed)."""
+    import re
+    # Replace spaces and & with hyphens
+    text = text.lower().replace(" ", "-").replace("&", "and")
+    # Remove any character that's not alphanumeric, underscore, or hyphen
+    text = re.sub(r'[^\w\-]', '', text)
+    # Remove consecutive hyphens
+    text = re.sub(r'-+', '-', text)
+    # Trim to 30 characters
+    return text[:30].strip('-')
+
+
+def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict:
     """Create a visual object from configuration."""
     vtype = visual_config["type"]
     title = visual_config["title"]
-    visual_id = title.lower().replace(" ", "-").replace("&", "and")[:30]
+    # Add index to ensure unique IDs when titles are similar
+    base_id = _sanitize_id(title)
+    visual_id = f"{base_id}-{index}" if index > 0 else base_id
 
     if vtype == "KPIVisual":
         v = KPIVisual(f"kpi-{visual_id}")
@@ -253,25 +391,27 @@ def auto_dashboard(
     name: str = "Auto Dashboard",
     output_dir: str = ".",
     dataset_id: str = "dataset",
+    sheet_name: str = None,
 ) -> tuple[dict, str]:
     """
     Automatically generate a dashboard from a dataset.
 
     Args:
-        data: CSV file path or pandas DataFrame
+        data: CSV file path, Excel file path, or pandas DataFrame
         name: Dashboard name
         output_dir: Output directory for generated files
         dataset_id: Dataset identifier for QuickSight
+        sheet_name: For Excel files, specific sheet to use (auto-detected if None)
 
     Returns:
         Tuple of (analysis_dict, html_file_path)
 
     Example:
         >>> analysis, html = auto_dashboard("sales.csv", "Sales Dashboard")
-        >>> print(f"Generated: {html}")
+        >>> analysis, html = auto_dashboard("data.xlsx", "Portfolio", sheet_name="Inventory")
     """
     # Load data
-    df = _load_dataframe(data)
+    df = _load_dataframe(data, sheet_name=sheet_name)
 
     # Analyze columns
     column_types = infer_column_types(df)
@@ -290,7 +430,7 @@ def auto_dashboard(
     col = 0
 
     for i, config in enumerate(visual_configs):
-        visual = _create_visual(config, dataset_id)
+        visual = _create_visual(config, dataset_id, index=i)
         vtype = config["type"]
 
         # Determine size based on visual type
@@ -334,8 +474,13 @@ def auto_dashboard(
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Convert DataFrame to dict for sample data
-    sample_data = df.to_dict("list")
+    # Convert DataFrame to dict for sample data (convert datetime to string for JSON)
+    import pandas as pd
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if pd.api.types.is_datetime64_any_dtype(df_copy[col]):
+            df_copy[col] = df_copy[col].astype(str)
+    sample_data = df_copy.to_dict("list")
 
     # Generate HTML preview with actual data
     html_file = output_path / f"{name.lower().replace(' ', '_')}_dashboard.html"

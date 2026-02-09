@@ -647,8 +647,34 @@ def _render_bar_chart(visual_id: str, title: str, categories: list, measures: li
     measure_field = measures[0] if measures else "Value"
 
     if sample_data and cat_field in sample_data and measure_field in sample_data:
-        labels = sample_data[cat_field][:8]
-        values = sample_data[measure_field][:8]
+        # Aggregate data by category (average for scores/indices, sum otherwise)
+        cat_values = sample_data[cat_field]
+        measure_values = sample_data[measure_field]
+        aggregated = {}
+        counts = {}
+        for cat, val in zip(cat_values, measure_values):
+            cat_str = str(cat) if cat is not None else "Unknown"
+            if cat_str not in aggregated:
+                aggregated[cat_str] = 0
+                counts[cat_str] = 0
+            try:
+                aggregated[cat_str] += float(val) if val is not None else 0
+                counts[cat_str] += 1
+            except (ValueError, TypeError):
+                pass
+        # Use average if measure name suggests it's a score/index/rating
+        measure_lower = measure_field.lower()
+        use_avg = any(kw in measure_lower for kw in ['score', 'index', 'rating', 'pct', 'percent'])
+        # Sort by value and take top 8
+        if use_avg:
+            sorted_items = sorted(
+                [(k, aggregated[k] / counts[k] if counts[k] > 0 else 0) for k in aggregated],
+                key=lambda x: x[1], reverse=True
+            )[:8]
+        else:
+            sorted_items = sorted(aggregated.items(), key=lambda x: x[1], reverse=True)[:8]
+        labels = [item[0] for item in sorted_items]
+        values = [round(item[1], 1) for item in sorted_items]
     else:
         labels = _generate_mock_categories(cat_field)
         values = _generate_mock_values(measure_field, len(labels), visual_id)
@@ -748,8 +774,22 @@ def _render_pie_chart(visual_id: str, title: str, categories: list, measures: li
     measure_field = measures[0] if measures else "Value"
 
     if sample_data and cat_field in sample_data and measure_field in sample_data:
-        labels = sample_data[cat_field][:6]
-        values = sample_data[measure_field][:6]
+        # Aggregate data by category (sum values for each category)
+        cat_values = sample_data[cat_field]
+        measure_values = sample_data[measure_field]
+        aggregated = {}
+        for cat, val in zip(cat_values, measure_values):
+            cat_str = str(cat) if cat is not None else "Unknown"
+            if cat_str not in aggregated:
+                aggregated[cat_str] = 0
+            try:
+                aggregated[cat_str] += float(val) if val is not None else 0
+            except (ValueError, TypeError):
+                pass
+        # Sort by value descending and take top 6
+        sorted_items = sorted(aggregated.items(), key=lambda x: x[1], reverse=True)[:6]
+        labels = [item[0] for item in sorted_items]
+        values = [round(item[1], 1) for item in sorted_items]
     else:
         labels = _generate_mock_categories(cat_field, 5)
         values = _generate_mock_values(measure_field, len(labels), visual_id)
@@ -876,23 +916,70 @@ def _render_heatmap(visual_id: str, title: str, inner: dict, sample_data: dict |
     if values_list:
         value_field = values_list[0].get("NumericalMeasureField", {}).get("Column", {}).get("ColumnName")
 
-    row_labels = _generate_mock_categories(rows_field or "Row", 4)
-    col_labels = _generate_mock_categories(cols_field or "Column", 4)
+    # Try to use real data if available
+    use_real_data = (sample_data and rows_field and cols_field and value_field and
+                     rows_field in sample_data and cols_field in sample_data and value_field in sample_data)
 
-    random.seed(hashlib.md5(visual_id.encode()).hexdigest())
+    if use_real_data:
+        # Aggregate data: average value for each (row, col) combination
+        row_vals = sample_data[rows_field]
+        col_vals = sample_data[cols_field]
+        measure_vals = sample_data[value_field]
+
+        # Get unique values (top N)
+        row_labels = list(dict.fromkeys(str(v) for v in row_vals if v is not None))[:6]
+        col_labels = list(dict.fromkeys(str(v) for v in col_vals if v is not None))[:5]
+
+        # Aggregate: sum and count for averaging
+        aggregated = {}
+        for r, c, v in zip(row_vals, col_vals, measure_vals):
+            r_str, c_str = str(r), str(c)
+            if r_str in row_labels and c_str in col_labels:
+                key = (r_str, c_str)
+                if key not in aggregated:
+                    aggregated[key] = {"sum": 0, "count": 0}
+                try:
+                    aggregated[key]["sum"] += float(v) if v is not None else 0
+                    aggregated[key]["count"] += 1
+                except (ValueError, TypeError):
+                    pass
+
+        # Calculate averages
+        grid_data = {}
+        all_values = []
+        for (r, c), data in aggregated.items():
+            avg = data["sum"] / data["count"] if data["count"] > 0 else 0
+            grid_data[(r, c)] = round(avg, 1)
+            all_values.append(avg)
+
+        # Normalize for coloring
+        min_val = min(all_values) if all_values else 0
+        max_val = max(all_values) if all_values else 100
+        val_range = max_val - min_val if max_val != min_val else 1
+    else:
+        row_labels = _generate_mock_categories(rows_field or "Row", 4)
+        col_labels = _generate_mock_categories(cols_field or "Column", 4)
+        random.seed(hashlib.md5(visual_id.encode()).hexdigest())
+        grid_data = None
+        min_val, max_val, val_range = 20, 95, 75
 
     grid_html = []
     grid_html.append("<div class='heatmap-grid'>")
     grid_html.append("<div class='heatmap-row'><div class='heatmap-cell corner'></div>")
     for col in col_labels:
-        grid_html.append(f"<div class='heatmap-cell header'>{col}</div>")
+        grid_html.append(f"<div class='heatmap-cell header'>{col[:12]}</div>")
     grid_html.append("</div>")
 
     for row in row_labels:
-        grid_html.append(f"<div class='heatmap-row'><div class='heatmap-cell row-header'>{row}</div>")
-        for _ in col_labels:
-            val = random.randint(20, 95)
-            hue = 120 - (val - 20) * 1.6  # green to red
+        grid_html.append(f"<div class='heatmap-row'><div class='heatmap-cell row-header'>{row[:12]}</div>")
+        for col in col_labels:
+            if grid_data and (row, col) in grid_data:
+                val = grid_data[(row, col)]
+                normalized = (val - min_val) / val_range
+            else:
+                val = random.randint(20, 95)
+                normalized = (val - 20) / 75
+            hue = 120 - normalized * 120  # green (120) to red (0)
             color = f"hsl({hue}, 70%, 50%)"
             grid_html.append(f"<div class='heatmap-cell value' style='background:{color}'>{val}</div>")
         grid_html.append("</div>")

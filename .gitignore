@@ -218,3 +218,5 @@ output/
 *.xlsx
 *.pdf
 .DS_Store
+.claude/
+scripts/*.sh
