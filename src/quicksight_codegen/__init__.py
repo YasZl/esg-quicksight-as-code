@@ -94,6 +94,20 @@ from .auto import (
     suggest_visuals,
 )
 
+from .discovery import (
+    get_account_id,
+    list_datasets,
+    get_dataset_arn,
+    get_user_arn,
+    pick_dataset_interactive,
+)
+
+from .dataset import (
+    fix_dataset_types,
+    describe_dataset,
+    create_dataset_from_csv,
+)
+
 __version__ = "0.1.0"
 
 __all__ = [
@@ -162,4 +176,14 @@ __all__ = [
     "auto_dashboard",
     "infer_column_types",
     "suggest_visuals",
+    # Discovery
+    "get_account_id",
+    "list_datasets",
+    "get_dataset_arn",
+    "get_user_arn",
+    "pick_dataset_interactive",
+    # Dataset
+    "fix_dataset_types",
+    "describe_dataset",
+    "create_dataset_from_csv",
 ]
