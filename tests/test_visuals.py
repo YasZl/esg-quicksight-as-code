@@ -74,13 +74,22 @@ def test_pie_chart_visual():
 def test_visual_filter_action():
     """Test adding filter actions to visuals."""
     bar = BarChartVisual("bar-1")
+    bar.add_categorical_dimension_field("Category", "dataset")
+    bar.add_numerical_measure_field("Value", "dataset", "SUM")
     bar.add_filter_action(
         custom_action_id="action-1",
         action_name="Filter on click",
         trigger="DATA_POINT_CLICK",
         selected_field_options="ALL_FIELDS",
-        target_visual_options=["ALL_VISUALS"],
+        target_visual_options="ALL_VISUALS",
     )
 
     assert len(bar.actions) == 1
     assert bar.actions[0]["CustomActionId"] == "action-1"
+
+    # Verify actions appear in compiled output
+    result = bar.compile()
+    assert "Actions" in result["BarChartVisual"]
+    assert result["BarChartVisual"]["Actions"][0]["Trigger"] == "DATA_POINT_CLICK"
+    target = result["BarChartVisual"]["Actions"][0]["ActionOperations"][0]["FilterOperation"]
+    assert target["TargetVisualsConfiguration"]["SameSheetTargetVisualConfiguration"]["TargetVisualOptions"] == "ALL_VISUALS"

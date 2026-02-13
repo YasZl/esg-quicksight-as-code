@@ -45,7 +45,7 @@ class BarChartVisual(Visual):
             result["BarChartVisual"]["Title"] = self.title
         if self.colors:
             result["BarChartVisual"]["ChartConfiguration"]["FieldWells"]["BarChartAggregatedFieldWells"]["Colors"] = self.colors
-        return result
+        return self._apply_common(result, "BarChartVisual")
 
 
 class LineChartVisual(Visual):
@@ -79,7 +79,7 @@ class LineChartVisual(Visual):
             result["LineChartVisual"]["Title"] = self.title
         if self.colors:
             result["LineChartVisual"]["ChartConfiguration"]["FieldWells"]["LineChartAggregatedFieldWells"]["Colors"] = self.colors
-        return result
+        return self._apply_common(result, "LineChartVisual")
 
 
 class TableVisual(Visual):
@@ -259,7 +259,7 @@ class TableVisual(Visual):
             result["TableVisual"]["ConditionalFormatting"] = {
                 "ConditionalFormattingOptions": self.conditional_formatting_options
             }
-        return result
+        return self._apply_common(result, "TableVisual")
 
 
 class PivotTableVisual(Visual):
@@ -333,7 +333,7 @@ class KPIVisual(Visual):
         }
         if self.title:
             result["KPIVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "KPIVisual")
 
 
 class PieChartVisual(Visual):
@@ -373,7 +373,7 @@ class PieChartVisual(Visual):
             result["PieChartVisual"]["ChartConfiguration"]["DonutOptions"] = {
                 "ArcOptions": {"ArcThickness": self.donut_type}
             }
-        return result
+        return self._apply_common(result, "PieChartVisual")
 
 
 class ScatterPlotVisual(Visual):
@@ -402,4 +402,4 @@ class ScatterPlotVisual(Visual):
         }
         if self.title:
             result["ScatterPlotVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "ScatterPlotVisual")

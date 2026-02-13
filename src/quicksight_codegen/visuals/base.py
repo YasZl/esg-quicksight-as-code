@@ -204,24 +204,37 @@ class Visual:
         status: str = "ENABLED",
         selected_field_options: str = "",
         selected_fields: list = None,
-        target_visual_options: list = None,
+        target_visual_options: str = None,
         target_visuals: list = None,
     ):
-        """Add a filter action to the visual."""
+        """Add a filter action to the visual.
+
+        Args:
+            target_visual_options: "ALL_VISUALS" to target every visual on the sheet.
+                                  Mutually exclusive with target_visuals.
+            target_visuals: List of specific visual IDs to target.
+                           Mutually exclusive with target_visual_options.
+        """
+        selected_config = {}
+        if selected_field_options:
+            selected_config["SelectedFieldOptions"] = selected_field_options
+        if selected_fields:
+            selected_config["SelectedFields"] = selected_fields
+
+        target_config = {}
+        if target_visual_options:
+            target_config["TargetVisualOptions"] = target_visual_options
+        if target_visuals:
+            target_config["TargetVisuals"] = target_visuals
+
         self.actions.append(
             {
                 "ActionOperations": [
                     {
                         "FilterOperation": {
-                            "SelectedFieldsConfiguration": {
-                                "SelectedFieldOptions": selected_field_options,
-                                "SelectedFields": selected_fields or [],
-                            },
+                            "SelectedFieldsConfiguration": selected_config,
                             "TargetVisualsConfiguration": {
-                                "SameSheetTargetVisualConfiguration": {
-                                    "TargetVisualOptions": target_visual_options or [],
-                                    "TargetVisuals": target_visuals or [],
-                                }
+                                "SameSheetTargetVisualConfiguration": target_config,
                             },
                         }
                     }
@@ -232,6 +245,14 @@ class Visual:
                 "Status": status,
             }
         )
+
+    def _apply_common(self, result: dict, visual_key: str) -> dict:
+        """Inject actions and column_hierarchies into compiled result."""
+        if self.actions:
+            result[visual_key]["Actions"] = self.actions
+        if self.column_hierarchies:
+            result[visual_key]["ColumnHierarchies"] = self.column_hierarchies
+        return result
 
 
 class TextBox:

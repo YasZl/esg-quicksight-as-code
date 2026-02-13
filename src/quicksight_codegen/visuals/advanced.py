@@ -96,7 +96,7 @@ class TreeMapVisual(Visual):
         }
         if self.title:
             result["TreeMapVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "TreeMapVisual")
 
 
 class WaterfallVisual(Visual):
@@ -141,7 +141,7 @@ class WaterfallVisual(Visual):
             result["WaterfallVisual"]["ChartConfiguration"]["FieldWells"]["WaterfallChartAggregatedFieldWells"]["Breakdowns"] = self.breakdowns
         if self.title:
             result["WaterfallVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "WaterfallVisual")
 
 
 class FilledMapVisual(Visual):
@@ -184,7 +184,7 @@ class FilledMapVisual(Visual):
         }
         if self.title:
             result["FilledMapVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "FilledMapVisual")
 
 
 class GeospatialMapVisual(Visual):
@@ -247,7 +247,7 @@ class GeospatialMapVisual(Visual):
         }
         if self.title:
             result["GeospatialMapVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "GeospatialMapVisual")
 
 
 class FunnelChartVisual(Visual):
@@ -273,7 +273,7 @@ class FunnelChartVisual(Visual):
         }
         if self.title:
             result["FunnelChartVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "FunnelChartVisual")
 
 
 class HeatMapVisual(Visual):
@@ -334,7 +334,7 @@ class HeatMapVisual(Visual):
         }
         if self.title:
             result["HeatMapVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "HeatMapVisual")
 
 
 class BoxPlotVisual(Visual):
@@ -360,7 +360,7 @@ class BoxPlotVisual(Visual):
         }
         if self.title:
             result["BoxPlotVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "BoxPlotVisual")
 
 
 class GaugeChartVisual(Visual):
@@ -414,4 +414,4 @@ class GaugeChartVisual(Visual):
         }
         if self.title:
             result["GaugeChartVisual"]["Title"] = self.title
-        return result
+        return self._apply_common(result, "GaugeChartVisual")

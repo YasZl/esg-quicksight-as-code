@@ -385,6 +385,17 @@ def _sanitize_id(text: str) -> str:
     return text[:30].strip('-')
 
 
+def _add_click_filter(v, visual_id: str, category_col: str):
+    """Attach a DATA_POINT_CLICK filter action to a visual with a category dimension."""
+    v.add_filter_action(
+        custom_action_id=f"action-{visual_id}",
+        action_name=f"Filter by {category_col}",
+        trigger="DATA_POINT_CLICK",
+        selected_field_options="ALL_FIELDS",
+        target_visual_options="ALL_VISUALS",
+    )
+
+
 def _create_visual(visual_config: dict, dataset_id: str, index: int = 0, field_map: dict = None) -> dict:
     """Create a visual object from configuration.
 
@@ -415,6 +426,8 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0, field_m
         for m in visual_config["measure"]:
             v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
+        if visual_config["category"]:
+            _add_click_filter(v, visual_id, visual_config["category"][0])
         return v.compile()
 
     elif vtype == "LineChartVisual":
@@ -433,6 +446,8 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0, field_m
         for m in visual_config["measure"]:
             v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
+        if visual_config["category"]:
+            _add_click_filter(v, visual_id, visual_config["category"][0])
         return v.compile()
 
     elif vtype == "HeatMapVisual":
@@ -444,6 +459,9 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0, field_m
         for m in visual_config["measure"]:
             v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
+        rows = visual_config.get("rows", [])
+        if rows:
+            _add_click_filter(v, visual_id, rows[0])
         return v.compile()
 
     elif vtype == "TableVisual":
