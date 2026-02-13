@@ -465,6 +465,7 @@ def auto_dashboard(
     output_dir: str = ".",
     dataset_id: str = "dataset",
     sheet_name: str = None,
+    theme: str = None,
 ) -> tuple[dict, str]:
     """
     Automatically generate a dashboard from a dataset.
@@ -475,14 +476,23 @@ def auto_dashboard(
         output_dir: Output directory for generated files
         dataset_id: Dataset identifier for QuickSight
         sheet_name: For Excel files, specific sheet to use (auto-detected if None)
+        theme: Optional theme preset name (e.g. "manaos", "ocean")
 
     Returns:
         Tuple of (analysis_dict, html_file_path)
 
     Example:
         >>> analysis, html = auto_dashboard("sales.csv", "Sales Dashboard")
-        >>> analysis, html = auto_dashboard("data.xlsx", "Portfolio", sheet_name="Inventory")
+        >>> analysis, html = auto_dashboard("data.xlsx", "Portfolio", theme="manaos")
     """
+    # Validate theme preset if specified
+    if theme:
+        from .themes import THEME_PRESETS, list_presets
+        if theme not in THEME_PRESETS:
+            raise ValueError(
+                f"Unknown theme '{theme}'. Available: {', '.join(list_presets())}"
+            )
+
     # Load data
     df = _load_dataframe(data, sheet_name=sheet_name)
 
@@ -559,6 +569,10 @@ def auto_dashboard(
         filter_groups=compiled_filter_groups,
         calculated_fields=compiled_calc_fields,
     )
+
+    # Store theme preset name for the CLI to use during deployment
+    if theme:
+        analysis["_theme_preset"] = theme
 
     # Prepare output directory
     output_path = Path(output_dir)

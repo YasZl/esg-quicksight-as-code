@@ -86,6 +86,7 @@ def cmd_deploy(args):
 
     # Generate dashboard
     analysis_id = args.id or args.name.lower().replace(" ", "-")
+    theme_name = getattr(args, "theme", None)
     print(f"\n[generate] Creating dashboard from {args.csv}...")
 
     analysis, html_path = auto_dashboard(
@@ -94,6 +95,7 @@ def cmd_deploy(args):
         output_dir=args.output or ".",
         dataset_id="dataset",
         sheet_name=args.sheet,
+        theme=theme_name,
     )
 
     print(f"[generate] Preview saved to: {html_path}")
@@ -120,6 +122,22 @@ def cmd_deploy(args):
         ],
     }]
 
+    # Create/update theme if requested
+    theme_arn = None
+    theme_preset = analysis.get("_theme_preset") or theme_name
+    if theme_preset:
+        from .themes import get_or_create_theme
+        theme_id = f"codegen-{theme_preset}"
+        print(f"\n[theme] Applying theme preset '{theme_preset}'...")
+        theme_arn = get_or_create_theme(
+            account_id=account_id,
+            theme_id=theme_id,
+            preset_name=theme_preset,
+            region=region,
+            user_arn=user_arn,
+        )
+        print(f"[theme] Theme ARN: {theme_arn}")
+
     print(f"\n[deploy] Deploying '{args.name}' to QuickSight...")
     response = deploy_analysis(
         aws_account_id=account_id,
@@ -132,6 +150,7 @@ def cmd_deploy(args):
         permissions=permissions,
         update=args.update,
         region=region,
+        theme_arn=theme_arn,
     )
 
     status = response.get("Status", response.get("ResponseMetadata", {}).get("HTTPStatusCode", "?"))
@@ -210,6 +229,7 @@ def main(argv=None):
     p_deploy.add_argument("--update", action="store_true", help="Update existing analysis")
     p_deploy.add_argument("--dry-run", action="store_true", help="Generate only, don't deploy")
     p_deploy.add_argument("--fix-types", action="store_true", help="Fix dataset column types before deploying")
+    p_deploy.add_argument("--theme", help="Theme preset name (manaos, ocean, forest, corporate, sunset)")
     p_deploy.add_argument("--s3-bucket", help="S3 bucket for full-auto upload (requires S3 permissions)")
     p_deploy.set_defaults(func=cmd_deploy)
 

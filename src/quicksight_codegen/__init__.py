@@ -95,6 +95,13 @@ from .auto import (
     suggest_visuals,
 )
 
+from .themes import (
+    THEME_PRESETS,
+    create_theme,
+    get_or_create_theme,
+    list_presets,
+)
+
 from .discovery import (
     get_account_id,
     list_datasets,
@@ -178,6 +185,11 @@ __all__ = [
     "auto_dashboard",
     "infer_column_types",
     "suggest_visuals",
+    # Themes
+    "THEME_PRESETS",
+    "create_theme",
+    "get_or_create_theme",
+    "list_presets",
     # Discovery
     "get_account_id",
     "list_datasets",
