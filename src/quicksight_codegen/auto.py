@@ -19,7 +19,7 @@ from .visuals import (
 )
 from .analysis import CalculatedField
 from .filters import FilterGroup, CategoryFilter, FilterDropdownControl
-from .sheets import create_empty_sheet, add_visual_to_sheet
+from .sheets import create_empty_sheet, add_visual_to_sheet, add_title
 from .deploy import simulate_deploy
 from .preview import generate_chart_html_preview, save_analysis_json
 
@@ -511,41 +511,79 @@ def auto_dashboard(
     # Create sheet with visuals
     sheet = create_empty_sheet("auto-sheet", name)
 
-    # Layout configuration - start at row 0 (no title visual, sheet name serves as title)
-    row = 0
-    col = 0
+    # Group visuals by section for structured layout
+    sections = {
+        "Key Metrics": [],       # KPI cards
+        "Distribution": [],      # BarChart, PieChart
+        "Trends": [],            # LineChart
+        "Correlation": [],       # HeatMap
+        "Data Details": [],      # Table
+    }
 
     for i, config in enumerate(visual_configs):
-        visual = _create_visual(config, dataset_id, index=i, field_map=field_map)
         vtype = config["type"]
-
-        # Determine size based on visual type
+        entry = (i, config)
         if vtype == "KPIVisual":
-            row_span, col_span = 6, 6
-        elif vtype == "TableVisual":
-            row_span, col_span = 10, 24
-            col = 0  # Tables start at column 0
+            sections["Key Metrics"].append(entry)
+        elif vtype in ("BarChartVisual", "PieChartVisual"):
+            sections["Distribution"].append(entry)
+        elif vtype == "LineChartVisual":
+            sections["Trends"].append(entry)
         elif vtype == "HeatMapVisual":
-            row_span, col_span = 10, 16
+            sections["Correlation"].append(entry)
+        elif vtype == "TableVisual":
+            sections["Data Details"].append(entry)
         else:
-            row_span, col_span = 10, 12
+            sections["Distribution"].append(entry)
 
-        # Check if we need to move to next row
-        if col + col_span > 24:
-            row += 10
-            col = 0
+    row = 0
 
-        sheet = add_visual_to_sheet(sheet, visual, row=row, col=col, row_span=row_span, col_span=col_span)
+    for section_name, entries in sections.items():
+        if not entries:
+            continue
 
-        # Move to next position
-        if vtype == "TableVisual" or vtype == "HeatMapVisual":
-            row += row_span
-            col = 0
-        else:
-            col += col_span
-            if col >= 24:
+        # Add section header
+        sheet = add_title(sheet, f"<b>{section_name}</b>", row=row, col=0, row_span=2, col_span=24)
+        row += 2
+
+        col = 0
+        for i, config in entries:
+            visual = _create_visual(config, dataset_id, index=i, field_map=field_map)
+            vtype = config["type"]
+
+            # Size by visual type
+            if vtype == "KPIVisual":
+                row_span, col_span = 6, 8
+            elif vtype == "TableVisual":
+                row_span, col_span = 10, 24
+            elif vtype == "HeatMapVisual":
+                row_span, col_span = 12, 24
+            elif vtype in ("BarChartVisual", "LineChartVisual"):
+                row_span, col_span = 10, 12
+            else:
+                row_span, col_span = 10, 12
+
+            # Wrap to next row if needed
+            if col + col_span > 24:
                 row += row_span
                 col = 0
+
+            sheet = add_visual_to_sheet(sheet, visual, row=row, col=col, row_span=row_span, col_span=col_span)
+
+            # Advance position
+            if col_span >= 24:
+                row += row_span
+                col = 0
+            else:
+                col += col_span
+                if col >= 24:
+                    row += row_span
+                    col = 0
+
+        # After each section, move to next row
+        if col > 0:
+            row += row_span
+            col = 0
 
     # Generate filters for categorical columns
     sheet_id = sheet["SheetId"]
