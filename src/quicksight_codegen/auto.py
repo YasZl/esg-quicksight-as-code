@@ -208,7 +208,7 @@ def _generate_calc_fields(column_types: dict, dataset_id: str) -> tuple[list, di
         calc_name = f"{col}_decimal"
         calc_fields.append(CalculatedField(
             data_set_identifier=dataset_id,
-            expression=f"parseDecimal({{{col}}})",
+            expression=f"parseDecimal(toString({{{col}}}))",
             name=calc_name,
         ))
         field_map[col] = calc_name
