@@ -105,6 +105,8 @@ def cmd_deploy(args):
 
     # Deploy
     sheets = analysis["Definition"]["Sheets"]
+    filter_groups = analysis["Definition"].get("FilterGroups") or None
+    calculated_fields = analysis["Definition"].get("CalculatedFields") or None
     permissions = [{
         "Principal": user_arn,
         "Actions": [
@@ -125,6 +127,8 @@ def cmd_deploy(args):
         name=args.name,
         dataset_arn=dataset_arn,
         sheets=sheets,
+        filter_groups=filter_groups,
+        calculated_fields=calculated_fields,
         permissions=permissions,
         update=args.update,
         region=region,

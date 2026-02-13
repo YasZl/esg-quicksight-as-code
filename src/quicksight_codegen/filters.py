@@ -338,3 +338,37 @@ class FilterDateTimePickerControl(FilterControl):
                 "Type": self.type,
             }
         }
+
+
+class FilterDropdownControl(FilterControl):
+    """Dropdown control for categorical filter values."""
+
+    def __init__(self, filter_control_id: str, source_filter_id: str, title: str):
+        super().__init__(filter_control_id, source_filter_id, title)
+        self.type = "MULTI_SELECT"
+        self.selectable_values = None
+
+    def set_type(self, control_type: str):
+        """Set dropdown type (MULTI_SELECT or SINGLE_SELECT)."""
+        self.type = control_type
+
+    def compile(self) -> dict:
+        """Compile to dictionary."""
+        dropdown = {
+            "FilterControlId": self.id,
+            "SourceFilterId": self.source_filter_id,
+            "Title": self.title,
+            "Type": self.type,
+            "DisplayOptions": {
+                "SelectAllOptions": {"Visibility": "VISIBLE"},
+                "TitleOptions": {
+                    "Visibility": "VISIBLE",
+                    "FontConfiguration": {
+                        "FontSize": {"Relative": "MEDIUM"},
+                    },
+                },
+            },
+        }
+        if self.selectable_values:
+            dropdown["SelectableValues"] = self.selectable_values
+        return {"Dropdown": dropdown}

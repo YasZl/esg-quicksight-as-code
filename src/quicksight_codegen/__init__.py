@@ -47,6 +47,7 @@ from .filters import (
     TimeRangeFilter,
     FilterControl,
     FilterDateTimePickerControl,
+    FilterDropdownControl,
 )
 
 from .visuals import (
@@ -141,6 +142,7 @@ __all__ = [
     "TimeRangeFilter",
     "FilterControl",
     "FilterDateTimePickerControl",
+    "FilterDropdownControl",
     # Visuals
     "Visual",
     "BarChartVisual",

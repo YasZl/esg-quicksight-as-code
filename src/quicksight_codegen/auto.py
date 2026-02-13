@@ -17,6 +17,8 @@ from .visuals import (
     TableVisual,
     HeatMapVisual,
 )
+from .analysis import CalculatedField
+from .filters import FilterGroup, CategoryFilter, FilterDropdownControl
 from .sheets import create_empty_sheet, add_visual_to_sheet
 from .deploy import simulate_deploy
 from .preview import generate_chart_html_preview, save_analysis_json
@@ -191,6 +193,71 @@ def _rank_dimension_columns(columns: list[str], df: "pd.DataFrame") -> list[str]
     return sorted(columns, key=score, reverse=True)
 
 
+def _generate_calc_fields(column_types: dict, dataset_id: str) -> tuple[list, dict]:
+    """Generate CalculatedFields to cast STRING numeric columns to DECIMAL.
+
+    Returns:
+        Tuple of (calc_fields, field_map).
+        - calc_fields: list of CalculatedField objects
+        - field_map: dict mapping original column name to calculated field name
+    """
+    calc_fields = []
+    field_map = {}
+
+    for col in column_types["numeric"]:
+        calc_name = f"{col}_decimal"
+        calc_fields.append(CalculatedField(
+            data_set_identifier=dataset_id,
+            expression=f"parseDecimal({{{col}}})",
+            name=calc_name,
+        ))
+        field_map[col] = calc_name
+
+    return calc_fields, field_map
+
+
+def _generate_auto_filters(
+    column_types: dict, dataset_id: str, sheet_id: str
+) -> tuple[list, list]:
+    """Generate FilterGroups and FilterControls for categorical columns.
+
+    Creates dropdown filters for up to 4 categorical columns, allowing
+    users to interactively filter all visuals on the sheet.
+
+    Returns:
+        Tuple of (filter_groups, filter_controls) — both as compiled dicts.
+    """
+    categorical = column_types["categorical"]
+    if not categorical:
+        return [], []
+
+    filters = []
+    controls = []
+
+    for col in categorical[:4]:
+        slug = col.lower().replace(" ", "-").replace("_", "-")
+        filter_id = f"auto-filter-{slug}"
+        control_id = f"auto-control-{slug}"
+
+        cat_filter = CategoryFilter(filter_id, col, dataset_id)
+        cat_filter.add_filter_list_configuration(
+            match_operator="CONTAINS",
+            select_all_options="FILTER_ALL_VALUES",
+        )
+        filters.append(cat_filter)
+
+        control = FilterDropdownControl(control_id, filter_id, col)
+        controls.append(control)
+
+    fg = FilterGroup("ALL_DATASETS", "auto-filter-group")
+    for f in filters:
+        fg.add_filter(f)
+    fg.add_scope_configuration("ALL_VISUALS", sheet_id)
+    fg.set_status("ENABLED")
+
+    return [fg], controls
+
+
 def suggest_visuals(df: "pd.DataFrame", column_types: dict) -> list[dict]:
     """
     Suggest visualizations based on column types with smart column selection.
@@ -318,8 +385,14 @@ def _sanitize_id(text: str) -> str:
     return text[:30].strip('-')
 
 
-def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict:
-    """Create a visual object from configuration."""
+def _create_visual(visual_config: dict, dataset_id: str, index: int = 0, field_map: dict = None) -> dict:
+    """Create a visual object from configuration.
+
+    Args:
+        field_map: Optional mapping from original column names to CalculatedField names.
+                   Used to reference parseDecimal() fields instead of raw STRING columns.
+    """
+    fm = field_map or {}
     vtype = visual_config["type"]
     title = visual_config["title"]
     # Add index to ensure unique IDs when titles are similar
@@ -329,7 +402,7 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict
     if vtype == "KPIVisual":
         v = KPIVisual(f"kpi-{visual_id}")
         for m in visual_config["measure"]:
-            v.add_numerical_measure_field(m, dataset_id, visual_config["aggregation"])
+            v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
         return v.compile()
 
@@ -340,7 +413,7 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict
         for c in visual_config["category"]:
             v.add_categorical_dimension_field(c, dataset_id)
         for m in visual_config["measure"]:
-            v.add_numerical_measure_field(m, dataset_id, visual_config["aggregation"])
+            v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
         return v.compile()
 
@@ -349,7 +422,7 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict
         for c in visual_config["category"]:
             v.add_categorical_dimension_field(c, dataset_id)
         for m in visual_config["measure"]:
-            v.add_numerical_measure_field(m, dataset_id, visual_config["aggregation"])
+            v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
         return v.compile()
 
@@ -358,7 +431,7 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict
         for c in visual_config["category"]:
             v.add_categorical_dimension_field(c, dataset_id)
         for m in visual_config["measure"]:
-            v.add_numerical_measure_field(m, dataset_id, visual_config["aggregation"])
+            v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
         return v.compile()
 
@@ -369,7 +442,7 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict
         for c in visual_config.get("columns", []):
             v.add_column_categorical_dimension_field(c, dataset_id)
         for m in visual_config["measure"]:
-            v.add_numerical_measure_field(m, dataset_id, visual_config["aggregation"])
+            v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
         return v.compile()
 
@@ -378,7 +451,7 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0) -> dict
         for c in visual_config.get("columns", []):
             v.add_categorical_dimension_field(c, dataset_id)
         for m in visual_config.get("measure", []):
-            v.add_numerical_measure_field(m, dataset_id, visual_config["aggregation"])
+            v.add_numerical_measure_field(fm.get(m, m), dataset_id, visual_config["aggregation"])
         v.add_title("VISIBLE", "PlainText", title)
         return v.compile()
 
@@ -416,6 +489,9 @@ def auto_dashboard(
     # Analyze columns
     column_types = infer_column_types(df)
 
+    # Generate CalculatedFields for numeric columns (parseDecimal)
+    calc_fields, field_map = _generate_calc_fields(column_types, dataset_id)
+
     # Suggest visuals
     visual_configs = suggest_visuals(df, column_types)
 
@@ -430,7 +506,7 @@ def auto_dashboard(
     col = 0
 
     for i, config in enumerate(visual_configs):
-        visual = _create_visual(config, dataset_id, index=i)
+        visual = _create_visual(config, dataset_id, index=i, field_map=field_map)
         vtype = config["type"]
 
         # Determine size based on visual type
@@ -461,13 +537,27 @@ def auto_dashboard(
                 row += row_span
                 col = 0
 
+    # Generate filters for categorical columns
+    sheet_id = sheet["SheetId"]
+    filter_groups, filter_controls = _generate_auto_filters(
+        column_types, dataset_id, sheet_id
+    )
+
+    # Add filter controls to the sheet
+    if filter_controls:
+        sheet["FilterControls"] = [ctrl.compile() for ctrl in filter_controls]
+
     # Create analysis
+    compiled_filter_groups = [fg.compile() for fg in filter_groups] if filter_groups else None
+    compiled_calc_fields = [cf.compile() for cf in calc_fields] if calc_fields else None
     analysis = simulate_deploy(
         aws_account_id="AUTO",
         analysis_id=name.lower().replace(" ", "-"),
         name=name,
         dataset_arn=f"arn:aws:quicksight:us-east-1:AUTO:dataset/{dataset_id}",
         sheets=[sheet],
+        filter_groups=compiled_filter_groups,
+        calculated_fields=compiled_calc_fields,
     )
 
     # Prepare output directory
@@ -481,6 +571,11 @@ def auto_dashboard(
         if pd.api.types.is_datetime64_any_dtype(df_copy[col]):
             df_copy[col] = df_copy[col].astype(str)
     sample_data = df_copy.to_dict("list")
+
+    # Add calculated field aliases so preview finds data under both names
+    for orig, calc in field_map.items():
+        if orig in sample_data:
+            sample_data[calc] = sample_data[orig]
 
     # Generate HTML preview with actual data
     html_file = output_path / f"{name.lower().replace(' ', '_')}_dashboard.html"
