@@ -11,7 +11,12 @@ Usage:
 """
 
 import argparse
+import os
 import sys
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def cmd_deploy(args):
@@ -49,9 +54,10 @@ def cmd_deploy(args):
         )
         print()
 
-    # Auto-detect account ID
-    if args.account_id:
-        account_id = args.account_id
+    # Auto-detect account ID (CLI flag > env var > STS auto-detect)
+    account_id = args.account_id or os.environ.get("AWS_ACCOUNT_ID")
+    if account_id:
+        print(f"[discovery] Account ID: {account_id}")
     else:
         print("[discovery] Detecting AWS account ID...")
         account_id = get_account_id()
@@ -69,9 +75,10 @@ def cmd_deploy(args):
         ds = pick_dataset_interactive(account_id, region)
         dataset_arn = ds["Arn"]
 
-    # Resolve user ARN for permissions
-    if args.user_arn:
-        user_arn = args.user_arn
+    # Resolve user ARN for permissions (CLI flag > env var > ListUsers auto-detect)
+    user_arn = args.user_arn or os.environ.get("QUICKSIGHT_USER_ARN")
+    if user_arn:
+        print(f"[discovery] User ARN: {user_arn}")
     else:
         print("[discovery] Detecting QuickSight user...")
         user_arn = get_user_arn(account_id, region)
@@ -192,8 +199,8 @@ def main(argv=None):
     p_deploy.add_argument("--dataset-arn", help="Full dataset ARN (skips discovery)")
     p_deploy.add_argument("--id", help="Analysis ID (defaults to slugified name)")
     p_deploy.add_argument("--region", help="AWS region (auto-detected if not set)")
-    p_deploy.add_argument("--account-id", help="AWS account ID (auto-detected if not set)")
-    p_deploy.add_argument("--user-arn", help="QuickSight user ARN (auto-detected if not set)")
+    p_deploy.add_argument("--account-id", help="AWS account ID (or set AWS_ACCOUNT_ID env var)")
+    p_deploy.add_argument("--user-arn", help="QuickSight user ARN (or set QUICKSIGHT_USER_ARN env var)")
     p_deploy.add_argument("--output", help="Output directory for preview files")
     p_deploy.add_argument("--sheet", help="Excel sheet name (auto-detected if not set)")
     p_deploy.add_argument("--update", action="store_true", help="Update existing analysis")
