@@ -1,125 +1,101 @@
 #!/usr/bin/env python3
 """
-Deploy ESG Dashboard to AWS QuickSight.
+Deploy a dashboard to AWS QuickSight from a CSV file.
+
+This script shows how to use the library programmatically.
+For most users, the CLI is simpler:
+
+    quicksight-codegen deploy --csv data.csv --dataset "my-dataset" --name "My Dashboard"
 
 Usage:
     1. Copy .env.example to .env and fill in your values
-    2. Run: python scripts/deploy_to_quicksight.py
+    2. Run: python scripts/deploy_to_quicksight.py --csv your_data.csv
 
 Prerequisites:
     - AWS CLI configured (aws configure)
-    - QuickSight Dataset created with your CSV data
-    - pip install quicksight-codegen[aws] python-dotenv
+    - QuickSight dataset created with your CSV data
+    - pip install -e ".[aws,auto]"
 """
 
+import argparse
 import os
 import sys
 from pathlib import Path
 
-# Add src to path for local development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
-
-# Required environment variables
-AWS_ACCOUNT_ID = os.getenv("AWS_ACCOUNT_ID")
-AWS_REGION = os.getenv("AWS_REGION", "eu-central-1")
-QUICKSIGHT_DATASET_ARN = os.getenv("QUICKSIGHT_DATASET_ARN")
-QUICKSIGHT_USER_ARN = os.getenv("QUICKSIGHT_USER_ARN")
-
-
-def validate_config():
-    """Validate required configuration."""
-    missing = []
-    if not AWS_ACCOUNT_ID:
-        missing.append("AWS_ACCOUNT_ID")
-    if not QUICKSIGHT_DATASET_ARN:
-        missing.append("QUICKSIGHT_DATASET_ARN")
-    if not QUICKSIGHT_USER_ARN:
-        missing.append("QUICKSIGHT_USER_ARN")
-
-    if missing:
-        print("Missing required environment variables:")
-        for var in missing:
-            print(f"  - {var}")
-        print("\nPlease copy .env.example to .env and fill in your values.")
-        sys.exit(1)
 
 
 def main():
-    """Deploy ESG dashboard to QuickSight."""
-    validate_config()
+    parser = argparse.ArgumentParser(description="Deploy dashboard to QuickSight")
+    parser.add_argument("--csv", required=True, help="Path to CSV file")
+    parser.add_argument("--name", default="Auto Dashboard", help="Dashboard name")
+    parser.add_argument("--update", action="store_true", help="Update existing analysis")
+    args = parser.parse_args()
 
     from quicksight_codegen import auto_dashboard, deploy_analysis
+    from quicksight_codegen.discovery import get_account_id, get_dataset_arn, get_user_arn, _get_region
 
-    # Configuration
-    csv_path = Path(__file__).parent.parent / "sample_esg.csv"
-    dashboard_name = "ESG Biodiversity Dashboard"
-    analysis_id = "esg-biodiversity-dashboard"
-    output_dir = Path(__file__).parent.parent / "esg_output"
+    # Auto-detect AWS configuration
+    account_id = os.getenv("AWS_ACCOUNT_ID") or get_account_id()
+    region = _get_region(os.getenv("AWS_REGION"))
+    user_arn = os.getenv("QUICKSIGHT_USER_ARN") or get_user_arn(account_id, region)
 
-    # Use "dataset" as the logical identifier (must match DataSetIdentifierDeclarations)
-    # The actual dataset is referenced via ARN in the definition
-    dataset_id = "dataset"
+    dataset_arn = os.getenv("QUICKSIGHT_DATASET_ARN")
+    if not dataset_arn:
+        dataset_name = os.getenv("QUICKSIGHT_DATASET_NAME", Path(args.csv).stem)
+        dataset_arn = get_dataset_arn(dataset_name, account_id, region)
 
-    print(f"Configuration:")
-    print(f"  AWS Account: {AWS_ACCOUNT_ID}")
-    print(f"  Region: {AWS_REGION}")
-    print(f"  Dataset ARN: {QUICKSIGHT_DATASET_ARN}")
+    analysis_id = args.name.lower().replace(" ", "-")
+
+    print(f"Account:  {account_id}")
+    print(f"Region:   {region}")
+    print(f"Dataset:  {dataset_arn}")
+    print(f"User:     {user_arn}")
     print()
 
-    # Step 1: Generate analysis definition
-    print("Step 1: Generating analysis definition...")
-    analysis, html_file = auto_dashboard(
-        str(csv_path),
-        name=dashboard_name,
-        output_dir=str(output_dir),
-        dataset_id=dataset_id,
+    # Generate dashboard
+    print("Generating dashboard...")
+    analysis, html_path = auto_dashboard(
+        data=args.csv,
+        name=args.name,
+        output_dir="output/",
+        dataset_id="dataset",
     )
-    print(f"  Generated HTML preview: {html_file}")
-    print(f"  Generated {len(analysis['Definition']['Sheets'][0]['Visuals'])} visuals")
-    print()
+    print(f"Preview: {html_path}")
 
-    # Step 2: Deploy to QuickSight
-    print("Step 2: Deploying to AWS QuickSight...")
-    try:
-        response = deploy_analysis(
-            aws_account_id=AWS_ACCOUNT_ID,
-            analysis_id=analysis_id,
-            name=dashboard_name,
-            dataset_arn=QUICKSIGHT_DATASET_ARN,
-            sheets=analysis["Definition"]["Sheets"],
-            region=AWS_REGION,
-            permissions=[{
-                "Principal": QUICKSIGHT_USER_ARN,
-                "Actions": [
-                    "quicksight:DescribeAnalysis",
-                    "quicksight:QueryAnalysis",
-                    "quicksight:UpdateAnalysis",
-                    "quicksight:DeleteAnalysis",
-                ]
-            }],
-            update=False,  # Set to True to update existing analysis
-        )
+    # Deploy
+    print("Deploying to QuickSight...")
+    response = deploy_analysis(
+        aws_account_id=account_id,
+        analysis_id=analysis_id,
+        name=args.name,
+        dataset_arn=dataset_arn,
+        sheets=analysis["Definition"]["Sheets"],
+        filter_groups=analysis["Definition"].get("FilterGroups"),
+        calculated_fields=analysis["Definition"].get("CalculatedFields"),
+        permissions=[{
+            "Principal": user_arn,
+            "Actions": [
+                "quicksight:DescribeAnalysis",
+                "quicksight:QueryAnalysis",
+                "quicksight:UpdateAnalysis",
+                "quicksight:DeleteAnalysis",
+                "quicksight:RestoreAnalysis",
+                "quicksight:DescribeAnalysisPermissions",
+                "quicksight:UpdateAnalysisPermissions",
+            ],
+        }],
+        update=args.update,
+        region=region,
+    )
 
-        print("Deployment successful!")
-        print(f"  Analysis ARN: {response.get('Arn', 'N/A')}")
-        print(f"  Status: {response.get('Status', 'N/A')}")
-        print()
-        print(f"View your analysis at:")
-        print(f"  https://{AWS_REGION}.quicksight.aws.amazon.com/sn/analyses/{analysis_id}")
-
-    except Exception as e:
-        error_msg = str(e)
-        if "ResourceExistsException" in error_msg:
-            print("Analysis already exists. To update, set update=True in the script.")
-            print("Or delete the existing analysis in QuickSight console first.")
-        else:
-            print(f"Deployment failed: {e}")
-            raise
+    status = response.get("Status", response.get("ResponseMetadata", {}).get("HTTPStatusCode", "?"))
+    print(f"Status: {status}")
+    print(f"URL: https://{region}.quicksight.aws.amazon.com/sn/analyses/{analysis_id}")
 
 
 if __name__ == "__main__":
