@@ -124,7 +124,7 @@ def cmd_deploy(args):
 
     # Create/update theme if requested
     theme_arn = None
-    theme_preset = analysis.get("_theme_preset") or theme_name
+    theme_preset = analysis.get("ThemePreset") or theme_name
     if theme_preset:
         from .themes import get_or_create_theme
         theme_id = f"codegen-{theme_preset}"

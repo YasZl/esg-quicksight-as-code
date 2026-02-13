@@ -565,6 +565,7 @@ def auto_dashboard(
         row += 2
 
         col = 0
+        section_row_span = 10  # track last row_span for end-of-section wrap
         for i, config in entries:
             visual = _create_visual(config, dataset_id, index=i, field_map=field_map)
             vtype = config["type"]
@@ -587,6 +588,7 @@ def auto_dashboard(
                 col = 0
 
             sheet = add_visual_to_sheet(sheet, visual, row=row, col=col, row_span=row_span, col_span=col_span)
+            section_row_span = row_span
 
             # Advance position
             if col_span >= 24:
@@ -600,7 +602,7 @@ def auto_dashboard(
 
         # After each section, move to next row
         if col > 0:
-            row += row_span
+            row += section_row_span
             col = 0
 
     # Generate filters for categorical columns
@@ -626,9 +628,9 @@ def auto_dashboard(
         calculated_fields=compiled_calc_fields,
     )
 
-    # Store theme preset name for the CLI to use during deployment
+    # Store theme preset name for CLI to resolve into a ThemeArn at deploy time
     if theme:
-        analysis["_theme_preset"] = theme
+        analysis["ThemePreset"] = theme
 
     # Prepare output directory
     output_path = Path(output_dir)
