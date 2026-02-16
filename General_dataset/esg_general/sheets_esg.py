@@ -11,12 +11,12 @@ def _id(): return str(uuid.uuid4())
 def build_overview_sheet(dataset_id, roles, controls=None):
     sheet = create_empty_sheet(_id(), "Overview")
 
-    # ✅ Controls sur toute la largeur (36 colonnes)
+    # Controls sur toute la largeur 
     sheet = add_parameter_control_to_sheet(sheet, "SectorDrop01",  row=0, col=0,  row_span=4, col_span=12)
     sheet = add_parameter_control_to_sheet(sheet, "RegionCtrl01",  row=0, col=12, row_span=4, col_span=12)
     sheet = add_parameter_control_to_sheet(sheet, "CountryCtrl01", row=0, col=24, row_span=4, col_span=12)
 
-    # ✅ ParameterControls : uniquement ceux affichés
+    # ParameterControls : uniquement ceux affichés
     if controls:
         keep = {"SectorDrop01", "RegionCtrl01", "CountryCtrl01"}
         filtered = []
@@ -27,12 +27,12 @@ def build_overview_sheet(dataset_id, roles, controls=None):
                 filtered.append(c)
         sheet = add_parameter_controls(sheet, filtered)
 
-    # ✅ Titres sur toute la largeur (36 colonnes)
+    # Titres sur toute la largeur (36 colonnes)
     sheet = add_title(sheet, "Analyse ESG", row=4, col=0, row_span=2, col_span=36)
     sheet = add_title(sheet, "Données",     row=6, col=0, row_span=2, col_span=36,
                       color="#111111", font_size=26)
 
-    # ✅ Visuels (début row=8)
+    # Visuels 
     kpi = visuals_basic.make_total_metric_kpi(_id(), dataset_id, roles).compile()
     sheet = add_visual_to_sheet(sheet, kpi, row=8, col=0,  row_span=6,  col_span=12)
 
@@ -91,7 +91,7 @@ def build_portfolio_sheet(dataset_id, roles):
     if roles.get("security_id"):
         table_obj.add_categorical_dimension_field(roles["security_id"], dataset_id)
 
-    #  Mesure numérique (optionnelle)
+    #  Mesure numérique 
     if roles.get("value"):
         table_obj.add_numerical_measure_field(roles["value"], dataset_id)
 

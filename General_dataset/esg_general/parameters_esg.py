@@ -45,7 +45,7 @@ def build_all_esg_parameters_and_controls(dataset_id):
         "ISSUER_CNTRY_DOMICILE",
         dataset_id,
         title="Pays (domicile issuer)",
-        multi=False   # ✅ au lieu de True
+        multi=False   
     )
     parameters.append(region_param)
     controls.append(region_control)
@@ -58,7 +58,7 @@ def build_all_esg_parameters_and_controls(dataset_id):
         "ISSUER_CNTRY_DOMICILE",
         dataset_id,
         title="Country",
-        multi=False   # ✅ au lieu de True
+        multi=False  
     )
     parameters.append(country_param)
     controls.append(country_control)

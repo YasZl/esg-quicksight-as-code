@@ -84,7 +84,7 @@ def add_title(
                   .replace(">", "&gt;")
     )
 
-    # ✅ Rich text minimal accepté par QuickSight
+    #  text accepté par QuickSight
     content = (
         f'<text-box>'
         f'<inline font-size="{font_size}px" color="{color}">{safe_text}</inline>'

@@ -12,7 +12,7 @@ def build_esg_filter_groups(dataset_id: str, sheet_ids: list[str]):
         match_operator="EQUALS",
         null_option="NON_NULLS_ONLY",
         parameter_name="SectorParam"
-        # ❌ PAS de select_all_options ici
+        
     )
     fg_sector.add_filter(f_sector)
 
@@ -20,7 +20,7 @@ def build_esg_filter_groups(dataset_id: str, sheet_ids: list[str]):
     fg_region = FilterGroup(cross_dataset="SINGLE_DATASET", filter_group_id=_id())
     f_region = CategoryFilter(_id(), "ISSUER_CNTRY_DOMICILE", dataset_id)
     f_region.add_custom_filter_configuration(
-        match_operator="EQUALS",          # ✅ PAS CONTAINS
+        match_operator="EQUALS",          
         null_option="NON_NULLS_ONLY",
         parameter_name="RegionParam"
     )
@@ -30,7 +30,7 @@ def build_esg_filter_groups(dataset_id: str, sheet_ids: list[str]):
     fg_country = FilterGroup(cross_dataset="SINGLE_DATASET", filter_group_id=_id())
     f_country = CategoryFilter(_id(), "ISSUER_CNTRY_DOMICILE", dataset_id)
     f_country.add_custom_filter_configuration(
-        match_operator="EQUALS",          # ✅ PAS CONTAINS
+        match_operator="EQUALS",          
         null_option="NON_NULLS_ONLY",
         parameter_name="CountryParam"
     )

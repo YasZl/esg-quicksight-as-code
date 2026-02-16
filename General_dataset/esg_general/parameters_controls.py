@@ -69,7 +69,7 @@ def create_sector_parameter_single(param_name="SectorParam", default_sector=None
 # PARAMETRES DE SECTEUR
 
 def create_sector_parameter(param_name="SectorParam", default_sector=None):
-    param = StringParameter(param_name, "SINGLE_VALUED")  # <- ici
+    param = StringParameter(param_name, "SINGLE_VALUED")  
     param.set_value_when_unset(value_when_unset_option="NULL")
     if default_sector is not None:
         param.set_static_default_value(default_sector)
@@ -162,7 +162,7 @@ def create_intensity_slider_control(
 # Paramètres ESG supplémentaires (région, type d’actif, intensité)
 
 def create_region_parameter(name="RegionParam", default=None):
-    param = StringParameter(name, "SINGLE_VALUED")   # ✅ au lieu de MULTI_VALUED
+    param = StringParameter(name, "SINGLE_VALUED")   # au lieu de MULTI_VALUED
     if default is not None:
         param.set_static_default_value(default)
     return param
