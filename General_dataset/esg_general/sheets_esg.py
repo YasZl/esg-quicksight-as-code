@@ -13,7 +13,7 @@ def add_big_title(sheet, text, row):
     return add_title(
         sheet, text,
         row=row, col=0,
-        row_span=4, col_span=36,   # ⬅️ plus haut
+        row_span=4, col_span=36,  
         font_size=40,
         color="#111111"
     )
@@ -27,11 +27,11 @@ def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
     sheet = add_title(sheet, "Entreprise: MANAOS", row=0, col=24, row_span=2, col_span=12,
                       color="#111111", font_size=18)
 
-    # Controls (plus grands)
+    # Controls 
     sheet = add_parameter_control_to_sheet(sheet, "SectorList01", row=2, col=0,  row_span=4, col_span=18)
     sheet = add_parameter_control_to_sheet(sheet, "RegionCtrl01", row=2, col=18, row_span=4, col_span=18)
 
-    # ParameterControls : uniquement ceux affichés
+    # ParameterControls 
     if controls:
         keep = {"SectorList01", "RegionCtrl01"}
         filtered = []
@@ -44,14 +44,15 @@ def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
 
     # Titles
     sheet = add_title(
-    sheet, "Analyse ESG",
-    row=8, col=0,
-    row_span=4, col_span=36,
-    font_size=40,
-    color="#6C4CF7"   # violet
+        sheet, "Analyse ESG",
+        row=8, col=0,
+        row_span=4, col_span=36,
+        font_size=40,
+        color="#6C4CF7"   
     )
-    # Section 1 : Données
-    sheet = add_title(sheet, "Données", row=13, col=0, row_span=3, col_span=36, font_size=28, color="#111111")
+    sheet = add_title(sheet, "Données",
+                  row=13, col=0, row_span=3, col_span=36,
+                  font_size=32, color="#111111")
 
     kpi = visuals_basic.make_total_metric_kpi(_id(), dataset_id, roles).compile()
     sheet = add_visual_to_sheet(sheet, kpi, row=16, col=0, row_span=6, col_span=12)
@@ -59,16 +60,17 @@ def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
     bar = visuals_basic.make_metric_by_category_bar(_id(), dataset_id, roles).compile()
     sheet = add_visual_to_sheet(sheet, bar, row=16, col=12, row_span=10, col_span=24)
 
-    # Section 2 : GICS SECTOR
-    sheet = add_title(sheet, "GICS sector", row=27, col=0, row_span=3, col_span=36, font_size=28, color="#111111")
+    # SECTION 2 : GICS SECTOR 
+    sheet = add_title(sheet, "GICS SECTOR",
+                  row=27, col=0, row_span=3, col_span=36,
+                  font_size=32, color="#111111")
 
     pie = visuals_basic.make_category_share_pie(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, pie, row=29, col=0, row_span=10, col_span=36)
+    sheet = add_visual_to_sheet(sheet, pie, row=30, col=0, row_span=10, col_span=36)
 
-    # Table
+    # TABLE 
     table = visuals_basic.make_generic_table(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, table, row=40, col=0, row_span=12, col_span=36)
-    
+    sheet = add_visual_to_sheet(sheet, table, row=41, col=0, row_span=12, col_span=36)
     return sheet
 
 
@@ -76,20 +78,31 @@ def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
 
 def build_risk_sheet(dataset_id, roles):
     sheet = create_empty_sheet(_id(), "Insights")
-    sheet = add_title(sheet, "Insights", row=0, col=0, row_span=2, col_span=30)
 
-    # Heatmap seulement si bucket_1 existe
+    # Titre + haut 
+    sheet = add_title(
+        sheet,
+        "Insights",
+        row=0, col=0,
+        row_span=3,   
+        col_span=36,  
+        font_size=40,
+        color="#6C4CF7"
+    )
+
+    # Décaler les visuels 
+    start_row = 4   
+
     if roles.get("bucket_1"):
         heat = visuals_advanced.make_heatmap(_id(), dataset_id, roles).compile()
-        sheet = add_visual_to_sheet(sheet, heat, row=2, col=0, row_span=12, col_span=15)
+        sheet = add_visual_to_sheet(sheet, heat, row=start_row, col=0, row_span=12, col_span=18)
 
-    # Map seulement si geo existe ET geo_role_ok == True
     if roles.get("geo") and roles.get("geo_role_ok", False):
         mp = visuals_advanced.make_filled_map(_id(), dataset_id, roles).compile()
-        sheet = add_visual_to_sheet(sheet, mp, row=14, col=10, row_span=10, col_span=20)
+        sheet = add_visual_to_sheet(sheet, mp, row=start_row, col=18, row_span=12, col_span=18)
 
-    
     return sheet
+
 
 def build_portfolio_sheet(dataset_id, roles):
     sheet_id = _id()

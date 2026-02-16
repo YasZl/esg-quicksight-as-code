@@ -22,11 +22,11 @@ from General_dataset.esg_general.filters_esg import build_esg_filter_groups
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = "730335657350"
+AWS_ACCOUNT_ID = "..."
 REGION = "eu-central-1"
-DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31" # 👉 A CHANGER SELON LE DATASET UTILISE
-#DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741" # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = "arn:aws:quicksight:eu-central-1:730335657350:user/default/yasmine.zeroual@edu.devinci.fr"
+DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
+#DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
+QUICKSIGHT_USER_ARN = "..."
 
 
 
@@ -91,12 +91,7 @@ def run_one(tag, config_path):
     else:
         overview = build_overview_sheet(dataset_label, dataset_id, roles, controls=compiled_controls)
         risk = build_risk_sheet(dataset_id, roles)
-        portfolio_data = build_portfolio_data_sheet(dataset_id, roles)
-        paris = build_paris_alignment_sheet(dataset_id, roles)
-        exclusion = build_exclusion_sheet(dataset_id, roles)
-        biodiversity = build_biodiversity_sheet(dataset_id, roles)
-
-        sheets = [overview, risk, portfolio_data, paris, exclusion, biodiversity]
+        sheets = [overview, risk]
 
         sheet_ids = [s["SheetId"] for s in sheets]
 

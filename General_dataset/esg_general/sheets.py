@@ -145,7 +145,7 @@ def add_parameter_controls(sheet: dict, controls: list[dict]) -> dict:
     """
     sheet.setdefault("ParameterControls", [])
 
-    # IDs déjà présents
+    
     existing_ids = set()
     for c in sheet["ParameterControls"]:
         k = next(iter(c.keys()))
@@ -170,7 +170,7 @@ def add_parameter_control_to_sheet(
     row_span: int = 2,
     col_span: int = 6,
 ) -> Dict[str, Any]:
-    # IMPORTANT: en GridLayout, ElementId = ParameterControlId
+    
     sheet["Layouts"][0]["Configuration"]["GridLayout"]["Elements"].append(
         {
             "ElementId": control_id,
