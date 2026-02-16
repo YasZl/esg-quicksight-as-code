@@ -4,9 +4,19 @@ from . import visuals_basic
 from . import visuals_advanced
 from ..external.quicksight_assets_class import KPIVisual, BarChartVisual, TableVisual
 from .sheets import add_parameter_control_to_sheet, add_parameter_controls
+from .sheets import add_section_header
+
 
 
 def _id(): return str(uuid.uuid4())
+def add_big_title(sheet, text, row):
+    return add_title(
+        sheet, text,
+        row=row, col=0,
+        row_span=4, col_span=36,   # ⬅️ plus haut
+        font_size=40,
+        color="#111111"
+    )
 
 def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
     sheet = create_empty_sheet(_id(), "Overview")
@@ -33,23 +43,32 @@ def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
         sheet = add_parameter_controls(sheet, filtered)
 
     # Titles
-    sheet = add_title(sheet, "Analyse ESG", row=8, col=0, row_span=2, col_span=36)
-    sheet = add_title(sheet, "Données",     row=10, col=0, row_span=2, col_span=36,
-                      color="#111111", font_size=26)
+    sheet = add_title(
+    sheet, "Analyse ESG",
+    row=8, col=0,
+    row_span=4, col_span=36,
+    font_size=40,
+    color="#6C4CF7"   # violet
+    )
+    # Section 1 : Données
+    sheet = add_title(sheet, "Données", row=13, col=0, row_span=3, col_span=36, font_size=28, color="#111111")
 
-    # Visuals (tous commencent après "Données")
     kpi = visuals_basic.make_total_metric_kpi(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, kpi, row=12, col=0,  row_span=6,  col_span=12)
+    sheet = add_visual_to_sheet(sheet, kpi, row=16, col=0, row_span=6, col_span=12)
 
     bar = visuals_basic.make_metric_by_category_bar(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, bar, row=12, col=12, row_span=10, col_span=12)
+    sheet = add_visual_to_sheet(sheet, bar, row=16, col=12, row_span=10, col_span=24)
+
+    # Section 2 : GICS SECTOR
+    sheet = add_title(sheet, "GICS sector", row=27, col=0, row_span=3, col_span=36, font_size=28, color="#111111")
 
     pie = visuals_basic.make_category_share_pie(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, pie, row=12, col=24, row_span=10, col_span=12)
+    sheet = add_visual_to_sheet(sheet, pie, row=29, col=0, row_span=10, col_span=36)
 
+    # Table
     table = visuals_basic.make_generic_table(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, table, row=24, col=0, row_span=12, col_span=36)
-
+    sheet = add_visual_to_sheet(sheet, table, row=40, col=0, row_span=12, col_span=36)
+    
     return sheet
 
 
@@ -109,8 +128,14 @@ def build_portfolio_data_sheet(dataset_id, roles):
 
 def build_paris_alignment_sheet(dataset_id, roles):
     sheet = create_empty_sheet(_id(), "Paris Alignment")
-    sheet = add_title(sheet, "Stratégie d'alignement avec les Accords de Paris", row=0, col=0, row_span=2, col_span=30)
+    sheet = add_title(sheet, "Stratégie d'alignement avec les Accords de Paris",
+                      row=0, col=0, row_span=2, col_span=36, font_size=26)
+
+    sheet = add_title(sheet, "Climat", row=3, col=0, row_span=2, col_span=36, font_size=28, color="#111111")
+    sheet = add_title(sheet, "Données climat", row=12, col=0, row_span=2, col_span=36, font_size=28, color="#111111")
+    sheet = add_title(sheet, "Score", row=22, col=0, row_span=2, col_span=36, font_size=28, color="#111111")
     return sheet
+
 
 def build_exclusion_sheet(dataset_id, roles):
     sheet = create_empty_sheet(_id(), "Exclusion")

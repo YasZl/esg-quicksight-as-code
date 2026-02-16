@@ -182,5 +182,38 @@ def add_parameter_control_to_sheet(
         }
     )
     return sheet
+def add_section_header(
+    sheet,
+    text: str,
+    row: int,
+    col: int = 0,
+    col_span: int = 36,
+) :
+    # Sous-titre
+    sheet = add_title(
+        sheet,
+        text,
+        row=row,
+        col=col,
+        row_span=1,
+        col_span=col_span,
+        color="#111111",
+        font_size=20,
+    )
+
+    # Ligne de séparation
+    sheet = add_title(
+        sheet,
+        "────────────────────────────────────────────────",
+        row=row + 1,
+        col=col,
+        row_span=1,
+        col_span=col_span,
+        color="#111111",
+        font_size=14,
+    )
+
+    return sheet
+
 
 

@@ -22,11 +22,11 @@ from General_dataset.esg_general.filters_esg import build_esg_filter_groups
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = "..."
+AWS_ACCOUNT_ID = "730335657350"
 REGION = "eu-central-1"
-DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-#DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = "..."
+DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31" # 👉 A CHANGER SELON LE DATASET UTILISE
+#DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741" # 👉 A CHANGER SELON LE DATASET UTILISE
+QUICKSIGHT_USER_ARN = "arn:aws:quicksight:eu-central-1:730335657350:user/default/yasmine.zeroual@edu.devinci.fr"
 
 
 
