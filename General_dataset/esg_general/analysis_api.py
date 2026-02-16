@@ -61,9 +61,7 @@ def build_definition(
     if parameters_dict:
         definition["ParameterDeclarations"] = parameters_dict
     
-    if controls_dict:
-        definition["ParameterControlDeclarations"] = controls_dict
-
+    
     return definition
 
 
@@ -102,37 +100,19 @@ def build_analysis(
 
 def sanitize_definition(definition: dict) -> dict:
     """
-    Rend la Definition compatible avec boto3 QuickSight CreateAnalysis.
-    - Supprime les TextBoxVisual
-    - Corrige typos connues
-    - Enlève champs vides
-    - Convertit Visuals : {"VisualId": "...", "KPIVisual": {...}} -> {"KPIVisual": {...}}
-    - Nettoie les LayoutElements qui référencent des visuals supprimés
+    Nettoyage minimal compatible boto3 QuickSight CreateAnalysis.
+    - Corrige GridLineVisbility -> GridLineVisibility
+    - Supprime champs vides
+    NE SUPPRIME PAS Layouts / Visuals / TextBoxVisual
     """
-
-    ALLOWED_VISUAL_KEYS = {
-        "TableVisual", "PivotTableVisual", "BarChartVisual", "KPIVisual", "PieChartVisual",
-        "GaugeChartVisual", "LineChartVisual", "HeatMapVisual", "TreeMapVisual",
-        "GeospatialMapVisual", "FilledMapVisual", "LayerMapVisual", "FunnelChartVisual",
-        "ScatterPlotVisual", "ComboChartVisual", "BoxPlotVisual", "WaterfallVisual",
-        "HistogramVisual", "WordCloudVisual", "InsightVisual", "SankeyDiagramVisual",
-        "CustomContentVisual", "EmptyVisual", "RadarChartVisual", "PluginVisual",
-        "TextBoxVisual",
-    }
-
     def clean(obj):
         if isinstance(obj, dict):
-            # Drop subtitles / fix typos
             new = {}
             for k, v in obj.items():
-                if k == "subtitle":
-                    continue
                 if k == "GridLineVisbility":
                     k = "GridLineVisibility"
-
                 cv = clean(v)
 
-                # remove empties
                 if cv in ("", None):
                     continue
                 if isinstance(cv, dict) and not cv:
@@ -141,20 +121,6 @@ def sanitize_definition(definition: dict) -> dict:
                     continue
 
                 new[k] = cv
-
-            # If this is a Visual wrapper with VisualId 
-            if "VisualId" in new:
-                visual_keys = [k for k in new.keys() if k in ALLOWED_VISUAL_KEYS and k != "TextBoxVisual"]
-                if "TextBoxVisual" in new:
-                    return None  # remove titles completely
-                if len(visual_keys) == 1:
-                    vk = visual_keys[0]
-                    return {vk: new[vk]}  # convert to boto3 shape
-
-            # If it is a pure TextBoxVisual 
-            if "TextBoxVisual" in new:
-                return None
-
             return new
 
         if isinstance(obj, list):
@@ -165,18 +131,15 @@ def sanitize_definition(definition: dict) -> dict:
                     continue
                 if isinstance(cx, dict) and not cx:
                     continue
+                if isinstance(cx, list) and not cx:
+                    continue
                 out.append(cx)
             return out
 
         return obj
 
-    cleaned = clean(definition) or {}
+    return clean(definition) or {}
 
-    # Layout cleanup: remove layout elements referencing removed visuals 
-    for sheet in cleaned.get("Sheets", []):
-        sheet.pop("Layouts", None)
-
-    return cleaned
 
 
 def create_analysis_boto3(analysis_obj, region):

@@ -1,0 +1,314 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Dashoard10</title>
+<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --blue: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .header {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 { margin: 0 0 8px 0; font-size: 28px; }
+  .header .subtitle { color: var(--muted); font-size: 14px; }
+  .chips { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .chip {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .tab.active {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+  .sheet { display: none; }
+  .sheet.active { display: block; }
+  .sheet-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 16px;
+  }
+  .visual-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 280px;
+  }
+  .visual-card.wide {
+    grid-column: span 2;
+  }
+  @media (max-width: 800px) {
+    .visual-card.wide { grid-column: span 1; }
+  }
+  .chart-container {
+    height: 220px;
+    position: relative;
+  }
+  .kpi-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    text-align: center;
+  }
+  .kpi-title {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--blue);
+  }
+  .kpi-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .table-container { overflow-x: auto; }
+  .table-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th, .data-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  .data-table th {
+    background: #f8fafc;
+    font-weight: 700;
+  }
+  .heatmap-container { }
+  .heatmap-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .heatmap-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .heatmap-row {
+    display: flex;
+    gap: 2px;
+  }
+  .heatmap-cell {
+    width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .heatmap-cell.corner { background: transparent; }
+  .heatmap-cell.header { background: #f1f5f9; font-size: 11px; }
+  .heatmap-cell.row-header { background: #f1f5f9; font-size: 11px; width: 80px; }
+  .heatmap-cell.value { color: white; border-radius: 4px; }
+  .textbox {
+    padding: 20px;
+    text-align: center;
+  }
+  .textbox h2 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--text);
+  }
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+</style>
+
+</head><body>
+<div class='wrap'>
+<div class='header'>
+<h1>Dashoard10</h1>
+<div class='subtitle'>Interactive chart preview with sample data</div>
+<div class='chips'>
+<div class='chip'>Sheets: 1</div>
+<div class='chip'>Visuals: 7</div>
+</div>
+</div>
+<div class='tabs'>
+<div class='tab'>Dashoard10</div>
+</div>
+<div class='sheet' id='sheet-0'>
+<div class='sheet-title'>Dashoard10</div>
+<div class='grid'>
+<div class='visual-card'>
+
+    <div class="kpi-card" id="kpi_avg_bio_score_float">
+      <div class="kpi-title">Avg BIO_SCORE_FLOAT</div>
+      <div class="kpi-value">nan</div>
+      <div class="kpi-label">BIO_SCORE_FLOAT_decimal</div>
+    </div>
+    
+</div>
+<div class='visual-card'>
+
+    <div class="kpi-card" id="kpi_avg_bio_score_int_1">
+      <div class="kpi-title">Avg BIO_SCORE_INT</div>
+      <div class="kpi-value">nan</div>
+      <div class="kpi-label">BIO_SCORE_INT_decimal</div>
+    </div>
+    
+</div>
+<div class='visual-card'>
+
+    <div class="kpi-card" id="kpi_avg_biodiv_exposure_index_2">
+      <div class="kpi-title">Avg BIODIV_EXPOSURE_INDEX</div>
+      <div class="kpi-value">nan</div>
+      <div class="kpi-label">BIODIV_EXPOSURE_INDEX_decimal</div>
+    </div>
+    
+</div>
+<div class='visual-card'>
+
+    <div class="chart-container">
+      <canvas id="bar_bio_score_float_by_gics_sector_3"></canvas>
+    </div>
+    <script>
+      new Chart(document.getElementById('bar_bio_score_float_by_gics_sector_3'), {
+        type: 'bar',
+        data: {
+          labels: ["nan", "Information Technology", "Financials", "Health Care", "Communication Services", "Real Estate", "Consumer Discretionary", "Utilities"],
+          datasets: [{
+            label: 'BIO_SCORE_FLOAT_decimal',
+            data: [NaN, 7.2, 7.2, 7.2, 6.8, 6.5, 6.5, 6.2],
+            backgroundColor: ["rgba(37, 99, 235, 0.8)", "rgba(16, 185, 129, 0.8)", "rgba(245, 158, 11, 0.8)", "rgba(239, 68, 68, 0.8)", "rgba(139, 92, 246, 0.8)", "rgba(6, 182, 212, 0.8)", "rgba(236, 72, 153, 0.8)", "rgba(107, 114, 128, 0.8)"],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'x',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'BIO_SCORE_FLOAT by GICS_SECTOR', font: { size: 14, weight: 'bold' } }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    </script>
+    
+</div>
+<div class='visual-card'>
+
+    <div class="chart-container">
+      <canvas id="pie_bio_score_float_by_bio_score_g_4"></canvas>
+    </div>
+    <script>
+      new Chart(document.getElementById('pie_bio_score_float_by_bio_score_g_4'), {
+        type: 'doughnut',
+        data: {
+          labels: ["D", "nan", "C", "B", "A"],
+          datasets: [{
+            data: [805221.5, NaN, 1613761.6, 1382355.1, 403341.7],
+            backgroundColor: ["rgba(37, 99, 235, 0.8)", "rgba(16, 185, 129, 0.8)", "rgba(245, 158, 11, 0.8)", "rgba(239, 68, 68, 0.8)", "rgba(139, 92, 246, 0.8)"]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'right' },
+            title: { display: true, text: 'BIO_SCORE_FLOAT by BIO_SCORE_GRADE', font: { size: 14, weight: 'bold' } }
+          }
+        }
+      });
+    </script>
+    
+</div>
+<div class='visual-card wide'>
+
+    <div class="heatmap-container" id="heat_bio_score_float_by_gics_sector_5">
+      <div class="heatmap-title">BIO_SCORE_FLOAT by GICS_SECTOR & BIO_SCORE_GRADE</div>
+      <div class='heatmap-grid'><div class='heatmap-row'><div class='heatmap-cell corner'></div><div class='heatmap-cell header'>D</div><div class='heatmap-cell header'>nan</div><div class='heatmap-cell header'>C</div><div class='heatmap-cell header'>B</div><div class='heatmap-cell header'>A</div></div><div class='heatmap-row'><div class='heatmap-cell row-header'>Communicatio</div><div class='heatmap-cell value' style='background:hsl(109.83616362918382, 70%, 50%)'>4.9</div><div class='heatmap-cell value' style='background:hsl(4.800000000000011, 70%, 50%)'>92</div><div class='heatmap-cell value' style='background:hsl(72.50744839705807, 70%, 50%)'>6.3</div><div class='heatmap-cell value' style='background:hsl(37.845069967227005, 70%, 50%)'>7.6</div><div class='heatmap-cell value' style='background:hsl(0.5163547351012312, 70%, 50%)'>9.0</div></div><div class='heatmap-row'><div class='heatmap-cell row-header'>nan</div><div class='heatmap-cell value' style='background:hsl(22.39999999999999, 70%, 50%)'>81</div><div class='heatmap-cell value' style='background:hsl(nan, 70%, 50%)'>nan</div><div class='heatmap-cell value' style='background:hsl(105.6, 70%, 50%)'>29</div><div class='heatmap-cell value' style='background:hsl(88.0, 70%, 50%)'>40</div><div class='heatmap-cell value' style='background:hsl(28.799999999999997, 70%, 50%)'>77</div></div><div class='heatmap-row'><div class='heatmap-cell row-header'>Real Estate</div><div class='heatmap-cell value' style='background:hsl(112.50250043147854, 70%, 50%)'>4.8</div><div class='heatmap-cell value' style='background:hsl(49.599999999999994, 70%, 50%)'>64</div><div class='heatmap-cell value' style='background:hsl(72.50744839705807, 70%, 50%)'>6.3</div><div class='heatmap-cell value' style='background:hsl(37.845069967227005, 70%, 50%)'>7.6</div><div class='heatmap-cell value' style='background:hsl(0.5163547351012312, 70%, 50%)'>9.0</div></div><div class='heatmap-row'><div class='heatmap-cell row-header'>Industrials</div><div class='heatmap-cell value' style='background:hsl(115.16883723377322, 70%, 50%)'>4.7</div><div class='heatmap-cell value' style='background:hsl(88.0, 70%, 50%)'>40</div><div class='heatmap-cell value' style='background:hsl(75.17378519935275, 70%, 50%)'>6.2</div><div class='heatmap-cell value' style='background:hsl(40.5114067695217, 70%, 50%)'>7.5</div><div class='heatmap-cell value' style='background:hsl(3.182691537395911, 70%, 50%)'>8.9</div></div><div class='heatmap-row'><div class='heatmap-cell row-header'>Consumer Dis</div><div class='heatmap-cell value' style='background:hsl(112.50250043147854, 70%, 50%)'>4.8</div><div class='heatmap-cell value' style='background:hsl(91.2, 70%, 50%)'>38</div><div class='heatmap-cell value' style='background:hsl(72.50744839705807, 70%, 50%)'>6.3</div><div class='heatmap-cell value' style='background:hsl(37.845069967227005, 70%, 50%)'>7.6</div><div class='heatmap-cell value' style='background:hsl(0.5163547351012312, 70%, 50%)'>9.0</div></div><div class='heatmap-row'><div class='heatmap-cell row-header'>Consumer Sta</div><div class='heatmap-cell value' style='background:hsl(120.50151083836262, 70%, 50%)'>4.5</div><div class='heatmap-cell value' style='background:hsl(72.0, 70%, 50%)'>50</div><div class='heatmap-cell value' style='background:hsl(75.17378519935275, 70%, 50%)'>6.2</div><div class='heatmap-cell value' style='background:hsl(40.5114067695217, 70%, 50%)'>7.5</div><div class='heatmap-cell value' style='background:hsl(3.182691537395911, 70%, 50%)'>8.9</div></div></div>
+    </div>
+    
+</div>
+<div class='visual-card wide'>
+
+    <div class="table-container" id="table_data_details_6">
+      <div class="table-title">Data Details</div>
+      <table class="data-table">
+        <thead><tr><th>GICS_SECTOR</th><th>BIO_SCORE_GRADE</th><th>BIODIV_EXPOSURE_INDEX_decimal</th><th>BIO_SCORE_FLOAT_decimal</th><th>BIO_SCORE_INT_decimal</th></tr></thead>
+        <tbody><tr><td>Communication Services</td><td>D</td><td>43.0</td><td>5.1</td><td>51.0</td></tr><tr><td>nan</td><td>nan</td><td>nan</td><td>nan</td><td>nan</td></tr><tr><td>Real Estate</td><td>D</td><td>49.0</td><td>3.9</td><td>39.0</td></tr><tr><td>Industrials</td><td>C</td><td>32.0</td><td>6.3</td><td>63.0</td></tr><tr><td>nan</td><td>nan</td><td>nan</td><td>nan</td><td>nan</td></tr></tbody>
+      </table>
+    </div>
+    
+</div>
+</div>
+</div>
+<div class='footer'>Generated by quicksight-codegen</div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const sheets = document.querySelectorAll('.sheet');
+
+  function activate(i) {
+    tabs.forEach(t => t.classList.remove('active'));
+    sheets.forEach(s => s.classList.remove('active'));
+    tabs[i]?.classList.add('active');
+    sheets[i]?.classList.add('active');
+  }
+
+  tabs.forEach((t, i) => t.addEventListener('click', () => activate(i)));
+  activate(0);
+</script>
+
+</body></html>

@@ -4,18 +4,29 @@ from pathlib import Path
 from sys import prefix
 
 from General_dataset.esg_general.analysis_api import deploy_analysis
-from General_dataset.esg_general.sheets_esg import build_overview_sheet, build_risk_sheet, build_portfolio_sheet
 from General_dataset.esg_general.parameters_esg import build_all_esg_parameters_and_controls
+from General_dataset.esg_general.sheets_esg import (
+    build_overview_sheet,
+    build_risk_sheet,
+    build_portfolio_sheet,
+    build_portfolio_data_sheet,
+    build_paris_alignment_sheet,
+    build_exclusion_sheet,
+    build_biodiversity_sheet,
+)
+from General_dataset.esg_general.filters_esg import build_esg_filter_groups
+from General_dataset.esg_general.filters_esg import build_esg_filter_groups
+
 
 
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = "..."
+AWS_ACCOUNT_ID = "730335657350"
 REGION = "eu-central-1"
-DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-#DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = "..."
+DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31" # 👉 A CHANGER SELON LE DATASET UTILISE
+#DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741" # 👉 A CHANGER SELON LE DATASET UTILISE
+QUICKSIGHT_USER_ARN = "arn:aws:quicksight:eu-central-1:730335657350:user/default/yasmine.zeroual@edu.devinci.fr"
 
 
 
@@ -57,22 +68,41 @@ def run_one(tag, config_path):
 
     # prefix selon le template
     prefix = "portfolio" if template == "portfolio" else "esg"
+    filter_groups = []
 
     # analysis_id UNIQUE avec timestamp (pas de conflit)
     analysis_id = f"{prefix}_{tag}-analysis-{datetime.now():%Y%m%d-%H%M%S}"
 
+        # paramètres + controls
+    parameters, controls = build_all_esg_parameters_and_controls(dataset_id)
+    compiled_controls = [c.compile() for c in controls]
+
+    print("CONTROL IDS =", [
+        c[next(iter(c.keys()))]["ParameterControlId"]
+        for c in compiled_controls
+    ])
+
     # construction des sheets
     if template == "portfolio":
         sheets = [build_portfolio_sheet(dataset_id, roles)]
+        # pas de filtres ESG pour portfolio
+        filter_groups = []
     else:
-        sheets = [
-            build_overview_sheet(dataset_id, roles),
-            build_risk_sheet(dataset_id, roles),
-        ]
-    # paramètres (controls volontairement désactivés)
-    parameters, controls = build_all_esg_parameters_and_controls(dataset_id)
-    controls = []
+        overview = build_overview_sheet(dataset_id, roles, controls=compiled_controls)
+        risk = build_risk_sheet(dataset_id, roles)
+        portfolio_data = build_portfolio_data_sheet(dataset_id, roles)
+        paris = build_paris_alignment_sheet(dataset_id, roles)
+        exclusion = build_exclusion_sheet(dataset_id, roles)
+        biodiversity = build_biodiversity_sheet(dataset_id, roles)
 
+        sheets = [overview, risk, portfolio_data, paris, exclusion, biodiversity]
+
+        sheet_ids = [s["SheetId"] for s in sheets]
+
+        from General_dataset.esg_general.filters_esg import build_esg_filter_groups
+        filter_groups = build_esg_filter_groups(dataset_id, sheet_ids)
+
+    
     # déploiement QuickSight
     response = deploy_analysis(
         aws_account_id=AWS_ACCOUNT_ID,
@@ -81,8 +111,8 @@ def run_one(tag, config_path):
         dataset_arn=dataset_arn,
         sheets=sheets,
         parameters=parameters,
-        parameter_controls=[],
-        filter_groups=[],
+        parameter_controls=compiled_controls,
+        filter_groups=filter_groups,
         calculated_fields=[],
         permissions=make_permissions(QUICKSIGHT_USER_ARN),
         update=False,

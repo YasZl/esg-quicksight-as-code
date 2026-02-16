@@ -1,0 +1,707 @@
+{
+  "AwsAccountId": "AUTO",
+  "AnalysisId": "dashoard10",
+  "Name": "Dashoard10",
+  "Definition": {
+    "DataSetIdentifierDeclarations": [
+      {
+        "DataSetArn": "arn:aws:quicksight:us-east-1:AUTO:dataset/dataset",
+        "Identifier": "dataset"
+      }
+    ],
+    "Sheets": [
+      {
+        "SheetId": "auto-sheet",
+        "Name": "Dashoard10",
+        "ContentType": "INTERACTIVE",
+        "Visuals": [
+          {
+            "KPIVisual": {
+              "VisualId": "kpi-avg-bio_score_float",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "BIO_SCORE_FLOAT_decimal",
+                        "Column": {
+                          "ColumnName": "BIO_SCORE_FLOAT_decimal",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "AVERAGE"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Avg BIO_SCORE_FLOAT"
+                }
+              }
+            }
+          },
+          {
+            "KPIVisual": {
+              "VisualId": "kpi-avg-bio_score_int-1",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "BIO_SCORE_INT_decimal",
+                        "Column": {
+                          "ColumnName": "BIO_SCORE_INT_decimal",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "AVERAGE"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Avg BIO_SCORE_INT"
+                }
+              }
+            }
+          },
+          {
+            "KPIVisual": {
+              "VisualId": "kpi-avg-biodiv_exposure_index-2",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "Values": [
+                    {
+                      "NumericalMeasureField": {
+                        "FieldId": "BIODIV_EXPOSURE_INDEX_decimal",
+                        "Column": {
+                          "ColumnName": "BIODIV_EXPOSURE_INDEX_decimal",
+                          "DataSetIdentifier": "dataset"
+                        },
+                        "AggregationFunction": {
+                          "SimpleNumericalAggregation": "AVERAGE"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Avg BIODIV_EXPOSURE_INDEX"
+                }
+              }
+            }
+          },
+          {
+            "BarChartVisual": {
+              "VisualId": "bar-bio_score_float-by-gics_sector-3",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "BarChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "GICS_SECTOR",
+                          "Column": {
+                            "ColumnName": "GICS_SECTOR",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "BIO_SCORE_FLOAT_decimal",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_FLOAT_decimal",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "AVERAGE"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "BarsArrangement": "CLUSTERED",
+                "Orientation": "VERTICAL"
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "BIO_SCORE_FLOAT by GICS_SECTOR"
+                }
+              }
+            }
+          },
+          {
+            "PieChartVisual": {
+              "VisualId": "pie-bio_score_float-by-bio_score_g-4",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "PieChartAggregatedFieldWells": {
+                    "Category": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "BIO_SCORE_GRADE",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_GRADE",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "BIO_SCORE_FLOAT_decimal",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_FLOAT_decimal",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "BIO_SCORE_FLOAT by BIO_SCORE_GRADE"
+                }
+              }
+            }
+          },
+          {
+            "HeatMapVisual": {
+              "VisualId": "heat-bio_score_float-by-gics_sector-5",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "HeatMapAggregatedFieldWells": {
+                    "Columns": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "BIO_SCORE_GRADE",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_GRADE",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Rows": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "GICS_SECTOR",
+                          "Column": {
+                            "ColumnName": "GICS_SECTOR",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "BIO_SCORE_FLOAT_decimal",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_FLOAT_decimal",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "AVERAGE"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "BIO_SCORE_FLOAT by GICS_SECTOR & BIO_SCORE_GRADE"
+                }
+              }
+            }
+          },
+          {
+            "TableVisual": {
+              "VisualId": "table-data-details-6",
+              "ChartConfiguration": {
+                "FieldWells": {
+                  "TableAggregatedFieldWells": {
+                    "GroupBy": [
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "GICS_SECTOR",
+                          "Column": {
+                            "ColumnName": "GICS_SECTOR",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      },
+                      {
+                        "CategoricalDimensionField": {
+                          "FieldId": "BIO_SCORE_GRADE",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_GRADE",
+                            "DataSetIdentifier": "dataset"
+                          }
+                        }
+                      }
+                    ],
+                    "Values": [
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "BIO_SCORE_FLOAT_decimal",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_FLOAT_decimal",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          }
+                        }
+                      },
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "BIO_SCORE_INT_decimal",
+                          "Column": {
+                            "ColumnName": "BIO_SCORE_INT_decimal",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          }
+                        }
+                      },
+                      {
+                        "NumericalMeasureField": {
+                          "FieldId": "BIODIV_EXPOSURE_INDEX_decimal",
+                          "Column": {
+                            "ColumnName": "BIODIV_EXPOSURE_INDEX_decimal",
+                            "DataSetIdentifier": "dataset"
+                          },
+                          "AggregationFunction": {
+                            "SimpleNumericalAggregation": "SUM"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "Title": {
+                "Visibility": "VISIBLE",
+                "FormatText": {
+                  "PlainText": "Data Details"
+                }
+              }
+            }
+          }
+        ],
+        "Layouts": [
+          {
+            "Configuration": {
+              "GridLayout": {
+                "Elements": [
+                  {
+                    "ElementId": "kpi-avg-bio_score_float",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 6,
+                    "RowIndex": 0,
+                    "RowSpan": 6
+                  },
+                  {
+                    "ElementId": "kpi-avg-bio_score_int-1",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 6,
+                    "ColumnSpan": 6,
+                    "RowIndex": 0,
+                    "RowSpan": 6
+                  },
+                  {
+                    "ElementId": "kpi-avg-biodiv_exposure_index-2",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 12,
+                    "ColumnSpan": 6,
+                    "RowIndex": 0,
+                    "RowSpan": 6
+                  },
+                  {
+                    "ElementId": "bar-bio_score_float-by-gics_sector-3",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 12,
+                    "RowIndex": 10,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "pie-bio_score_float-by-bio_score_g-4",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 12,
+                    "ColumnSpan": 12,
+                    "RowIndex": 10,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "heat-bio_score_float-by-gics_sector-5",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 16,
+                    "RowIndex": 20,
+                    "RowSpan": 10
+                  },
+                  {
+                    "ElementId": "table-data-details-6",
+                    "ElementType": "VISUAL",
+                    "ColumnIndex": 0,
+                    "ColumnSpan": 24,
+                    "RowIndex": 30,
+                    "RowSpan": 10
+                  }
+                ],
+                "CanvasSizeOptions": {
+                  "ScreenCanvasSizeOptions": {
+                    "ResizeOption": "FIXED",
+                    "OptimizedViewPortWidth": "1600px"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "FilterControls": [
+          {
+            "Dropdown": {
+              "FilterControlId": "auto-control-issuer-cntry-domicile",
+              "SourceFilterId": "auto-filter-issuer-cntry-domicile",
+              "Title": "ISSUER_CNTRY_DOMICILE",
+              "Type": "MULTI_SELECT",
+              "DisplayOptions": {
+                "SelectAllOptions": {
+                  "Visibility": "VISIBLE"
+                },
+                "TitleOptions": {
+                  "Visibility": "VISIBLE",
+                  "FontConfiguration": {
+                    "FontSize": {
+                      "Relative": "MEDIUM"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "Dropdown": {
+              "FilterControlId": "auto-control-nace-section-code",
+              "SourceFilterId": "auto-filter-nace-section-code",
+              "Title": "NACE_SECTION_CODE",
+              "Type": "MULTI_SELECT",
+              "DisplayOptions": {
+                "SelectAllOptions": {
+                  "Visibility": "VISIBLE"
+                },
+                "TitleOptions": {
+                  "Visibility": "VISIBLE",
+                  "FontConfiguration": {
+                    "FontSize": {
+                      "Relative": "MEDIUM"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "Dropdown": {
+              "FilterControlId": "auto-control-gics-sector",
+              "SourceFilterId": "auto-filter-gics-sector",
+              "Title": "GICS_SECTOR",
+              "Type": "MULTI_SELECT",
+              "DisplayOptions": {
+                "SelectAllOptions": {
+                  "Visibility": "VISIBLE"
+                },
+                "TitleOptions": {
+                  "Visibility": "VISIBLE",
+                  "FontConfiguration": {
+                    "FontSize": {
+                      "Relative": "MEDIUM"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "Dropdown": {
+              "FilterControlId": "auto-control-bio-score-grade",
+              "SourceFilterId": "auto-filter-bio-score-grade",
+              "Title": "BIO_SCORE_GRADE",
+              "Type": "MULTI_SELECT",
+              "DisplayOptions": {
+                "SelectAllOptions": {
+                  "Visibility": "VISIBLE"
+                },
+                "TitleOptions": {
+                  "Visibility": "VISIBLE",
+                  "FontConfiguration": {
+                    "FontSize": {
+                      "Relative": "MEDIUM"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "FilterGroups": [
+      {
+        "CrossDataset": "ALL_DATASETS",
+        "FilterGroupId": "auto-filter-group",
+        "Filters": [
+          {
+            "CategoryFilter": {
+              "FilterId": "auto-filter-issuer-cntry-domicile",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "ISSUER_CNTRY_DOMICILE"
+              },
+              "Configuration": {
+                "FilterListConfiguration": {
+                  "MatchOperator": "CONTAINS",
+                  "CategoryValues": [],
+                  "SelectAllOptions": "FILTER_ALL_VALUES"
+                }
+              }
+            }
+          },
+          {
+            "CategoryFilter": {
+              "FilterId": "auto-filter-nace-section-code",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "NACE_SECTION_CODE"
+              },
+              "Configuration": {
+                "FilterListConfiguration": {
+                  "MatchOperator": "CONTAINS",
+                  "CategoryValues": [],
+                  "SelectAllOptions": "FILTER_ALL_VALUES"
+                }
+              }
+            }
+          },
+          {
+            "CategoryFilter": {
+              "FilterId": "auto-filter-gics-sector",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "GICS_SECTOR"
+              },
+              "Configuration": {
+                "FilterListConfiguration": {
+                  "MatchOperator": "CONTAINS",
+                  "CategoryValues": [],
+                  "SelectAllOptions": "FILTER_ALL_VALUES"
+                }
+              }
+            }
+          },
+          {
+            "CategoryFilter": {
+              "FilterId": "auto-filter-bio-score-grade",
+              "Column": {
+                "DataSetIdentifier": "dataset",
+                "ColumnName": "BIO_SCORE_GRADE"
+              },
+              "Configuration": {
+                "FilterListConfiguration": {
+                  "MatchOperator": "CONTAINS",
+                  "CategoryValues": [],
+                  "SelectAllOptions": "FILTER_ALL_VALUES"
+                }
+              }
+            }
+          }
+        ],
+        "ScopeConfiguration": {
+          "SelectedSheets": {
+            "SheetVisualScopingConfigurations": [
+              {
+                "Scope": "ALL_VISUALS",
+                "SheetId": "auto-sheet",
+                "VisualIds": []
+              }
+            ]
+          }
+        },
+        "Status": "ENABLED"
+      }
+    ],
+    "CalculatedFields": [
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({NACE_GROUP_CODE}))",
+        "Name": "NACE_GROUP_CODE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({BIO_SCORE_FLOAT}))",
+        "Name": "BIO_SCORE_FLOAT_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({BIO_SCORE_INT}))",
+        "Name": "BIO_SCORE_INT_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({BIO_SCORE_GRADE_NUM}))",
+        "Name": "BIO_SCORE_GRADE_NUM_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({BIO_POLICY_TEXT_NUM}))",
+        "Name": "BIO_POLICY_TEXT_NUM_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({BIODIV_EXPOSURE_INDEX}))",
+        "Name": "BIODIV_EXPOSURE_INDEX_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({NORMALIZED_EXPOSURE_0_1}))",
+        "Name": "NORMALIZED_EXPOSURE_0_1_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({PROTECTED_AREAS_OVERLAP_PCT}))",
+        "Name": "PROTECTED_AREAS_OVERLAP_PCT_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({PROXIMITY_TO_PA_KM}))",
+        "Name": "PROXIMITY_TO_PA_KM_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({LAND_CONVERSION_HA_SINCE_2020}))",
+        "Name": "LAND_CONVERSION_HA_SINCE_2020_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({PCT_SUPPLY_TRACEABLE}))",
+        "Name": "PCT_SUPPLY_TRACEABLE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({HCV_ASSESSMENTS_COUNT}))",
+        "Name": "HCV_ASSESSMENTS_COUNT_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({IUCN_CR_SPECIES_IMPACTED}))",
+        "Name": "IUCN_CR_SPECIES_IMPACTED_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({WATER_BOD_PROXIMITY_RISK_NUM}))",
+        "Name": "WATER_BOD_PROXIMITY_RISK_NUM_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({TNFD_READY_NUM}))",
+        "Name": "TNFD_READY_NUM_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({DATA_QUALITY_SCORE}))",
+        "Name": "DATA_QUALITY_SCORE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({PRESSURE_SCORE}))",
+        "Name": "PRESSURE_SCORE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({RESPONSE_SCORE}))",
+        "Name": "RESPONSE_SCORE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({STATE_SCORE}))",
+        "Name": "STATE_SCORE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({WEIGHT_PRESSURE}))",
+        "Name": "WEIGHT_PRESSURE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({WEIGHT_RESPONSE}))",
+        "Name": "WEIGHT_RESPONSE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({WEIGHT_STATE}))",
+        "Name": "WEIGHT_STATE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({COMPOSITE_INDEX}))",
+        "Name": "COMPOSITE_INDEX_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({BIO_SCORE_DECILE}))",
+        "Name": "BIO_SCORE_DECILE_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({HABITAT_DEPENDENCY_PCT}))",
+        "Name": "HABITAT_DEPENDENCY_PCT_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({SUPPLY_FOREST_RISK_PCT}))",
+        "Name": "SUPPLY_FOREST_RISK_PCT_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({RESTORATION_AREA_HA}))",
+        "Name": "RESTORATION_AREA_HA_decimal"
+      },
+      {
+        "DataSetIdentifier": "dataset",
+        "Expression": "parseDecimal(toString({NATURE_RELATED_SPEND_USD_M}))",
+        "Name": "NATURE_RELATED_SPEND_USD_M_decimal"
+      }
+    ]
+  }
+}

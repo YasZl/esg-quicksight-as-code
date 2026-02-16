@@ -8,7 +8,10 @@ from .parameters_controls import (
     create_intensity_min_parameter, create_intensity_max_parameter,
     create_intensity_min_slider, create_intensity_max_slider,
     create_subsector_list,
+    create_sector_parameter_single
 )
+from .parameters_controls import create_region_parameter, create_region_dropdown_control
+
 
 
 def build_all_esg_parameters_and_controls(dataset_id):
@@ -16,7 +19,7 @@ def build_all_esg_parameters_and_controls(dataset_id):
     controls = []
 
     # Secteur (GICS)
-    sector_param = create_sector_parameter(param_name="SectorParam")
+    sector_param = create_sector_parameter_single(param_name="SectorParam")
     sector_drop = create_sector_dropdown_control(
         "SectorDrop01",
         "SectorParam",
@@ -42,22 +45,26 @@ def build_all_esg_parameters_and_controls(dataset_id):
         "ISSUER_CNTRY_DOMICILE",
         dataset_id,
         title="Pays (domicile issuer)",
-        multi=True
+        multi=False   # ✅ au lieu de True
     )
     parameters.append(region_param)
     controls.append(region_control)
 
-    # Sous-secteur (NACE)
-    subsector_param = create_sector_parameter("SubSectorParam")
-    subsector_ctrl = create_subsector_list(
-        "SubSectorCtrl01",
-        "SubSectorParam",
-        "NACE_GROUP_CODE",
+    # Country
+    country_param = create_region_parameter(name="CountryParam")
+    country_control = create_region_dropdown_control(
+        "CountryCtrl01",
+        "CountryParam",
+        "ISSUER_CNTRY_DOMICILE",
         dataset_id,
-        title="Sous-secteur (NACE group)"
+        title="Country",
+        multi=False   # ✅ au lieu de True
     )
-    parameters.append(subsector_param)
-    controls.append(subsector_ctrl)
+    parameters.append(country_param)
+    controls.append(country_control)
+
+    # Sous-secteur (NACE)
+    
 
     # Seuils min/max sur un score 
     min_p = create_intensity_min_parameter(name="ScoreMinParam")

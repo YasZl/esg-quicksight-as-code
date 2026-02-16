@@ -60,21 +60,21 @@ def create_year_dropdown_control(
 
     return control
 
+def create_sector_parameter_single(param_name="SectorParam", default_sector=None):
+    param = StringParameter(param_name, "SINGLE_VALUED")
+    if default_sector is not None:
+        param.set_static_default_value(default_sector)
+    return param
 
 # PARAMETRES DE SECTEUR
 
 def create_sector_parameter(param_name="SectorParam", default_sector=None):
-    """
-    Paramètre texte pour le secteur
-    MULTI_VALUED = plusieurs secteurs possibles
-    """
-    param = StringParameter(param_name, "MULTI_VALUED")
-
-    # si une valeur par défaut existe, on l'ajoute
+    param = StringParameter(param_name, "SINGLE_VALUED")  # <- ici
+    param.set_value_when_unset(value_when_unset_option="NULL")
     if default_sector is not None:
         param.set_static_default_value(default_sector)
-
     return param
+
 
 
 def create_sector_dropdown_control(
@@ -90,7 +90,7 @@ def create_sector_dropdown_control(
     control = ParameterDropDownControl(control_id, parameter_name, title)
 
     #on peut afficher "Select all" ici si besoin
-    control.select_all_options_visibility = "VISIBLE"
+    control.select_all_options_visibility = "HIDDEN"
 
     #sélection d’un seul secteur (pas de multi-choix)
     control.type = "SINGLE_SELECT"
@@ -109,24 +109,11 @@ def create_sector_list_control(
     dataset_identifier,
     title="Secteurs"
 ):
-    """
-    Crée une liste permettant de sélectionner PLUSIEURS secteurs.
-    """
-    control = ParameterListControl(control_id, parameter_name, title)
-
-    # on autorise plusieurs choix
-    control.type = "MULTI_SELECT"
-
-    #on affiche "Select all" pour sélectionner tous les secteurs
+    control = ParameterDropDownControl(control_id, parameter_name, title)
     control.select_all_options_visibility = "VISIBLE"
-
-    # on active la barre de recherche 
-    control.search_options_visibility = "VISIBLE"
-
-    # On lie le contrôle au dataset
+    control.type = "MULTI_SELECT"
     control.column_name = column_name
     control.data_set_identifier = dataset_identifier
-
     return control
 
 
@@ -175,8 +162,7 @@ def create_intensity_slider_control(
 # Paramètres ESG supplémentaires (région, type d’actif, intensité)
 
 def create_region_parameter(name="RegionParam", default=None):
-    """Paramètre texte pour filtrer sur la région / pays."""
-    param = StringParameter(name, "MULTI_VALUED")
+    param = StringParameter(name, "SINGLE_VALUED")   # ✅ au lieu de MULTI_VALUED
     if default is not None:
         param.set_static_default_value(default)
     return param
@@ -185,7 +171,7 @@ def create_region_parameter(name="RegionParam", default=None):
 def create_region_dropdown_control(control_id, parameter_name, column_name, dataset_id, title="Région / Pays", multi=True):
     """Dropdown pour choisir un ou plusieurs pays dans le dataset."""
     control = ParameterDropDownControl(control_id, parameter_name, title)
-    control.select_all_options_visibility = "VISIBLE"
+    control.select_all_options_visibility = "HIDDEN"
     if multi:
         control.type = "MULTI_SELECT"
     else:
@@ -242,12 +228,9 @@ def create_intensity_max_slider(control_id, parameter_name, title="Intensité ma
 # Sous-secteurs 
 
 def create_subsector_list(control_id, parameter_name, column_name, dataset_id, title="Sous-secteur"):
-    """Liste multi-sélection pour les sous-secteurs."""
-    control = ParameterListControl(control_id, parameter_name, title)
-    control.type = "MULTI_SELECT"
+    control = ParameterDropDownControl(control_id, parameter_name, title)
     control.select_all_options_visibility = "VISIBLE"
-    control.search_options_visibility = "VISIBLE"
+    control.type = "MULTI_SELECT"
     control.column_name = column_name
     control.data_set_identifier = dataset_id
     return control
-
