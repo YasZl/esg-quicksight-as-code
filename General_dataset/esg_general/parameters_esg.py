@@ -7,9 +7,8 @@ from .parameters_controls import (
     create_region_parameter, create_region_dropdown_control,
     create_intensity_min_parameter, create_intensity_max_parameter,
     create_intensity_min_slider, create_intensity_max_slider,
-    create_subsector_list,
-    create_sector_parameter_single
 )
+
 from .parameters_controls import create_region_parameter, create_region_dropdown_control
 
 
@@ -18,15 +17,8 @@ def build_all_esg_parameters_and_controls(dataset_id):
     parameters = []
     controls = []
 
-    # Secteur (GICS)
-    sector_param = create_sector_parameter_single(param_name="SectorParam")
-    sector_drop = create_sector_dropdown_control(
-        "SectorDrop01",
-        "SectorParam",
-        "GICS_SECTOR",
-        dataset_id,
-        title="Secteur (GICS)"
-    )
+    # Secteur (GICS) - MULTI
+    sector_param = create_sector_parameter(param_name="SectorParam")  # doit être MULTI_VALUED
     sector_list = create_sector_list_control(
         "SectorList01",
         "SectorParam",
@@ -35,7 +27,8 @@ def build_all_esg_parameters_and_controls(dataset_id):
         title="Secteurs (GICS)"
     )
     parameters.append(sector_param)
-    controls.extend([sector_drop, sector_list])
+    controls.append(sector_list)
+
 
     # Pays / Domicile issuer
     region_param = create_region_parameter(name="RegionParam")
@@ -51,19 +44,9 @@ def build_all_esg_parameters_and_controls(dataset_id):
     controls.append(region_control)
 
     # Country
-    country_param = create_region_parameter(name="CountryParam")
-    country_control = create_region_dropdown_control(
-        "CountryCtrl01",
-        "CountryParam",
-        "ISSUER_CNTRY_DOMICILE",
-        dataset_id,
-        title="Country",
-        multi=False  
-    )
-    parameters.append(country_param)
-    controls.append(country_control)
+    
+    
 
-    # Sous-secteur (NACE)
     
 
     # Seuils min/max sur un score 

@@ -22,11 +22,11 @@ from General_dataset.esg_general.filters_esg import build_esg_filter_groups
 print(" deploy_aws.py started")
 
 # A REMPLIR AVEC LES INFOS PERSOS
-AWS_ACCOUNT_ID = "..."
+AWS_ACCOUNT_ID = "730335657350"
 REGION = "eu-central-1"
-DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-#DATASET_ARN = "..." # 👉 A CHANGER SELON LE DATASET UTILISE
-QUICKSIGHT_USER_ARN = "..."
+DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31" # 👉 A CHANGER SELON LE DATASET UTILISE
+#DATASET_ARN = "arn:aws:quicksight:eu-central-1:730335657350:dataset/498e463a-4e55-4db6-b832-100cb1eb6741" # 👉 A CHANGER SELON LE DATASET UTILISE
+QUICKSIGHT_USER_ARN = "arn:aws:quicksight:eu-central-1:730335657350:user/default/yasmine.zeroual@edu.devinci.fr"
 
 
 
@@ -63,6 +63,7 @@ def run_one(tag, config_path):
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
     dataset_arn = cfg.get("dataset_arn", DATASET_ARN)
     dataset_id = cfg["dataset_id"]
+    dataset_label = cfg.get("dataset_label", cfg.get("name", dataset_id))
     roles = cfg["roles"]
     template = cfg.get("template", "esg")
 
@@ -88,7 +89,7 @@ def run_one(tag, config_path):
         # pas de filtres ESG pour portfolio
         filter_groups = []
     else:
-        overview = build_overview_sheet(dataset_id, roles, controls=compiled_controls)
+        overview = build_overview_sheet(dataset_label, dataset_id, roles, controls=compiled_controls)
         risk = build_risk_sheet(dataset_id, roles)
         portfolio_data = build_portfolio_data_sheet(dataset_id, roles)
         paris = build_paris_alignment_sheet(dataset_id, roles)

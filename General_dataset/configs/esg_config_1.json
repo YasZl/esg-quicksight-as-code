@@ -1,5 +1,5 @@
 {
-  "name": "ESG Dataset – Config 1",
+  "name": "ESG Dataset",
   "dataset_id": "dataset",
   "template": "esg",
   "dataset_arn": "arn:aws:quicksight:eu-central-1:730335657350:dataset/7ba9e6bc-aeb9-491a-b382-75909cd1ea31",

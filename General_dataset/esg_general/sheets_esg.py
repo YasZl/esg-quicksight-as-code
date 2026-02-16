@@ -8,17 +8,22 @@ from .sheets import add_parameter_control_to_sheet, add_parameter_controls
 
 def _id(): return str(uuid.uuid4())
 
-def build_overview_sheet(dataset_id, roles, controls=None):
+def build_overview_sheet(dataset_label, dataset_id, roles, controls=None):
     sheet = create_empty_sheet(_id(), "Overview")
 
-    # Controls sur toute la largeur 
-    sheet = add_parameter_control_to_sheet(sheet, "SectorDrop01",  row=0, col=0,  row_span=4, col_span=12)
-    sheet = add_parameter_control_to_sheet(sheet, "RegionCtrl01",  row=0, col=12, row_span=4, col_span=12)
-    sheet = add_parameter_control_to_sheet(sheet, "CountryCtrl01", row=0, col=24, row_span=4, col_span=12)
+    # Header
+    sheet = add_title(sheet, f"Dataset: {dataset_label}", row=0, col=0,  row_span=2, col_span=24,
+                      color="#111111", font_size=18)
+    sheet = add_title(sheet, "Entreprise: MANAOS", row=0, col=24, row_span=2, col_span=12,
+                      color="#111111", font_size=18)
+
+    # Controls (plus grands)
+    sheet = add_parameter_control_to_sheet(sheet, "SectorList01", row=2, col=0,  row_span=4, col_span=18)
+    sheet = add_parameter_control_to_sheet(sheet, "RegionCtrl01", row=2, col=18, row_span=4, col_span=18)
 
     # ParameterControls : uniquement ceux affichés
     if controls:
-        keep = {"SectorDrop01", "RegionCtrl01", "CountryCtrl01"}
+        keep = {"SectorList01", "RegionCtrl01"}
         filtered = []
         for c in controls:
             k = next(iter(c.keys()))
@@ -27,25 +32,26 @@ def build_overview_sheet(dataset_id, roles, controls=None):
                 filtered.append(c)
         sheet = add_parameter_controls(sheet, filtered)
 
-    # Titres sur toute la largeur (36 colonnes)
-    sheet = add_title(sheet, "Analyse ESG", row=4, col=0, row_span=2, col_span=36)
-    sheet = add_title(sheet, "Données",     row=6, col=0, row_span=2, col_span=36,
+    # Titles
+    sheet = add_title(sheet, "Analyse ESG", row=8, col=0, row_span=2, col_span=36)
+    sheet = add_title(sheet, "Données",     row=10, col=0, row_span=2, col_span=36,
                       color="#111111", font_size=26)
 
-    # Visuels 
+    # Visuals (tous commencent après "Données")
     kpi = visuals_basic.make_total_metric_kpi(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, kpi, row=8, col=0,  row_span=6,  col_span=12)
+    sheet = add_visual_to_sheet(sheet, kpi, row=12, col=0,  row_span=6,  col_span=12)
 
     bar = visuals_basic.make_metric_by_category_bar(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, bar, row=8, col=12, row_span=10, col_span=12)
+    sheet = add_visual_to_sheet(sheet, bar, row=12, col=12, row_span=10, col_span=12)
 
     pie = visuals_basic.make_category_share_pie(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, pie, row=8, col=24, row_span=10, col_span=12)
+    sheet = add_visual_to_sheet(sheet, pie, row=12, col=24, row_span=10, col_span=12)
 
     table = visuals_basic.make_generic_table(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, table, row=20, col=0, row_span=12, col_span=36)
+    sheet = add_visual_to_sheet(sheet, table, row=24, col=0, row_span=12, col_span=36)
 
     return sheet
+
 
 
 
@@ -84,9 +90,6 @@ def build_portfolio_sheet(dataset_id, roles):
 
     table_obj = TableVisual(_id())
     table_obj.add_categorical_dimension_field(roles["security_name"], dataset_id)
-
-    if roles.get("security_type"):
-        table_obj.add_categorical_dimension_field(roles["security_type"], dataset_id)
 
     if roles.get("security_id"):
         table_obj.add_categorical_dimension_field(roles["security_id"], dataset_id)

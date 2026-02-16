@@ -69,13 +69,12 @@ def create_sector_parameter_single(param_name="SectorParam", default_sector=None
 # PARAMETRES DE SECTEUR
 
 def create_sector_parameter(param_name="SectorParam", default_sector=None):
-    param = StringParameter(param_name, "SINGLE_VALUED")  
-    param.set_value_when_unset(value_when_unset_option="NULL")
+    param = StringParameter(param_name, "MULTI_VALUED")
     if default_sector is not None:
         param.set_static_default_value(default_sector)
+
+    param.set_value_when_unset(value_when_unset_option="RECOMMENDED_VALUE")
     return param
-
-
 
 def create_sector_dropdown_control(
     control_id,
@@ -162,11 +161,12 @@ def create_intensity_slider_control(
 # Paramètres ESG supplémentaires (région, type d’actif, intensité)
 
 def create_region_parameter(name="RegionParam", default=None):
-    param = StringParameter(name, "SINGLE_VALUED")   # au lieu de MULTI_VALUED
+    param = StringParameter(name, "SINGLE_VALUED")
     if default is not None:
         param.set_static_default_value(default)
-    return param
 
+    param.set_value_when_unset(value_when_unset_option="RECOMMENDED_VALUE")
+    return param
 
 def create_region_dropdown_control(control_id, parameter_name, column_name, dataset_id, title="Région / Pays", multi=True):
     """Dropdown pour choisir un ou plusieurs pays dans le dataset."""
@@ -181,12 +181,6 @@ def create_region_dropdown_control(control_id, parameter_name, column_name, data
     return control
 
 
-def create_asset_type_parameter(name="AssetTypeParam", default=None):
-    """Paramètre pour filtrer Equity / Obligations / etc."""
-    param = StringParameter(name, "MULTI_VALUED")
-    if default is not None:
-        param.set_static_default_value(default)
-    return param
 
 
 def create_asset_type_dropdown_control(control_id, parameter_name, column_name, dataset_id, title="Type d'actif", multi=True):
