@@ -581,16 +581,7 @@ def auto_dashboard(
         font_size=30,
     )
 
-    sheet = add_title(
-        sheet,
-        "Données",
-        row=2,
-        col=0,
-        row_span=1,
-        col_span=24,
-        color="#111111",
-        font_size=20,
-    )
+    
     from collections import defaultdict
 
     visuals_by_type = defaultdict(list)
@@ -605,7 +596,7 @@ def auto_dashboard(
         ]
 
     
-    row = 3
+    row = 2
 
     for section in parsed_sections:
         # Titre de section
