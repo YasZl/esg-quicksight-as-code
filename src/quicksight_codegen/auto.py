@@ -476,6 +476,43 @@ def _create_visual(visual_config: dict, dataset_id: str, index: int = 0, field_m
     else:
         raise ValueError(f"Unknown visual type: {vtype}")
 
+CLI_TO_VISUAL_TYPE = {
+    "kpi": "KPIVisual",
+    "bar": "BarChartVisual",
+    "line": "LineChartVisual",
+    "pie": "PieChartVisual",
+    "heatmap": "HeatMapVisual",
+    "table": "TableVisual",
+}
+
+
+def _parse_sections(sections: list[str] | None) -> list[dict]:
+    if not sections:
+        return []
+
+    parsed = []
+    for item in sections:
+        if ":" not in item:
+            raise ValueError(
+                f"Invalid --section format: '{item}'. Expected 'Title:kpi,bar,table'"
+            )
+
+        title, visuals_str = item.split(":", 1)
+        visual_types = [v.strip().lower() for v in visuals_str.split(",") if v.strip()]
+
+        for v in visual_types:
+            if v not in CLI_TO_VISUAL_TYPE:
+                raise ValueError(
+                    f"Unsupported visual type '{v}'. "
+                    f"Supported: {', '.join(CLI_TO_VISUAL_TYPE.keys())}"
+                )
+
+        parsed.append({
+            "title": title.strip(),
+            "visual_types": visual_types,
+        })
+
+    return parsed
 
 def auto_dashboard(
     data: Union[str, "pd.DataFrame"],
@@ -484,6 +521,8 @@ def auto_dashboard(
     dataset_id: str = "dataset",
     sheet_name: str = None,
     theme: str = None,
+    main_title: str = None,
+    sections: list[str] | None = None,
 ) -> tuple[dict, str]:
     """
     Automatically generate a dashboard from a dataset.
@@ -522,7 +561,7 @@ def auto_dashboard(
 
     # Suggest visuals
     visual_configs = suggest_visuals(df, column_types)
-
+    parsed_sections = _parse_sections(sections)
     if not visual_configs:
         raise ValueError("Could not generate any visualizations from this dataset")
 
@@ -530,20 +569,10 @@ def auto_dashboard(
         # Create sheet with visuals
     sheet = create_empty_sheet("auto-sheet", name)
 
-<<<<<<< HEAD
-    # Group visuals by section for structured layout
-    sections = {
-        "Key Metrics": [],       # KPI cards
-        "Distribution": [],      # BarChart, PieChart
-        "Trends": [],            # LineChart
-        "Correlation": [],       # HeatMap
-        "Data Details": [],      # Table
-    }
-=======
     # Grand titre violet
     sheet = add_title(
         sheet,
-        "Analyse ESG",
+        main_title if main_title else "Analyse ESG",
         row=0,
         col=0,
         row_span=2,
@@ -562,78 +591,93 @@ def auto_dashboard(
         color="#111111",
         font_size=20,
     )
+    from collections import defaultdict
 
-    row = 3
-    col = 0
-    
->>>>>>> 97bd3df (update dashboard titles and layout)
-
+    visuals_by_type = defaultdict(list)
     for i, config in enumerate(visual_configs):
-        vtype = config["type"]
-        entry = (i, config)
-        if vtype == "KPIVisual":
-            sections["Key Metrics"].append(entry)
-        elif vtype in ("BarChartVisual", "PieChartVisual"):
-            sections["Distribution"].append(entry)
-        elif vtype == "LineChartVisual":
-            sections["Trends"].append(entry)
-        elif vtype == "HeatMapVisual":
-            sections["Correlation"].append(entry)
-        elif vtype == "TableVisual":
-            sections["Data Details"].append(entry)
-        else:
-            sections["Distribution"].append(entry)
+        visuals_by_type[config["type"]].append((i, config))
 
-    row = 0
+    visual_type_counters = defaultdict(int)
 
-    for section_name, entries in sections.items():
-        if not entries:
-            continue
+    if not parsed_sections:
+        parsed_sections = [
+            {"title": "Overview", "visual_types": ["kpi", "bar", "pie", "heatmap", "table"]}
+        ]
 
-        # Add section header
-        sheet = add_title(sheet, f"<b>{section_name}</b>", row=row, col=0, row_span=2, col_span=24)
-        row += 2
+    
+    row = 3
 
-        col = 0
-        section_row_span = 10  # track last row_span for end-of-section wrap
-        for i, config in entries:
+    for section in parsed_sections:
+        # Titre de section
+        sheet = add_title(
+            sheet,
+            section["title"],
+            row=row,
+            col=0,
+            row_span=1,
+            col_span=24,
+            color="#111111",
+            font_size=20,
+        )
+
+        # Les visuels commencent juste sous le titre
+        current_row = row + 1
+        current_col = 0
+        max_row_used = current_row
+
+        for short_type in section["visual_types"]:
+            internal_type = CLI_TO_VISUAL_TYPE[short_type]
+            idx = visual_type_counters[internal_type]
+            available = visuals_by_type.get(internal_type, [])
+
+            if idx >= len(available):
+                continue
+
+            i, config = available[idx]
+            visual_type_counters[internal_type] += 1
+
             visual = _create_visual(config, dataset_id, index=i, field_map=field_map)
             vtype = config["type"]
 
-            # Size by visual type
+            # Taille des visuels
             if vtype == "KPIVisual":
                 row_span, col_span = 6, 8
             elif vtype == "TableVisual":
                 row_span, col_span = 10, 24
             elif vtype == "HeatMapVisual":
                 row_span, col_span = 12, 24
-            elif vtype in ("BarChartVisual", "LineChartVisual"):
+            elif vtype in ("BarChartVisual", "LineChartVisual", "PieChartVisual"):
                 row_span, col_span = 10, 12
             else:
                 row_span, col_span = 10, 12
 
-            # Wrap to next row if needed
-            if col + col_span > 24:
-                row += row_span
-                col = 0
+            # Retour à la ligne si ça dépasse
+            if current_col + col_span > 24:
+                current_row = max_row_used
+                current_col = 0
 
-            sheet = add_visual_to_sheet(sheet, visual, row=row, col=col, row_span=row_span, col_span=col_span)
-            section_row_span = row_span
+            sheet = add_visual_to_sheet(
+                sheet,
+                visual,
+                row=current_row,
+                col=current_col,
+                row_span=row_span,
+                col_span=col_span,
+            )
 
-            # Advance position
+            # Mémorise la profondeur maximale utilisée
+            max_row_used = max(max_row_used, current_row + row_span)
+
+            # Position suivante
             if col_span >= 24:
-                row += row_span
-                col = 0
+                current_row = max_row_used
+                current_col = 0
             else:
-                col += col_span
-                if col >= 24:
-                    row += row_span
-                    col = 0
+                current_col += col_span
 
-        # After each section, move to next row
-        if col > 0:
-            row += section_row_span
-            col = 0
+        # La prochaine section commence après la fin complète de celle-ci
+        row = max_row_used + 1
+    
 
     # Generate filters for categorical columns
     sheet_id = sheet["SheetId"]
