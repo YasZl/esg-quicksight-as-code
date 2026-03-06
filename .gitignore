@@ -1,3 +1,10 @@
+# Generated dashboards
+*_dashboard.json
+*_dashboard.html
+
+# All json dashboards
+*.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

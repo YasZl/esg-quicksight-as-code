@@ -543,7 +543,8 @@ def sanitize_definition(definition: dict) -> dict:
 
                 new[k] = cv
 
-            # Handle Visual wrapper with VisualId
+                        # Handle Visual wrapper with VisualId
+                        # Handle Visual wrapper with VisualId
             if "VisualId" in new:
                 visual_keys = [
                     k
@@ -551,15 +552,15 @@ def sanitize_definition(definition: dict) -> dict:
                     if k in ALLOWED_VISUAL_KEYS and k != "TextBoxVisual"
                 ]
                 if "TextBoxVisual" in new:
-                    return None  # Remove titles completely
+                    return None
                 if len(visual_keys) == 1:
                     vk = visual_keys[0]
-                    return {vk: new[vk]}  # Convert to boto3 shape
+                    return {vk: new[vk]}
 
             # If it's a pure TextBoxVisual
             if "TextBoxVisual" in new:
                 return None
-
+            
             return new
 
         if isinstance(obj, list):
@@ -596,14 +597,22 @@ def sanitize_definition(definition: dict) -> dict:
         if i in original_layouts:
             sheet["Layouts"] = original_layouts[i]
 
-        # Filter layout elements to only include valid visuals
+                # Filter layout elements:
+        # - keep VISUAL elements only if their ElementId exists in valid_visual_ids
+        # - always keep TEXT_BOX elements
         for layout in sheet.get("Layouts", []):
             config = layout.get("Configuration", {})
             grid_layout = config.get("GridLayout", {})
             if "Elements" in grid_layout:
-                grid_layout["Elements"] = [
-                    elem for elem in grid_layout["Elements"]
-                    if elem.get("ElementId") in valid_visual_ids
-                ]
+                filtered_elements = []
+                for elem in grid_layout["Elements"]:
+                    element_type = elem.get("ElementType")
+                    element_id = elem.get("ElementId")
 
+                    if element_type == "TEXT_BOX":
+                        filtered_elements.append(elem)
+                    elif element_id in valid_visual_ids:
+                        filtered_elements.append(elem)
+
+                grid_layout["Elements"] = filtered_elements
     return cleaned

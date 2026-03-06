@@ -19,7 +19,7 @@ from .visuals import (
 )
 from .analysis import CalculatedField
 from .filters import FilterGroup, CategoryFilter, FilterDropdownControl
-from .sheets import create_empty_sheet, add_visual_to_sheet, add_title
+from .sheets import create_empty_sheet, add_visual_to_sheet, add_title, add_subtitle
 from .deploy import simulate_deploy
 from .preview import generate_chart_html_preview, save_analysis_json
 
@@ -526,9 +526,11 @@ def auto_dashboard(
     if not visual_configs:
         raise ValueError("Could not generate any visualizations from this dataset")
 
-    # Create sheet with visuals
+        # Create sheet with visuals
+        # Create sheet with visuals
     sheet = create_empty_sheet("auto-sheet", name)
 
+<<<<<<< HEAD
     # Group visuals by section for structured layout
     sections = {
         "Key Metrics": [],       # KPI cards
@@ -537,6 +539,34 @@ def auto_dashboard(
         "Correlation": [],       # HeatMap
         "Data Details": [],      # Table
     }
+=======
+    # Grand titre violet
+    sheet = add_title(
+        sheet,
+        "Analyse ESG",
+        row=0,
+        col=0,
+        row_span=2,
+        col_span=24,
+        color="#6C4CF7",
+        font_size=30,
+    )
+
+    sheet = add_title(
+        sheet,
+        "Données",
+        row=2,
+        col=0,
+        row_span=1,
+        col_span=24,
+        color="#111111",
+        font_size=20,
+    )
+
+    row = 3
+    col = 0
+    
+>>>>>>> 97bd3df (update dashboard titles and layout)
 
     for i, config in enumerate(visual_configs):
         vtype = config["type"]

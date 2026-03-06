@@ -252,19 +252,53 @@ def build_overview_sheet(dataset_id: str, roles: Dict[str, str]) -> Dict[str, An
         Dictionary representing the sheet structure
     """
     sheet = create_empty_sheet(_id(), "Overview")
-    sheet = add_title(sheet, "Overview", row=0, col=0, row_span=2, col_span=30)
+    # Grand titre violet
+    sheet = add_title(
+        sheet,
+        "Analyse ESG",
+        row=0,
+        col=0,
+        row_span=2,
+        col_span=30,
+        color="#6C4CF1",
+        font_size=30,
+        bold=True,
+    )    
+    # Sous-titre noir
+    sheet = add_title(
+        sheet,
+        "Données",
+        row=2,
+        col=0,
+        row_span=2,
+        col_span=30,
+        color="#000000",
+        font_size=22,
+        bold=True,
+    )
+
 
     kpi = make_total_metric_kpi(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, kpi, row=2, col=0, row_span=6, col_span=6)
+    sheet = add_visual_to_sheet(sheet, kpi, row=4, col=0, row_span=6, col_span=6)
 
     bar = make_metric_by_category_bar(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, bar, row=2, col=6, row_span=10, col_span=12)
-
+    sheet = add_visual_to_sheet(sheet, bar, row=4, col=6, row_span=10, col_span=12)
+    sheet = add_title(
+        sheet,
+        "GICS SECTOR",
+        row=24,
+        col=0,
+        row_span=2,
+        col_span=30,
+        color="#000000",
+        font_size=22,
+        bold=True,
+    )
     pie = make_category_share_pie(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, pie, row=2, col=18, row_span=10, col_span=12)
+    sheet = add_visual_to_sheet(sheet, pie, row=4, col=18, row_span=10, col_span=12)
 
     table = make_generic_table(_id(), dataset_id, roles).compile()
-    sheet = add_visual_to_sheet(sheet, table, row=12, col=0, row_span=10, col_span=30)
+    sheet = add_visual_to_sheet(sheet, table, row=14, col=0, row_span=10, col_span=30)
 
     return sheet
 

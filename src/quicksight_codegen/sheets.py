@@ -14,32 +14,28 @@ from typing import Dict, Any
 def create_empty_sheet(sheet_id: str, name: str) -> Dict[str, Any]:
     """
     Create a QuickSight sheet with an empty grid layout.
-
-    Args:
-        sheet_id: Unique identifier for the sheet
-        name: Display name for the sheet tab
-
-    Returns:
-        Dictionary representing the sheet structure
     """
     return {
         "SheetId": sheet_id,
         "Name": name,
         "ContentType": "INTERACTIVE",
         "Visuals": [],
-        "Layouts": [{
-            "Configuration": {
-                "GridLayout": {
-                    "Elements": [],
-                    "CanvasSizeOptions": {
-                        "ScreenCanvasSizeOptions": {
-                            "ResizeOption": "FIXED",
-                            "OptimizedViewPortWidth": "1600px"
+        "TextBoxes": [],
+        "Layouts": [
+            {
+                "Configuration": {
+                    "GridLayout": {
+                        "Elements": [],
+                        "CanvasSizeOptions": {
+                            "ScreenCanvasSizeOptions": {
+                                "ResizeOption": "FIXED",
+                                "OptimizedViewPortWidth": "1600px"
+                            }
                         }
                     }
                 }
             }
-        }],
+        ],
     }
 
 
@@ -52,22 +48,10 @@ def add_visual_to_sheet(
     col_span: int = 24,
 ) -> Dict[str, Any]:
     """
-    Add a visual to a sheet and position it in the grid layout.
-
-    Args:
-        sheet: The sheet dictionary to add the visual to
-        visual: The compiled visual dictionary
-        row: Row index in the grid (0-based)
-        col: Column index in the grid (0-based)
-        row_span: Number of rows the visual spans
-        col_span: Number of columns the visual spans
-
-    Returns:
-        The modified sheet dictionary
+    Add an existing visual to the sheet and position it in the grid layout.
     """
     visual_id = visual.get("VisualId")
     if not visual_id:
-        # Try to find VisualId in nested structure
         for key, value in visual.items():
             if isinstance(value, dict) and "VisualId" in value:
                 visual_id = value["VisualId"]
@@ -99,40 +83,38 @@ def add_title(
     col: int = 0,
     row_span: int = 3,
     col_span: int = 24,
+    color: str = "#6B4EFF",
+    font_size: int = 28,
 ) -> Dict[str, Any]:
     """
-    Add a text box visual as a title to the sheet.
-
-    Args:
-        sheet: The sheet dictionary to add the title to
-        title_text: The title text to display
-        row: Row index in the grid
-        col: Column index in the grid
-        row_span: Number of rows the title spans
-        col_span: Number of columns the title spans
-
-    Returns:
-        The modified sheet dictionary
+    Add a title as a QuickSight TEXT_BOX element (deployable).
     """
-    text_visual_id = str(uuid.uuid4())
+    text_box_id = str(uuid.uuid4())
 
-    text_visual = {
-        "VisualId": text_visual_id,
-        "TextBoxVisual": {
-            "VisualId": text_visual_id,
-            "Title": {"Visibility": "HIDDEN"},
-            "ChartConfiguration": {
-                "TextBoxChartConfiguration": {"Content": title_text}
-            },
-        },
-    }
+    safe_text = (
+        title_text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+    )
 
-    sheet["Visuals"].append(text_visual)
+    content = (
+        f'<text-box>'
+        f'<inline font-size="{font_size}px" color="{color}">{safe_text}</inline>'
+        f'</text-box>'
+    )
+
+    sheet.setdefault("TextBoxes", [])
+    sheet["TextBoxes"].append(
+        {
+            "SheetTextBoxId": text_box_id,
+            "Content": content,
+        }
+    )
 
     sheet["Layouts"][0]["Configuration"]["GridLayout"]["Elements"].append(
         {
-            "ElementId": text_visual_id,
-            "ElementType": "VISUAL",
+            "ElementId": text_box_id,
+            "ElementType": "TEXT_BOX",
             "ColumnIndex": col,
             "ColumnSpan": col_span,
             "RowIndex": row,
@@ -141,3 +123,25 @@ def add_title(
     )
 
     return sheet
+
+
+def add_subtitle(
+    sheet: Dict[str, Any],
+    text: str,
+    row: int,
+    col: int = 0,
+    row_span: int = 2,
+    col_span: int = 24,
+    color: str = "#111111",
+    font_size: int = 22,
+) -> Dict[str, Any]:
+    return add_title(
+        sheet,
+        text,
+        row=row,
+        col=col,
+        row_span=row_span,
+        col_span=col_span,
+        font_size=font_size,
+        color=color,
+    )
