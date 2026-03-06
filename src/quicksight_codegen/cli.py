@@ -14,10 +14,6 @@ import argparse
 import os
 import sys
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 def cmd_deploy(args):
     """Generate and deploy a dashboard to QuickSight."""
@@ -208,6 +204,9 @@ def cmd_list_datasets(args):
 
 
 def main(argv=None):
+    from dotenv import load_dotenv
+    load_dotenv()
+
     parser = argparse.ArgumentParser(
         prog="quicksight-codegen",
         description="Generate and deploy QuickSight dashboards as code",

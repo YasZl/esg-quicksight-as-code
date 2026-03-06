@@ -10,6 +10,8 @@ Also reserves stub functions for a future S3-based fully automated path.
 Requires boto3: pip install quicksight-codegen[aws]
 """
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 

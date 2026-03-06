@@ -39,8 +39,8 @@ dev = [
 quicksight-codegen = "quicksight_codegen.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/your-org/quicksight-codegen"
-Documentation = "https://github.com/your-org/quicksight-codegen#readme"
+Homepage = "https://github.com/YasZl/esg-quicksight-as-code"
+Documentation = "https://github.com/YasZl/esg-quicksight-as-code#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/quicksight_codegen"]

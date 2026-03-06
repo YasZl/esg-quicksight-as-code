@@ -5,6 +5,8 @@ This module generates HTML previews of analysis definitions,
 allowing visual inspection without deploying to AWS.
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
 from collections import Counter
