@@ -92,6 +92,8 @@ def cmd_deploy(args):
         dataset_id="dataset",
         sheet_name=args.sheet,
         theme=theme_name,
+        main_title=args.main_title,
+        sections=args.section,
     )
 
     print(f"[generate] Preview saved to: {html_path}")
@@ -230,6 +232,12 @@ def main(argv=None):
     p_deploy.add_argument("--fix-types", action="store_true", help="Fix dataset column types before deploying")
     p_deploy.add_argument("--theme", help="Theme preset name (manaos, ocean, forest, corporate, sunset)")
     p_deploy.add_argument("--s3-bucket", help="S3 bucket for full-auto upload (requires S3 permissions)")
+    p_deploy.add_argument("--main-title", help="Main dashboard title")
+    p_deploy.add_argument(
+        "--section",
+        action="append",
+        help='Dashboard section in format "Section Title:kpi,bar,table"',
+    )
     p_deploy.set_defaults(func=cmd_deploy)
 
     # preview
@@ -238,6 +246,7 @@ def main(argv=None):
     p_preview.add_argument("--name", default="Auto Dashboard", help="Dashboard name")
     p_preview.add_argument("--output", help="Output directory")
     p_preview.add_argument("--sheet", help="Excel sheet name")
+    p_preview.add_argument("--main-title", help="Main dashboard title")
     p_preview.set_defaults(func=cmd_preview)
 
     # fix-types
