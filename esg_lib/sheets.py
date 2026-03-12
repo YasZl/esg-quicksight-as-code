@@ -45,7 +45,7 @@ def add_visual_to_sheet(
             if isinstance(value, dict) and "VisualId" in value:
                 visual_id = value["VisualId"]
                 break
-    
+
     if not visual_id:
         raise ValueError("The visual must contain a 'VisualId' key.")
 
