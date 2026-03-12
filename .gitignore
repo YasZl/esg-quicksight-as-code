@@ -222,3 +222,5 @@ esg_dashboard_output_local.json
 # PDF files (reports and generated documents)
 *.pdf
 
+General_dataset/
+
