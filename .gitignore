@@ -216,6 +216,9 @@ COPIE.*
 dashboard_definition.json
 dashboard_preview.html
 esg_dashboard_output_local.json
-
+*.html
+*.json
+*.csv
 # PDF files (reports and generated documents)
 *.pdf
+
