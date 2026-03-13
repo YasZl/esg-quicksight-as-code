@@ -2,9 +2,6 @@
 *_dashboard.json
 *_dashboard.html
 
-# All json dashboards
-*.json
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -218,8 +215,7 @@ __marimo__/
 
 # Project specific
 output/
-*.json
-!pyproject.toml
+*_dashboard.json
 *.html
 *.csv
 *.xlsx
@@ -229,3 +225,4 @@ output/
 scripts/*.sh
 decisionlog.md
 presentation.md
+docs/

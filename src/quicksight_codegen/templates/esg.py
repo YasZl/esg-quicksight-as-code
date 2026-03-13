@@ -262,8 +262,7 @@ def build_overview_sheet(dataset_id: str, roles: Dict[str, str]) -> Dict[str, An
         col_span=30,
         color="#6C4CF1",
         font_size=30,
-        bold=True,
-    )    
+    )
     # Sous-titre noir
     sheet = add_title(
         sheet,
@@ -274,7 +273,6 @@ def build_overview_sheet(dataset_id: str, roles: Dict[str, str]) -> Dict[str, An
         col_span=30,
         color="#000000",
         font_size=22,
-        bold=True,
     )
 
 
@@ -292,7 +290,6 @@ def build_overview_sheet(dataset_id: str, roles: Dict[str, str]) -> Dict[str, An
         col_span=30,
         color="#000000",
         font_size=22,
-        bold=True,
     )
     pie = make_category_share_pie(_id(), dataset_id, roles).compile()
     sheet = add_visual_to_sheet(sheet, pie, row=4, col=18, row_span=10, col_span=12)

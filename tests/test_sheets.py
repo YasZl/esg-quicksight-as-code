@@ -34,5 +34,6 @@ def test_add_title():
     sheet = create_empty_sheet("sheet-1", "Overview")
     sheet = add_title(sheet, "Dashboard Title", row=0, col=0, row_span=2, col_span=24)
 
-    assert len(sheet["Visuals"]) == 1
-    assert "TextBoxVisual" in sheet["Visuals"][0]
+    assert len(sheet["TextBoxes"]) == 1
+    assert "SheetTextBoxId" in sheet["TextBoxes"][0]
+    assert "Content" in sheet["TextBoxes"][0]
