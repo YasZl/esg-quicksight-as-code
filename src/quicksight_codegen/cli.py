@@ -209,44 +209,67 @@ def main(argv=None):
     from dotenv import load_dotenv
     load_dotenv()
 
+    from . import __version__
+
     parser = argparse.ArgumentParser(
         prog="quicksight-codegen",
         description="Generate and deploy QuickSight dashboards as code",
+        epilog="Examples:\n"
+               "  quicksight-codegen preview --csv data.csv\n"
+               "  quicksight-codegen deploy --csv data.csv --dataset my-ds --name \"ESG Dashboard\"\n"
+               "  quicksight-codegen deploy --csv data.csv --dataset-arn arn:aws:... --name \"Dashboard\" --theme manaos\n"
+               "\n"
+               "Documentation: https://github.com/YasZl/esg-quicksight-as-code",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # deploy
-    p_deploy = subparsers.add_parser("deploy", help="Generate and deploy a dashboard")
-    p_deploy.add_argument("--csv", required=True, help="Path to CSV or Excel file")
-    p_deploy.add_argument("--name", required=True, help="Dashboard name")
-    p_deploy.add_argument("--dataset", help="Dataset name (auto-discovers ARN)")
-    p_deploy.add_argument("--dataset-arn", help="Full dataset ARN (skips discovery)")
-    p_deploy.add_argument("--id", help="Analysis ID (defaults to slugified name)")
-    p_deploy.add_argument("--region", help="AWS region (auto-detected if not set)")
+    p_deploy = subparsers.add_parser(
+        "deploy",
+        help="Generate and deploy a dashboard to AWS QuickSight",
+        description="Reads a CSV/Excel file, auto-generates chart visuals, and deploys to QuickSight.",
+        epilog="Example:\n"
+               "  quicksight-codegen deploy --csv portfolio.csv --dataset-arn arn:aws:... \\\n"
+               "    --name \"ESG Dashboard\" --user-arn arn:aws:... --theme manaos \\\n"
+               "    --section \"Overview:kpi,bar\" --section \"Details:table,heatmap\"",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p_deploy.add_argument("--csv", required=True, help="Path to CSV or Excel (.xlsx) data file")
+    p_deploy.add_argument("--name", required=True, help="Dashboard display name in QuickSight")
+    p_deploy.add_argument("--dataset", help="Dataset name in QuickSight (auto-discovers ARN)")
+    p_deploy.add_argument("--dataset-arn", help="Full dataset ARN (use instead of --dataset to skip discovery)")
+    p_deploy.add_argument("--id", help="Analysis ID (defaults to slugified --name)")
+    p_deploy.add_argument("--region", help="AWS region, e.g. eu-central-1 (auto-detected from AWS config)")
     p_deploy.add_argument("--account-id", help="AWS account ID (or set AWS_ACCOUNT_ID env var)")
-    p_deploy.add_argument("--user-arn", help="QuickSight user ARN (or set QUICKSIGHT_USER_ARN env var)")
-    p_deploy.add_argument("--output", help="Output directory for preview files")
-    p_deploy.add_argument("--sheet", help="Excel sheet name (auto-detected if not set)")
-    p_deploy.add_argument("--update", action="store_true", help="Update existing analysis")
-    p_deploy.add_argument("--dry-run", action="store_true", help="Generate only, don't deploy")
-    p_deploy.add_argument("--fix-types", action="store_true", help="Fix dataset column types before deploying")
-    p_deploy.add_argument("--theme", help="Theme preset name (manaos, ocean, forest, corporate, sunset)")
-    p_deploy.add_argument("--s3-bucket", help="S3 bucket for full-auto upload (requires S3 permissions)")
-    p_deploy.add_argument("--main-title", help="Main dashboard title")
+    p_deploy.add_argument("--user-arn", help="QuickSight user ARN for permissions (or set QUICKSIGHT_USER_ARN env var)")
+    p_deploy.add_argument("--output", help="Output directory for JSON and HTML preview files (default: current dir)")
+    p_deploy.add_argument("--sheet", help="Excel sheet name to use (auto-selects largest sheet if omitted)")
+    p_deploy.add_argument("--update", action="store_true", help="Update an existing analysis instead of creating new")
+    p_deploy.add_argument("--dry-run", action="store_true", help="Generate preview only, do not deploy to AWS")
+    p_deploy.add_argument("--fix-types", action="store_true", help="Cast dataset STRING columns to proper types before deploy")
+    p_deploy.add_argument("--theme", help="Color theme preset: manaos, ocean, forest, corporate, sunset")
+    p_deploy.add_argument("--s3-bucket", help="S3 bucket for CSV upload (not yet available)")
+    p_deploy.add_argument("--main-title", help="Main title displayed at the top of the dashboard")
     p_deploy.add_argument(
         "--section",
         action="append",
-        help='Dashboard section in format "Section Title:kpi,bar,table"',
+        help='Dashboard section: "Title:kpi,bar,table" (can be repeated)',
     )
     p_deploy.set_defaults(func=cmd_deploy)
 
     # preview
-    p_preview = subparsers.add_parser("preview", help="Generate local HTML preview only")
-    p_preview.add_argument("--csv", required=True, help="Path to CSV or Excel file")
-    p_preview.add_argument("--name", default="Auto Dashboard", help="Dashboard name")
-    p_preview.add_argument("--output", help="Output directory")
-    p_preview.add_argument("--sheet", help="Excel sheet name")
-    p_preview.add_argument("--main-title", help="Main dashboard title")
+    p_preview = subparsers.add_parser(
+        "preview",
+        help="Generate a local HTML preview without AWS",
+        description="Creates an interactive HTML dashboard preview using Chart.js — no AWS credentials needed.",
+    )
+    p_preview.add_argument("--csv", required=True, help="Path to CSV or Excel (.xlsx) data file")
+    p_preview.add_argument("--name", default="Auto Dashboard", help="Dashboard name shown in preview")
+    p_preview.add_argument("--output", help="Output directory for HTML file (default: current dir)")
+    p_preview.add_argument("--sheet", help="Excel sheet name (auto-selects largest sheet if omitted)")
+    p_preview.add_argument("--main-title", help="Main title displayed at the top of the preview")
     p_preview.set_defaults(func=cmd_preview)
 
     # fix-types
@@ -269,10 +292,37 @@ def main(argv=None):
         parser.print_help()
         sys.exit(1)
 
+    # Validate CSV path early for commands that need it
+    if hasattr(args, "csv") and args.csv:
+        csv_path = args.csv
+        if not os.path.isfile(csv_path):
+            print(f"\nError: File not found: '{csv_path}'", file=sys.stderr)
+            print("Please check the file path and try again.", file=sys.stderr)
+            sys.exit(1)
+        ext = os.path.splitext(csv_path)[1].lower()
+        if ext not in (".csv", ".xls", ".xlsx"):
+            print(f"\nError: Unsupported file format: '{ext}'", file=sys.stderr)
+            print("Supported formats: .csv, .xls, .xlsx", file=sys.stderr)
+            sys.exit(1)
+
     try:
         args.func(args)
     except KeyboardInterrupt:
         print("\nCancelled.")
+        sys.exit(1)
+    except ImportError as e:
+        module = str(e).split("'")[-2] if "'" in str(e) else str(e)
+        print(f"\nError: Missing dependency — {e}", file=sys.stderr)
+        if "pandas" in str(e).lower():
+            print("Install with: pip install quicksight-codegen[auto]", file=sys.stderr)
+        elif "boto3" in str(e).lower():
+            print("Install with: pip install quicksight-codegen[aws]", file=sys.stderr)
+        else:
+            print(f"Install with: pip install {module}", file=sys.stderr)
+        sys.exit(1)
+    except FileNotFoundError as e:
+        print(f"\nError: {e}", file=sys.stderr)
+        print("Please check the file path and try again.", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
         print(f"\nError: {e}", file=sys.stderr)
