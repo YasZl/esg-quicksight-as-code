@@ -7,6 +7,8 @@ from quicksight_codegen.auto import (
     infer_column_types,
     suggest_visuals,
     _generate_calc_fields,
+    _generate_auto_filters,
+    _generate_named_filters,
     _sanitize_id,
     _parse_sections,
     _rank_measure_columns,
@@ -259,3 +261,91 @@ class TestParseSections:
     def test_unsupported_visual_raises(self):
         with pytest.raises(ValueError, match="Unsupported visual type"):
             _parse_sections(["Title:kpi,invalidtype"])
+
+
+# ── _generate_named_filters ───────────────────────────────────────
+
+class TestGenerateNamedFilters:
+    """Test portfolio and date column filter generation."""
+
+    DS_ID = "test-dataset"
+    SHEET_ID = "test-sheet"
+    COLUMNS = ["PORTFOLIO_NAME", "VALUATION_DATE", "GICS_SECTOR", "SCORE"]
+
+    def test_portfolio_only(self):
+        fgs, ctrls = _generate_named_filters(
+            portfolio_column="PORTFOLIO_NAME",
+            date_column=None,
+            dataset_id=self.DS_ID,
+            sheet_id=self.SHEET_ID,
+            all_columns=self.COLUMNS,
+        )
+        assert len(fgs) == 1
+        assert len(ctrls) == 1
+        compiled = ctrls[0].compile()
+        assert "Dropdown" in compiled
+        assert compiled["Dropdown"]["Type"] == "MULTI_SELECT"
+
+    def test_date_only(self):
+        fgs, ctrls = _generate_named_filters(
+            portfolio_column=None,
+            date_column="VALUATION_DATE",
+            dataset_id=self.DS_ID,
+            sheet_id=self.SHEET_ID,
+            all_columns=self.COLUMNS,
+        )
+        assert len(fgs) == 1
+        assert len(ctrls) == 1
+        compiled = ctrls[0].compile()
+        assert compiled["Dropdown"]["Type"] == "SINGLE_SELECT"
+
+    def test_both(self):
+        fgs, ctrls = _generate_named_filters(
+            portfolio_column="PORTFOLIO_NAME",
+            date_column="VALUATION_DATE",
+            dataset_id=self.DS_ID,
+            sheet_id=self.SHEET_ID,
+            all_columns=self.COLUMNS,
+        )
+        assert len(ctrls) == 2
+        # Portfolio first, date second
+        assert "portfolio" in ctrls[0].compile()["Dropdown"]["FilterControlId"].lower()
+        assert "date" in ctrls[1].compile()["Dropdown"]["FilterControlId"].lower()
+
+    def test_none(self):
+        fgs, ctrls = _generate_named_filters(
+            portfolio_column=None,
+            date_column=None,
+            dataset_id=self.DS_ID,
+            sheet_id=self.SHEET_ID,
+            all_columns=self.COLUMNS,
+        )
+        assert fgs == []
+        assert ctrls == []
+
+    def test_invalid_column_raises(self):
+        with pytest.raises(ValueError, match="not found in data"):
+            _generate_named_filters(
+                portfolio_column="NONEXISTENT",
+                date_column=None,
+                dataset_id=self.DS_ID,
+                sheet_id=self.SHEET_ID,
+                all_columns=self.COLUMNS,
+            )
+
+    def test_excluded_from_auto_filters(self):
+        """Named filter columns should be excluded from auto-generated filters."""
+        types = {
+            "categorical": ["PORTFOLIO_NAME", "GICS_SECTOR", "REGION", "COUNTRY"],
+            "numeric": ["SCORE"],
+            "datetime": [],
+            "text": [],
+        }
+        # With portfolio_column set, auto filters should skip PORTFOLIO_NAME
+        fgs, ctrls = _generate_auto_filters(
+            types, self.DS_ID, self.SHEET_ID,
+            exclude_columns=["PORTFOLIO_NAME"],
+        )
+        control_titles = [c.compile()["Dropdown"]["Title"] for c in ctrls]
+        assert "PORTFOLIO_NAME" not in control_titles
+        assert "GICS_SECTOR" in control_titles
