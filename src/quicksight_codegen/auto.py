@@ -216,18 +216,76 @@ def _generate_calc_fields(column_types: dict, dataset_id: str) -> tuple[list, di
     return calc_fields, field_map
 
 
+def _generate_named_filters(
+    portfolio_column: str | None,
+    date_column: str | None,
+    dataset_id: str,
+    sheet_id: str,
+    all_columns: list[str],
+) -> tuple[list, list]:
+    """Generate FilterGroups and FilterControls for user-specified columns.
+
+    Creates a portfolio dropdown (MULTI_SELECT) and/or a date dropdown
+    (SINGLE_SELECT) based on CLI --portfolio-column / --date-column flags.
+
+    Returns:
+        Tuple of (filter_groups, filter_controls).
+    """
+    if not portfolio_column and not date_column:
+        return [], []
+
+    filters = []
+    controls = []
+
+    for col, prefix, select_type in [
+        (portfolio_column, "portfolio", "MULTI_SELECT"),
+        (date_column, "date", "SINGLE_SELECT"),
+    ]:
+        if not col:
+            continue
+        if col not in all_columns:
+            raise ValueError(f"Column '{col}' not found in data. Available: {all_columns}")
+
+        filter_id = f"named-filter-{prefix}"
+        control_id = f"named-control-{prefix}"
+
+        cat_filter = CategoryFilter(filter_id, col, dataset_id)
+        cat_filter.add_filter_list_configuration(
+            match_operator="CONTAINS",
+            select_all_options="FILTER_ALL_VALUES",
+        )
+        filters.append(cat_filter)
+
+        control = FilterDropdownControl(control_id, filter_id, col)
+        control.set_type(select_type)
+        controls.append(control)
+
+    fg = FilterGroup("ALL_DATASETS", "named-filter-group")
+    for f in filters:
+        fg.add_filter(f)
+    fg.add_scope_configuration("ALL_VISUALS", sheet_id)
+    fg.set_status("ENABLED")
+
+    return [fg], controls
+
+
 def _generate_auto_filters(
-    column_types: dict, dataset_id: str, sheet_id: str
+    column_types: dict, dataset_id: str, sheet_id: str,
+    exclude_columns: list[str] | None = None,
 ) -> tuple[list, list]:
     """Generate FilterGroups and FilterControls for categorical columns.
 
     Creates dropdown filters for up to 4 categorical columns, allowing
     users to interactively filter all visuals on the sheet.
 
+    Args:
+        exclude_columns: Column names to skip (already handled by named filters).
+
     Returns:
-        Tuple of (filter_groups, filter_controls) — both as compiled dicts.
+        Tuple of (filter_groups, filter_controls).
     """
-    categorical = column_types["categorical"]
+    excluded = set(exclude_columns or [])
+    categorical = [c for c in column_types["categorical"] if c not in excluded]
     if not categorical:
         return [], []
 
@@ -523,6 +581,8 @@ def auto_dashboard(
     theme: str = None,
     main_title: str = None,
     sections: list[str] | None = None,
+    portfolio_column: str | None = None,
+    date_column: str | None = None,
 ) -> tuple[dict, str]:
     """
     Automatically generate a dashboard from a dataset.
@@ -670,11 +730,24 @@ def auto_dashboard(
         row = max_row_used + 1
     
 
-    # Generate filters for categorical columns
+    # Generate filters
     sheet_id = sheet["SheetId"]
-    filter_groups, filter_controls = _generate_auto_filters(
-        column_types, dataset_id, sheet_id
+    all_columns = list(df.columns)
+
+    # Named filters (portfolio / date) — user-specified
+    named_fgs, named_ctrls = _generate_named_filters(
+        portfolio_column, date_column, dataset_id, sheet_id, all_columns,
     )
+
+    # Auto filters — exclude columns already handled by named filters
+    exclude = [c for c in [portfolio_column, date_column] if c]
+    auto_fgs, auto_ctrls = _generate_auto_filters(
+        column_types, dataset_id, sheet_id, exclude_columns=exclude,
+    )
+
+    # Combine: named filters first (appear leftmost in UI)
+    filter_groups = named_fgs + auto_fgs
+    filter_controls = named_ctrls + auto_ctrls
 
     # Add filter controls to the sheet
     if filter_controls:

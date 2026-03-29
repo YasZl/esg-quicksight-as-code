@@ -94,6 +94,8 @@ def cmd_deploy(args):
         theme=theme_name,
         main_title=args.main_title,
         sections=args.section,
+        portfolio_column=getattr(args, "portfolio_column", None),
+        date_column=getattr(args, "date_column", None),
     )
 
     print(f"[generate] Preview saved to: {html_path}")
@@ -168,6 +170,9 @@ def cmd_preview(args):
         output_dir=args.output or ".",
         dataset_id="dataset",
         sheet_name=args.sheet,
+        main_title=getattr(args, "main_title", None),
+        portfolio_column=getattr(args, "portfolio_column", None),
+        date_column=getattr(args, "date_column", None),
     )
     print(f"[done] Preview saved to: {html_path}")
 
@@ -257,6 +262,8 @@ def main(argv=None):
         action="append",
         help='Dashboard section: "Title:kpi,bar,table" (can be repeated)',
     )
+    p_deploy.add_argument("--portfolio-column", help="Column name for portfolio filter dropdown (e.g. PORTFOLIO_NAME)")
+    p_deploy.add_argument("--date-column", help="Column name for date version filter dropdown (e.g. VALUATION_DATE)")
     p_deploy.set_defaults(func=cmd_deploy)
 
     # preview
@@ -270,6 +277,8 @@ def main(argv=None):
     p_preview.add_argument("--output", help="Output directory for HTML file (default: current dir)")
     p_preview.add_argument("--sheet", help="Excel sheet name (auto-selects largest sheet if omitted)")
     p_preview.add_argument("--main-title", help="Main title displayed at the top of the preview")
+    p_preview.add_argument("--portfolio-column", help="Column name for portfolio filter dropdown")
+    p_preview.add_argument("--date-column", help="Column name for date version filter dropdown")
     p_preview.set_defaults(func=cmd_preview)
 
     # fix-types
