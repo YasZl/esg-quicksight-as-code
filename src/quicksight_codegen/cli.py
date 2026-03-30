@@ -81,7 +81,8 @@ def cmd_deploy(args):
         print(f"[discovery] User ARN: {user_arn}")
 
     # Generate dashboard
-    analysis_id = args.id or args.name.lower().replace(" ", "-")
+    from .auto import _sanitize_id
+    analysis_id = args.id or _sanitize_id(args.name)
     theme_name = getattr(args, "theme", None)
     print(f"\n[generate] Creating dashboard from {args.csv}...")
 
