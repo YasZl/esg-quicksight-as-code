@@ -155,10 +155,14 @@ def deploy_analysis(
         permissions=permissions,
     )
 
-    if update:
-        return update_analysis_boto3(analysis, region)
-    else:
+    # Auto upsert: try create first, update if already exists
+    try:
         return create_analysis_boto3(analysis, region)
+    except Exception as e:
+        if "ResourceExistsException" in str(type(e).__name__):
+            print("[deploy] Analysis already exists, updating...")
+            return update_analysis_boto3(analysis, region)
+        raise
 
 
 def simulate_deploy(
