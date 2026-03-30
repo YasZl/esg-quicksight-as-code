@@ -250,10 +250,18 @@ def _generate_named_filters(
         control_id = f"named-control-{prefix}"
 
         cat_filter = CategoryFilter(filter_id, col, dataset_id)
-        cat_filter.add_filter_list_configuration(
-            match_operator="CONTAINS",
-            select_all_options="FILTER_ALL_VALUES",
-        )
+        if prefix == "date":
+            # Date columns in SPICE require NullOption to be set
+            cat_filter.add_custom_filter_list_configuration(
+                match_operator="CONTAINS",
+                null_option="NON_NULLS_ONLY",
+                select_all_options="FILTER_ALL_VALUES",
+            )
+        else:
+            cat_filter.add_filter_list_configuration(
+                match_operator="CONTAINS",
+                select_all_options="FILTER_ALL_VALUES",
+            )
         filters.append(cat_filter)
 
         control = FilterDropdownControl(control_id, filter_id, col)
