@@ -222,11 +222,13 @@ def _generate_named_filters(
     dataset_id: str,
     sheet_id: str,
     all_columns: list[str],
+    df: "pd.DataFrame" = None,
 ) -> tuple[list, list]:
     """Generate FilterGroups and FilterControls for user-specified columns.
 
     Creates a portfolio dropdown (MULTI_SELECT) and/or a date dropdown
     (SINGLE_SELECT) based on CLI --portfolio-column / --date-column flags.
+    Populates dropdown values from the actual data.
 
     Important: date columns must be STRING type in SPICE (not DATE).
     Format date values as "Version YYYY-MM-DD" to prevent SPICE auto-detection.
@@ -252,9 +254,15 @@ def _generate_named_filters(
         filter_id = f"named-filter-{prefix}"
         control_id = f"named-control-{prefix}"
 
+        # Get unique values from data for the dropdown
+        values = []
+        if df is not None and col in df.columns:
+            values = sorted(df[col].dropna().astype(str).unique().tolist())
+
         cat_filter = CategoryFilter(filter_id, col, dataset_id)
         cat_filter.add_filter_list_configuration(
             match_operator="CONTAINS",
+            category_values=values,
             select_all_options="FILTER_ALL_VALUES",
         )
         filters.append(cat_filter)
@@ -739,7 +747,7 @@ def auto_dashboard(
 
     # Named filters (portfolio / date) — user-specified
     named_fgs, named_ctrls = _generate_named_filters(
-        portfolio_column, date_column, dataset_id, sheet_id, all_columns,
+        portfolio_column, date_column, dataset_id, sheet_id, all_columns, df=df,
     )
 
     # Auto filters — exclude columns already handled by named filters
