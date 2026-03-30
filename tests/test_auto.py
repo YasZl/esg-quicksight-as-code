@@ -273,7 +273,7 @@ class TestGenerateNamedFilters:
     COLUMNS = ["PORTFOLIO_NAME", "VALUATION_DATE", "GICS_SECTOR", "SCORE"]
 
     def test_portfolio_only(self):
-        fgs, ctrls, calcs = _generate_named_filters(
+        fgs, ctrls = _generate_named_filters(
             portfolio_column="PORTFOLIO_NAME",
             date_column=None,
             dataset_id=self.DS_ID,
@@ -282,13 +282,12 @@ class TestGenerateNamedFilters:
         )
         assert len(fgs) == 1
         assert len(ctrls) == 1
-        assert len(calcs) == 0
         compiled = ctrls[0].compile()
         assert "Dropdown" in compiled
         assert compiled["Dropdown"]["Type"] == "MULTI_SELECT"
 
     def test_date_only(self):
-        fgs, ctrls, calcs = _generate_named_filters(
+        fgs, ctrls = _generate_named_filters(
             portfolio_column=None,
             date_column="VALUATION_DATE",
             dataset_id=self.DS_ID,
@@ -297,15 +296,11 @@ class TestGenerateNamedFilters:
         )
         assert len(fgs) == 1
         assert len(ctrls) == 1
-        assert len(calcs) == 1
         compiled = ctrls[0].compile()
         assert compiled["Dropdown"]["Type"] == "SINGLE_SELECT"
-        # Should create a toString calc field for DATE compatibility
-        assert calcs[0].name == "VALUATION_DATE_str"
-        assert "toString" in calcs[0].expression
 
     def test_both(self):
-        fgs, ctrls, calcs = _generate_named_filters(
+        fgs, ctrls = _generate_named_filters(
             portfolio_column="PORTFOLIO_NAME",
             date_column="VALUATION_DATE",
             dataset_id=self.DS_ID,
@@ -313,13 +308,12 @@ class TestGenerateNamedFilters:
             all_columns=self.COLUMNS,
         )
         assert len(ctrls) == 2
-        assert len(calcs) == 1  # Only date needs calc field
         # Portfolio first, date second
         assert "portfolio" in ctrls[0].compile()["Dropdown"]["FilterControlId"].lower()
         assert "date" in ctrls[1].compile()["Dropdown"]["FilterControlId"].lower()
 
     def test_none(self):
-        fgs, ctrls, calcs = _generate_named_filters(
+        fgs, ctrls = _generate_named_filters(
             portfolio_column=None,
             date_column=None,
             dataset_id=self.DS_ID,
@@ -328,7 +322,6 @@ class TestGenerateNamedFilters:
         )
         assert fgs == []
         assert ctrls == []
-        assert calcs == []
 
     def test_invalid_column_raises(self):
         with pytest.raises(ValueError, match="not found in data"):
