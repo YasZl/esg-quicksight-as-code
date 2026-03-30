@@ -222,20 +222,25 @@ def _generate_named_filters(
     dataset_id: str,
     sheet_id: str,
     all_columns: list[str],
-) -> tuple[list, list]:
+) -> tuple[list, list, list]:
     """Generate FilterGroups and FilterControls for user-specified columns.
 
     Creates a portfolio dropdown (MULTI_SELECT) and/or a date dropdown
     (SINGLE_SELECT) based on CLI --portfolio-column / --date-column flags.
 
+    For date columns, a CalculatedField toString({col}) is created so
+    CategoryFilter works (SPICE auto-detects dates as DATE type, which
+    is incompatible with CategoryFilter).
+
     Returns:
-        Tuple of (filter_groups, filter_controls).
+        Tuple of (filter_groups, filter_controls, calc_fields).
     """
     if not portfolio_column and not date_column:
-        return [], []
+        return [], [], []
 
     filters = []
     controls = []
+    calc_fields = []
 
     for col, prefix, select_type in [
         (portfolio_column, "portfolio", "MULTI_SELECT"),
@@ -249,19 +254,22 @@ def _generate_named_filters(
         filter_id = f"named-filter-{prefix}"
         control_id = f"named-control-{prefix}"
 
-        cat_filter = CategoryFilter(filter_id, col, dataset_id)
+        # For date columns, create a toString() calc field so CategoryFilter works
         if prefix == "date":
-            # Date columns in SPICE require NullOption to be set
-            cat_filter.add_custom_filter_list_configuration(
-                match_operator="CONTAINS",
-                null_option="NON_NULLS_ONLY",
-                select_all_options="FILTER_ALL_VALUES",
-            )
+            filter_col = f"{col}_str"
+            calc_fields.append(CalculatedField(
+                data_set_identifier=dataset_id,
+                expression=f"toString({{{col}}})",
+                name=filter_col,
+            ))
         else:
-            cat_filter.add_filter_list_configuration(
-                match_operator="CONTAINS",
-                select_all_options="FILTER_ALL_VALUES",
-            )
+            filter_col = col
+
+        cat_filter = CategoryFilter(filter_id, filter_col, dataset_id)
+        cat_filter.add_filter_list_configuration(
+            match_operator="CONTAINS",
+            select_all_options="FILTER_ALL_VALUES",
+        )
         filters.append(cat_filter)
 
         control = FilterDropdownControl(control_id, filter_id, col)
@@ -274,7 +282,7 @@ def _generate_named_filters(
     fg.add_scope_configuration("ALL_VISUALS", sheet_id)
     fg.set_status("ENABLED")
 
-    return [fg], controls
+    return [fg], controls, calc_fields
 
 
 def _generate_auto_filters(
@@ -743,9 +751,10 @@ def auto_dashboard(
     all_columns = list(df.columns)
 
     # Named filters (portfolio / date) — user-specified
-    named_fgs, named_ctrls = _generate_named_filters(
+    named_fgs, named_ctrls, named_calcs = _generate_named_filters(
         portfolio_column, date_column, dataset_id, sheet_id, all_columns,
     )
+    calc_fields.extend(named_calcs)
 
     # Auto filters — exclude columns already handled by named filters
     exclude = [c for c in [portfolio_column, date_column] if c]
