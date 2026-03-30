@@ -260,11 +260,16 @@ def _generate_named_filters(
             values = sorted(df[col].dropna().astype(str).unique().tolist())
 
         cat_filter = CategoryFilter(filter_id, col, dataset_id)
-        cat_filter.add_filter_list_configuration(
-            match_operator="CONTAINS",
-            category_values=values,
-            select_all_options="FILTER_ALL_VALUES",
-        )
+        if values:
+            cat_filter.add_filter_list_configuration(
+                match_operator="CONTAINS",
+                category_values=values,
+            )
+        else:
+            cat_filter.add_filter_list_configuration(
+                match_operator="CONTAINS",
+                select_all_options="FILTER_ALL_VALUES",
+            )
         filters.append(cat_filter)
 
         control = FilterDropdownControl(control_id, filter_id, col)
