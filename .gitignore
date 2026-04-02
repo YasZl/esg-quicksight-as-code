@@ -225,6 +225,5 @@ output/
 scripts/*.sh
 decisionlog.md
 presentation.md
-docs/
 design-output/
 scripts/
